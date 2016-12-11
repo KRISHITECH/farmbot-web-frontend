@@ -41,7 +41,7 @@
     position: absolute;
     z-index: 999;
     font-style: normal;
-    background-color: $dark-gray;
+    background-color: $dark_gray;
     border-radius: 3px;
     padding: 6px;
     width: auto;
@@ -72,6 +72,6 @@
         border-style: solid;
         z-index: -1;
         border-width: 0 10px 16px 10px;
-        border-color: transparent transparent $dark-gray transparent;
+        border-color: transparent transparent $dark_gray transparent;
     }
 }

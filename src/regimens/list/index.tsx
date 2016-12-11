@@ -13,8 +13,8 @@ export function RegimensList(props: Everything) {
           <div className="widget-header">
             <h5>Regimens</h5>
             <i className="fa fa-question-circle widget-help-icon">
-              <div className="widget-help-text">{t(`This is a list of all of 
-                your regimens. Coming soon: Regimens, and regimen cloning!`)}
+              <div className="widget-help-text">{t(`This is a list of all of
+                your regimens. Click one to begin editing it.`)}
               </div>
             </i>
           </div>

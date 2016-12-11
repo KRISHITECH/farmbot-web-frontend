@@ -1,13 +1,19 @@
 import * as React from "react";
 import { Link } from "react-router";
 import { sync } from "../devices/actions";
-import { Ticker } from "../ticker/ticker";
 import { Everything } from "../interfaces";
-import { NavButtonProps, DropDownProps, NavBarState } from "./interfaces";
+import {
+    NavButtonProps,
+    DropDownProps,
+    NavBarState,
+    TickerListProps
+} from "./interfaces";
 import { EStopButton } from "../devices/components/e_stop_btn";
 import { connect } from "react-redux";
 import { t } from "i18next";
 import { Session } from "../session";
+import { Markdown } from "../ui";
+import * as moment from "moment";
 
 let DropDown = ({ auth, onClick, sync }: DropDownProps) => {
     if (!auth) { return <span></span>; }
@@ -68,15 +74,46 @@ let links = [
     { name: "Tools", icon: "wrench", url: "/app/tools" }
 ];
 
-class XNavBar extends React.Component<Everything, NavBarState> {
+let TickerList = ({sync}: TickerListProps) => {
+    return <div className="ticker-list"
+        /** Don't let user scroll when ticker list is shown */
+        onMouseEnter={() => { document.body.classList.toggle("freeze"); } }
+        onMouseLeave={() => { document.body.classList.toggle("freeze"); } }>
+        {sync.logs.map((log, index) => {
+            /** TODO: This should be refactored to reuse the Ticker component,
+             * the tickers in the list get their information just slightly
+             * different, as well as their styles.
+             */
+            let time = moment.utc(log.created_at).format("HH:mma");
+            /** If the first number is 0, ditch it. */
+            if (time.charAt(0) === "0") {
+                time = time.substr(1);
+            }
+            return <div key={index} className="status-ticker-wrapper">
+                <div className={`saucer ${log.meta.type}`} />
+                <label className="status-ticker-message">
+                    <Markdown>{log.message.toString() || "Loading"}</Markdown>
+                </label>
+                <label className="status-ticker-created-at">
+                    {time}
+                </label>
+            </div>;
+        })}
+    </div>;
+};
+
+@connect((state: Everything) => state)
+export class NavBar extends React.Component<Everything, NavBarState> {
     constructor() {
         super();
-        this.state = {
-            mobileNavExpanded: false
-        };
+        this.state = { mobileNavExpanded: false };
+        this.toggleNav = this.toggleNav.bind(this);
+        this.logout = this.logout.bind(this);
     }
 
     toggleNav() {
+        /** Don't let user scroll when nav is open */
+        document.body.classList.toggle("freeze");
         this.setState({
             mobileNavExpanded: !this.state.mobileNavExpanded
         });
@@ -90,9 +127,10 @@ class XNavBar extends React.Component<Everything, NavBarState> {
     render() {
         let mobileMenuClass = this.state.mobileNavExpanded ? "expanded" : "";
         let pageName = this.props.location.pathname.split("/").pop() || "";
+        let { toggleNav, logout } = this;
         return <nav role="navigation">
             <button
-                onClick={this.toggleNav.bind(this)}>
+                onClick={() => { toggleNav; } }>
                 <i className="fa fa-bars"></i>
             </button>
             <span className="page-name">{pageName}</span>
@@ -102,7 +140,7 @@ class XNavBar extends React.Component<Everything, NavBarState> {
                         return (
                             <li key={link.url}>
                                 <Link to={link.url}
-                                    onClick={this.toggleNav.bind(this)}
+                                    onClick={() => { toggleNav; } }
                                     activeClassName="active">
                                     <i className={`fa fa-${link.icon}`} />
                                     {link.name}
@@ -117,25 +155,35 @@ class XNavBar extends React.Component<Everything, NavBarState> {
                 <ul className="mobile-menu-extras">
                     <li>
                         <Link to="/app/account"
-                            onClick={this.toggleNav.bind(this)}>
+                            onClick={() => { toggleNav; } }>
                             <i className="fa fa-cog"></i>{t("Account Settings")}
                         </Link>
                     </li>
                     <li>
-                        <a onClick={this.logout.bind(this)}>
+                        <a onClick={logout}>
                             <i className="fa fa-sign-out"></i>{t("Logout")}
                         </a>
                     </li>
                 </ul>
+                <div className="version-links mobile-only">
+                    <span>API:
+                    <a href="https://github.com/FarmBot/Farmbot-Web-API"
+                            target="_blank">{this.props.sync.api_version}
+                        </a>
+                    </span>
+                    <span>Frontend:
+                    <a href="https://github.com/FarmBot/farmbot-web-frontend"
+                            target="_blank">{process.env.SHORT_REVISION}
+                        </a>
+                    </span>
+                </div>
             </div>
             <SyncButton { ...this.props } />
             <EStopButton { ...this.props } />
-            <Ticker { ...this.props } />
-            <DropDown onClick={this.logout.bind(this)} { ...this.props } />
+            <TickerList {...this.props} />
+            <DropDown onClick={logout} { ...this.props } />
             <div className={`underlay ${mobileMenuClass}`}
-                onClick={this.toggleNav.bind(this)}></div>
+                onClick={() => { toggleNav; } }></div>
         </nav>;
     }
 }
-
-export let NavBar = connect((state: Everything) => state)(XNavBar);

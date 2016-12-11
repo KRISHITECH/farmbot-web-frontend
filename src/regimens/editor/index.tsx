@@ -51,10 +51,9 @@ export function RegimenEditorWidget({regimens, dispatch, auth, bot}:
                 to take care of a plant throughout its entire life. A
                 regimen consists of many sequences that are scheduled to run
                 based on the age of the plant. Regimens are applied to
-                plants from the farm designer and can be re-used on many
-                plants growing at the same or different times. Multiple
-                regimens can be applied to any one plant. Coming soon: 
-                Regimens!`)}
+                plants from the farm designer (coming soon) and can be
+                re-used on many plants growing at the same or different
+                times. Multiple regimens can be applied to any one plant.`)}
                 </div>
               </i>
             </div>

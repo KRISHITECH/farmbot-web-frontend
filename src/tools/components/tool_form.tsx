@@ -1,37 +1,53 @@
 import * as React from "react";
 import { ListAndFormProps, ToolFormState } from "../interfaces";
-import { startEditing, destroyTool, addTool, stopEditing } from "../actions";
+import {
+    destroyTool,
+    addTool,
+    stopEditingTools,
+    updateTool,
+    saveTools
+} from "../actions";
 import { t } from "i18next";
 import {
     Widget,
     WidgetBody,
     WidgetHeader,
-    Select,
     BlurableInput
 } from "../../ui";
 
 export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
     constructor() {
         super();
-        this.set = this.set.bind(this);
         this.add = this.add.bind(this);
-        this.state = { name: "", slot_id: 0, id: 0 };
+        this.set = this.set.bind(this);
+        this.save = this.save.bind(this);
+        this.updateToolName = this.updateToolName.bind(this);
+        this.state = { name: "" };
     }
 
     add() {
-        this.props.dispatch(addTool(this.state));
+        this.props.dispatch(addTool(this.state.name));
+        this.setState({ name: "" });
     }
 
-    set(e: React.SyntheticEvent<HTMLInputElement>) {
-        // update dirty state
+    updateToolName(e: React.FormEvent<HTMLInputElement>) {
+        let { id, value } = e.currentTarget;
+        this.props.dispatch(updateTool(parseInt(id), value));
+    }
+
+    save() {
+        this.props.dispatch(saveTools(this.props.all.tools.all));
+    }
+
+    set(e: React.FormEvent<HTMLInputElement>) {
+        this.setState({ name: e.currentTarget.value });
     }
 
     render() {
-        let { set, add } = this;
+        let { set, add, updateToolName, save } = this;
         let { dispatch } = this.props;
-        let { tool_slots, tools } = this.props.all;
-        let edit = () => { dispatch(startEditing()); };
-        let stopEdit = () => { dispatch(stopEditing()); };
+        let { tools } = this.props.all;
+        let stopEdit = () => { dispatch(stopEditingTools()); };
         return <div>
             <Widget>
                 <WidgetHeader
@@ -39,8 +55,9 @@ export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
                     title="TOOLS">
                     <button
                         className="green button-like widget-control"
-                        onClick={edit}>
+                        onClick={() => { save(); } }>
                         {t("SAVE")}
+                        {tools.dirty && ("*")}
                     </button>
                     <button
                         className="gray button-like widget-control"
@@ -52,29 +69,21 @@ export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
                     <table>
                         <thead>
                             <tr>
-                                <th>TOOL NAME</th>
-                                <th>SLOT</th>
+                                <th>{t("TOOL NAME")}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {tools.map(tool => {
-                                let { id, name } = tool;
-                                return <tr key={name}>
+                            {tools.all.map((tool, index) => {
+                                index++;
+                                let { name, id } = tool;
+                                return <tr key={index}>
                                     <td>
                                         <BlurableInput
-                                            value={name}
-                                            onCommit={set}
+                                            value={name || "Error getting Name"}
+                                            onCommit={updateToolName}
+                                            id={id.toString()}
+                                            name={index.toString()}
                                             />
-                                    </td>
-                                    <td>
-                                        <Select>
-                                            {tool_slots.map((slot, i) => {
-                                                i++;
-                                                return <option key={i}>
-                                                    {slot.name}
-                                                </option>;
-                                            })}
-                                        </Select>
                                     </td>
                                     <td>
                                         <button
@@ -90,21 +99,11 @@ export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
                             })}
                             <tr>
                                 <td>
-                                    <BlurableInput
-                                        value={name}
-                                        onCommit={set}
+                                    <input
+                                        value={this.state.name}
+                                        onChange={set}
+                                        name="name"
                                         />
-                                </td>
-                                <td>
-                                    <Select>
-                                        {tool_slots.map(slot => {
-                                            return <option key={
-                                                slot.id
-                                            }>
-                                                {slot.id}
-                                            </option>;
-                                        })}
-                                    </Select>
                                 </td>
                                 <td>
                                     <button

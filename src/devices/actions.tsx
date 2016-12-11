@@ -266,6 +266,7 @@ export function connectDevice(token: string): {} | ((dispatch: any) => any) {
                 devices.current = bot;
                 readStatus();
                 dispatch(sync());
+                logDump();
                 bot.on("notification",
                     (msg: Notification<any>) => {
                         handleIncomingBotNotification(msg, dispatch);
@@ -273,6 +274,14 @@ export function connectDevice(token: string): {} | ((dispatch: any) => any) {
             }, (err) => dispatch(fetchDeviceErr(err)));
     };
 };
+
+function logDump() {
+    return devices
+        .current
+        .logDump()
+        .then(() => { })
+        .catch(() => { });
+}
 
 function fetchDeviceErr(err: Error) {
     return {

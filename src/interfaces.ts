@@ -1,7 +1,6 @@
 import { AuthState, User } from "./auth/interfaces";
 import { ConfigState } from "./config/interfaces";
 import { BotState, DeviceAccountSettings } from "./devices/interfaces";
-import { TickerState } from "./ticker/interfaces";
 import { BulkSchedulerState } from "./regimens/bulk_scheduler/interfaces";
 import {
     RegimensState,
@@ -18,6 +17,18 @@ import { ToolsState, ToolBay, Tool, ToolSlot } from "./tools/interfaces";
 /** Regimens and sequences may have a "color" which determines how it looks
     in the UI. Only certain colors are valid. */
 export type Color = FarmBotJsColor;
+
+export interface Log {
+    id: number;
+    message: string;
+    meta: {
+        type: string;
+    };
+    channels: string;
+    device_id: number;
+    created_at: string;
+    updated_at: string;
+}
 
 interface Location {
     /** EX: /app/designer */
@@ -41,7 +52,6 @@ export interface Everything {
     designer: DesignerState;
     dispatch: Function;
     bot: BotState;
-    ticker: TickerState;
     sequences: SequenceReducerState;
     regimens: RegimensState;
     bulkScheduler: BulkSchedulerState;
@@ -69,4 +79,5 @@ export interface Sync {
     tool_bays: ToolBay[];
     tool_slots: ToolSlot[];
     tools: Tool[];
+    logs: Log[];
 }

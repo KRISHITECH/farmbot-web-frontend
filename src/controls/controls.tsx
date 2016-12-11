@@ -135,10 +135,20 @@ export class Controls extends React.Component<Everything, ControlsState> {
         this.setState({ isEditingCameraURL: !this.state.isEditingCameraURL });
     }
 
+    clearURL() {
+        this.props.dispatch({
+            type: "CHANGE_WEBCAM_URL",
+            payload: "/"
+        });
+        let urlInput = document
+            .querySelector(".webcam-url-input") as HTMLInputElement;
+        urlInput.focus();
+    }
+
     render() {
         let fallback = "/webcam_url_not_set.jpeg";
         let custom = (this.props.bot.account && this.props.bot.account.webcam_url);
-        let url = custom || fallback;
+        let url = custom || fallback || "";
         let dirty = !!this.props.bot.account.dirty;
         let { isEditingCameraURL } = this.state;
         return (
@@ -146,7 +156,7 @@ export class Controls extends React.Component<Everything, ControlsState> {
                 <div className="all-content-wrapper">
                     <div>
                         <div className="row">
-                            <div className={`col-md-4 col-sm-6 col-xs-12 
+                            <div className={`col-md-4 col-sm-6 col-xs-12
                                 col-md-offset-1`}>
                                 <div>
                                     <div className="widget-wrapper">
@@ -155,8 +165,8 @@ export class Controls extends React.Component<Everything, ControlsState> {
                                                 <EStopButton {...this.props} />
                                                 <div className="widget-header">
                                                     <h5>Move</h5>
-                                                    <i className={`fa 
-                                                        fa-question-circle 
+                                                    <i className={`fa
+                                                        fa-question-circle
                                                         widget-help-icon`}>
                                                         <div
                                                             className={
@@ -167,8 +177,7 @@ export class Controls extends React.Component<Everything, ControlsState> {
                               the arrows for relative movements or type in new
                               coordinates and press GO for an
                               absolute movement. Tip: Press the Home button when
-                              you are done so FarmBot is ready to get back to 
-                              work. Note: Currently all buttons except for Home 
+                              you are done so FarmBot is ready to get back to
                               work.`)}
                                                         </div>
                                                     </i>
@@ -297,7 +306,7 @@ export class Controls extends React.Component<Everything, ControlsState> {
                                                     <h5>{t("Camera")}</h5>
                                                     <i className="fa fa-question-circle widget-help-icon">
                                                         <div className="widget-help-text">
-                                                            {t(`Press the edit button to update 
+                                                            {t(`Press the edit button to update
                                                                 and save your webcam URL.`)}
                                                         </div>
                                                     </i>
@@ -307,16 +316,20 @@ export class Controls extends React.Component<Everything, ControlsState> {
                                         <div className="row">
                                             <div className="col-sm-12">
                                                 <div>
-                                                    {isEditingCameraURL ?
+                                                    {isEditingCameraURL && (
                                                         <div>
                                                             <label>{t("Set Webcam URL:")}</label>
+                                                            <button
+                                                                className="clear-webcam-url-btn"
+                                                                onClick={this.clearURL.bind(this)}>
+                                                                <i className="fa fa-times"></i>
+                                                            </button>
                                                             <input type="text"
                                                                 onChange={updateWebcamUrl(this.props.dispatch)}
-                                                                value={url} />
+                                                                value={url}
+                                                                className="webcam-url-input" />
                                                         </div>
-                                                        :
-                                                        <div>{url}</div>
-                                                    }
+                                                    )}
                                                 </div>
                                                 {showUrl(url, dirty)}
                                             </div>
@@ -331,4 +344,3 @@ export class Controls extends React.Component<Everything, ControlsState> {
         );
     }
 };
-

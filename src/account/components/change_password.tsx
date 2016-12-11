@@ -9,8 +9,8 @@ export class ChangePassword extends React.Component<ChangePwPropTypes, {}> {
         let npc = this.props.new_password_confirmation;
         let npcString = "new_password_confirmation";
         return <Row>
-            <div className={`col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 
-                    col-md-offset-2`}>
+            <div className={`col-xs-12 col-sm-10 col-sm-offset-1 col-md-6
+                    col-md-offset-3`}>
                 <div className="widget-wrapper">
                     <Row>
                         <div className="col-sm-12">
@@ -27,10 +27,10 @@ export class ChangePassword extends React.Component<ChangePwPropTypes, {}> {
                             <div className="col-sm-12">
                                 <div className="widget-content">
                                     <div className="form-group row">
-                                        <label className="col-sm-3">
+                                        <label className="col-sm-4">
                                             {t("Old Password")}
                                         </label>
-                                        <div className="col-sm-9">
+                                        <div className="col-sm-8">
                                             <BlurableInput
                                                 allowEmpty={true}
                                                 onCommit={set}
@@ -41,10 +41,10 @@ export class ChangePassword extends React.Component<ChangePwPropTypes, {}> {
                                         </div>
                                     </div>
                                     <div className="form-group row">
-                                        <label className="col-sm-3">
+                                        <label className="col-sm-4">
                                             {t("New Password")}
                                         </label>
-                                        <div className="col-sm-9">
+                                        <div className="col-sm-8">
                                             <BlurableInput
                                                 allowEmpty={true}
                                                 onCommit={set}
@@ -55,10 +55,10 @@ export class ChangePassword extends React.Component<ChangePwPropTypes, {}> {
                                         </div>
                                     </div>
                                     <div className="form-group row">
-                                        <label className="col-sm-3">
+                                        <label className="col-sm-4">
                                             {t("New Password")}
                                         </label>
-                                        <div className="col-sm-9">
+                                        <div className="col-sm-8">
                                             <BlurableInput
                                                 allowEmpty={true}
                                                 onCommit={set}

@@ -7,7 +7,6 @@ import {
 } from "../controls/peripherals/reducer";
 import { configReducer as config } from "../config/reducer";
 import { regimensReducer as regimens } from "../regimens/reducer";
-import { tickerReducer as ticker } from "../ticker/reducer";
 import { draggableReducer as draggable } from "../draggable/reducer";
 import { toolsReducer as tools } from "../tools/reducer";
 import { syncReducer as sync } from "../sync/reducer";
@@ -25,7 +24,6 @@ let reducers = combineReducers({
     bulkScheduler,
     config,
     designer,
-    ticker,
     draggable,
     peripherals,
     tools,

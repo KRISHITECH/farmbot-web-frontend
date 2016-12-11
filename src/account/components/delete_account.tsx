@@ -7,8 +7,8 @@ export class DeleteAccount extends React.Component<DeleteAccountPropTypes, {}> {
     render() {
         let { set, deletion_confirmation } = this.props;
         return <Row>
-            <div className={`col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 
-                    col-md-offset-2`}>
+            <div className={`col-xs-12 col-sm-10 col-sm-offset-1 col-md-6
+                    col-md-offset-3`}>
                 <div className="widget-wrapper">
                     <Row>
                         <div className="col-sm-12">
@@ -43,10 +43,10 @@ export class DeleteAccount extends React.Component<DeleteAccountPropTypes, {}> {
                             <div className="col-sm-12">
                                 <div className="widget-content">
                                     <div className="form-group row">
-                                        <label className="col-sm-3">
+                                        <label className="col-sm-4">
                                             {t("Enter Password")}
                                         </label>
-                                        <div className="col-sm-9">
+                                        <div className="col-sm-8">
                                             <BlurableInput
                                                 onCommit={set}
                                                 name="deletion_confirmation"
@@ -56,7 +56,7 @@ export class DeleteAccount extends React.Component<DeleteAccountPropTypes, {}> {
                                                 type="password" />
                                         </div>
                                         <button onClick={this.props.save}
-                                            className={`red button-like 
+                                            className={`red button-like
                                                     widget-control`}
                                             type="button">
                                             {t("DELETE ACCOUNT")}

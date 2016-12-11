@@ -4,19 +4,6 @@ import {
   configKey
 } from "farmbot/dist/interfaces";
 
-export interface BotLog {
-  /** The actual message that was emitted */
-  message: string;
-  /** a Unix timestamp (UTC) */
-  time: number;
-  /** A subset of interface `HardwareState`. But I only needed x,y,z. */
-  status: HardwareState;
-  /** Where to display this message. */
-  channel: string;
-  /** A list of tags for sorting. **/
-  tags: Array<string>;
-};
-
 /** How the device is stored in the API side.
  * This is what comes back from the API as JSON.
  */
@@ -32,13 +19,37 @@ export interface DeviceAccountSettings {
  * Rpc Log message from the bot.
  */
 export interface RpcBotLog {
-  channels: string[];
+  /** The message to be displayed from the bot. */
   message: string;
-  time: number;
-  tags: string;
-  status: HardwareState;
-
+  /** Unix timestamp of when the log was created. */
+  created_at: number;
+  /** Array of channels where this message is supposed to show up. */
+  channels: RpcBotLogChannel[];
+  /** Meta data about the message. */
+  meta: Meta;
 }
+
+/** Meta information about a log message. */
+interface Meta {
+  type: RpcBotLogType;
+  /** Bot Position X */
+  x: number | undefined;
+  /** Bot Position Y */
+  y: number | undefined;
+  /** Bot Position Z */
+  z: number | undefined;
+}
+
+/** The different channels on which a notification can be sent. */
+type RpcBotLogChannel = "toast";
+
+/** Different types of messages. */
+type RpcBotLogType = "success"
+  | "busy"
+  | "warn"
+  | "error"
+  | "info"
+  | "fun"
 
 /** Typescript does not have partial types yet.
  *  When it does, we can pull this out*/
@@ -54,7 +65,7 @@ export interface BotState {
   account: DeviceAccountSettings;
   /** Maximum number of messages to cache. Excess is truncated. */
   logQueueSize: number;
-  logQueue: BotLog[];
+  logQueue: RpcBotLog[];
   status: string;
   /** How many steps to move when the user presses a manual movement arrow */
   stepSize: number;

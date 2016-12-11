@@ -18,33 +18,33 @@ import { getParam } from "../util";
 
 // Dynamically determine what to render in the designer"s first panel
 // based on the value of hash fragment "p1"
-type ComponentMap = {[name: string] : React.ComponentClass<any> | React.StatelessComponent<any>};
+type ComponentMap = { [name: string]: React.ComponentClass<any> };
 export class Panel1 extends React.Component<any, any> {
-  get tabName() :string {
+  get tabName(): string {
     return (getParam("p1") || "Plants");
   }
 
   get content() {
-    let component= 
-    ({
-      Plants,
-      NoTab,
-      SpeciesCatalog,
-      SpeciesInfo,
-      PlantInfo,
-      Groups,
-      AddGroup,
-      Zones,
-      AddZone,
-      Panel2
-    } as ComponentMap)[this.tabName];
+    let component =
+      ({
+        Plants,
+        NoTab,
+        SpeciesCatalog,
+        SpeciesInfo,
+        PlantInfo,
+        Groups,
+        AddGroup,
+        Zones,
+        AddZone,
+        Panel2
+      } as ComponentMap)[this.tabName];
     return React.createElement(component, this.props);
   }
 
   render() {
     return (
       <div>
-        { this.content }
+        {this.content}
       </div>
     );
   }

@@ -26,9 +26,9 @@ export function BulkSchedulerWidget({sequences, dispatch, editor}:
                     <div className="widget-header">
                         <h5>Scheduler</h5>
                         <i className="fa fa-question-circle widget-help-icon">
-                            <div className="widget-help-text">{t(`Use this tool 
-                                to schedule a sequence to run on many days of 
-                                your regimen.`)}</div>
+                            <div className="widget-help-text">{t(`Use this tool
+                                to schedule sequences to run on one or many
+                                days of your regimen.`)}</div>
                         </i>
                     </div>
                 </div>

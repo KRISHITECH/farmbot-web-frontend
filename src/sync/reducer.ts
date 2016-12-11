@@ -1,5 +1,6 @@
 import { generateReducer } from "../redux/generate_reducer";
 import { Sync } from "../interfaces";
+import { Log } from "../interfaces";
 
 const initialState: Sync = {
     api_version: "",
@@ -18,11 +19,17 @@ const initialState: Sync = {
     tool_bays: [],
     tool_slots: [],
     tools: [],
-    plants: []
+    plants: [],
+    logs: []
 };
 
 export let syncReducer = generateReducer<Sync>(initialState)
-    .add<Sync>("FETCH_SYNC_OK", function (s, a) {
+    .add<Log>("BOT_LOG", function(state, { payload }) {
+        state.logs.unshift(payload);
+        state.logs = _.take(_.uniq(state.logs, JSON.stringify), 50);
+        return state;
+    })
+    .add<Sync>("FETCH_SYNC_OK", function(s, a) {
         s = a.payload;
         return s;
     });

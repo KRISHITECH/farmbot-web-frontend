@@ -136,6 +136,18 @@ button {
                 margin: 0 auto;
                 left: 0;
                 right: 0;
+                box-shadow: inset rgba(0, 0, 0, 0.03) 0px 0px 3px 3px;
+            }
+            &:before {
+                content: '';
+                position: absolute;
+                height: 1.6rem;
+                width: 1.6rem;
+                border-radius: 50%;
+                top: 0.2rem;
+                margin: 0 auto;
+                left: 0;
+                right: 0;
                 box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0px 0 rgba(0, 0, 0, 0.04), 0 4px 9px rgba(0, 0, 0, 0.13), 0 3px 3px rgba(0, 0, 0, 0.05);
             }
         }

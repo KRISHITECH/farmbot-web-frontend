@@ -91,6 +91,8 @@ export class API {
     get baseUrl() { return `${this.protocol}//${this.host}`; };
     /** /api/tokens/ */
     get tokensPath() { return `${this.baseUrl}/api/tokens/`; };
+    /** /api/password_resets/ */
+    get passwordResetPath() { return `${this.baseUrl}/api/password_resets/`; };
     /** /api/device/ */
     get devicePath() { return `${this.baseUrl}/api/device/`; };
     /** /api/users/ */

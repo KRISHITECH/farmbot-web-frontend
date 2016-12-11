@@ -14,21 +14,26 @@ export class SpeciesInfo extends React.Component<Everything, any> {
     }
 
     drop(e: React.MouseEvent<any>) {
-        let box = document
-            .querySelector("#drop-area > svg > rect")
-            .getBoundingClientRect();
-        let p: PlantOptions = fromScreenToGarden(e.pageX, e.pageY, box.left, box.bottom);
-        // TEMPORARY SOLUTION =======
-        let OFEntry = this.findCrop(this.props.location.query["id"]);
-        p.img_url = OFEntry.image;
-        p.openfarm_slug = OFEntry.crop.slug;
-        p.name = OFEntry.crop.name || "Mystery Crop";
-        // END TEMPORARY SOLUTION =======
 
-        let plant = Plant(p);
-        let baseUrl: string = API.current.baseUrl;
+        let el = document.querySelector("#drop-area > svg > rect");
+        if (!el) {
+            throw new Error("why");
+        } else {
+            let box = el.getBoundingClientRect();
 
-        this.props.dispatch(savePlant(plant, baseUrl));
+            let p: PlantOptions = fromScreenToGarden(e.pageX, e.pageY, box.left, box.bottom);
+            // TEMPORARY SOLUTION =======
+            let OFEntry = this.findCrop(this.props.location.query["id"]);
+            p.img_url = OFEntry.image;
+            p.openfarm_slug = OFEntry.crop.slug;
+            p.name = OFEntry.crop.name || "Mystery Crop";
+            // END TEMPORARY SOLUTION =======
+
+            let plant = Plant(p);
+            let baseUrl: string = API.current.baseUrl;
+
+            this.props.dispatch(savePlant(plant, baseUrl));
+        }
     }
 
     findCrop(slug?: string) {
@@ -79,7 +84,7 @@ export class SpeciesInfo extends React.Component<Everything, any> {
                             _(result.crop)
                                 .omit(["slug", "processing_pictures"])
                                 .pairs()
-                                .map(function(pair, i) {
+                                .map(function (pair, i) {
                                     let key = pair[0] as string;
                                     let value = pair[1];
                                     return <li key={i}>

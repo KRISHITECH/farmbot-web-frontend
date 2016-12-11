@@ -6,7 +6,8 @@ import { connect } from "react-redux";
 import { Page, Row, Col } from "../ui";
 import { success } from "../ui";
 
-class XTools extends React.Component<Everything, ToolsState> {
+@connect((state: Everything) => state)
+export class Tools extends React.Component<Everything, ToolsState> {
     componentDidMount() {
         success(
             "Subscribe to the FarmBot.io mailing list for news and updates.",
@@ -15,6 +16,7 @@ class XTools extends React.Component<Everything, ToolsState> {
     }
     render() {
         let editing = this.props.tools.editorMode;
+        let isEditingTools = this.props.tools.tools.isEditing;
         return <Page>
             <Row>
                 <Col>
@@ -32,13 +34,13 @@ class XTools extends React.Component<Everything, ToolsState> {
                     )}
                 </Col>
                 <Col>
-                    {!editing && (
+                    {!isEditingTools && (
                         <ToolList
                             all={this.props.tools}
                             dispatch={this.props.dispatch}
                             />
                     )}
-                    {editing && (
+                    {isEditingTools && (
                         <ToolForm
                             all={this.props.tools}
                             dispatch={this.props.dispatch}
@@ -49,5 +51,3 @@ class XTools extends React.Component<Everything, ToolsState> {
         </Page>;
     }
 }
-
-export let Tools = connect((state: Everything) => state)(XTools);

@@ -1,9 +1,10 @@
 import * as React from "react";
-import { Everything } from "../interfaces";
-import { ConfigState } from "../config/interfaces";
-import { BotState } from "../devices/interfaces";
-import { PeripheralState } from "../controls/peripherals/interfaces";
-import { ToolsState } from "../tools/interfaces";
+import { Everything } from "./interfaces";
+import { ConfigState } from "./config/interfaces";
+import { BotState } from "./devices/interfaces";
+import { PeripheralState } from "./controls/peripherals/interfaces";
+import { ToolsState } from "./tools/interfaces";
+import { Log } from "./interfaces";
 
 export class Wrapper extends React.Component<any, any> {
     render() {
@@ -89,12 +90,6 @@ export function fakeState(dispatcher?: Function): Everything {
         all: []
     };
 
-    let ticker = {
-        message: "Inside test suite",
-        color: "red",
-        show: true
-    };
-
     let bulkScheduler = {
         currentRegimen: 0,
         form: {
@@ -102,7 +97,7 @@ export function fakeState(dispatcher?: Function): Everything {
             weeks: []
         }
     };
-    let dispatch = dispatcher || function(p: any) { };
+    let dispatch = dispatcher || function (p: any) { };
     let config: ConfigState = {
         host: "localhost",
         port: "5555"
@@ -130,7 +125,8 @@ export function fakeState(dispatcher?: Function): Everything {
         tool_bays: [],
         tool_slots: [],
         tools: [],
-        plants: []
+        plants: [],
+        logs: []
     };
 
     let draggable = { dataTransfer: {} };
@@ -146,20 +142,21 @@ export function fakeState(dispatcher?: Function): Everything {
         tool_slots: [
             {
                 id: 333,
-                name: "slotster",
                 tool_bay_id: 1234,
+                created_at: "SOME UTC STRING",
+                tool_id: 1,
                 x: 10,
                 y: 20,
                 z: 30
             },
         ],
-        tools: [
-            {
+        tools: {
+            isEditing: false,
+            all: [{
                 id: 1,
-                name: "tool1",
-                slot_id: 111
-            }
-        ]
+                name: "tool1"
+            }]
+        }
     };
 
     return {
@@ -168,7 +165,6 @@ export function fakeState(dispatcher?: Function): Everything {
         , designer
         , dispatch
         , bot
-        , ticker
         , sequences
         , regimens
         , bulkScheduler

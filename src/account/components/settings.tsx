@@ -7,8 +7,8 @@ export class Settings extends React.Component<SettingsPropTypes, {}> {
     render() {
         let { name, email, set, save } = this.props;
         return <Row>
-            <div className={`col-xs-12 col-sm-10 col-sm-offset-1 
-                        col-md-8 col-md-offset-2`}>
+            <div className={`col-xs-12 col-sm-10 col-sm-offset-1
+                        col-md-6 col-md-offset-3`}>
                 <div className="widget-wrapper">
                     <Row>
                         <div className="col-sm-12">
@@ -28,10 +28,10 @@ export class Settings extends React.Component<SettingsPropTypes, {}> {
                             <div className="col-sm-12">
                                 <div className="widget-content">
                                     <div className="form-group row">
-                                        <label className="col-sm-3">
+                                        <label className="col-sm-4">
                                             {t("Your Name")}
                                         </label>
-                                        <div className="col-sm-9">
+                                        <div className="col-sm-8">
                                             <BlurableInput
                                                 onCommit={set}
                                                 name="name"
@@ -41,10 +41,10 @@ export class Settings extends React.Component<SettingsPropTypes, {}> {
                                         </div>
                                     </div>
                                     <div className="form-group row">
-                                        <label className="col-sm-3">
+                                        <label className="col-sm-4">
                                             {t("Email")}
                                         </label>
-                                        <div className="col-sm-9">
+                                        <div className="col-sm-8">
                                             <BlurableInput
                                                 onCommit={set}
                                                 name="email"

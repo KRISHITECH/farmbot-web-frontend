@@ -1,5 +1,17 @@
 /* Styles used throughout the frontend */
 
+body {
+    min-height: 100vh;
+    &.freeze {
+        height: 100vh;
+        overflow: hidden;
+    }
+}
+
+.markdown * {
+    color: #fff;
+}
+
 .all-content-wrapper {
     padding: 3rem 3rem 0rem 3rem;
     margin-left: auto;
@@ -12,6 +24,10 @@
     .all-content-wrapper {
         padding: 2.5rem 0rem 0rem 0rem;
     }
+}
+
+.app {
+    overflow: hidden !important;
 }
 
 .hide {
@@ -51,7 +67,6 @@ a {
         height: 1rem;
         top: 0;
         right: 0;
-        z-index: 9999;
         padding: 0.4rem 1.5rem 0 0px;
         pointer-events: none
     }
@@ -232,6 +247,16 @@ span.prefix {
 
 .webcam-widget label {
     padding: 0.5rem 0 0 0.5rem;
+}
+
+.clear-webcam-url-btn {
+    position: absolute;
+    left: 2rem;
+    top: 3.2rem;
+}
+
+.webcam-url-input {
+    padding-left: 3.4rem;
 }
 
 ul {

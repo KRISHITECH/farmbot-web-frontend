@@ -16,5 +16,10 @@ export interface DropDownProps {
 }
 
 export interface NavBarState {
-    mobileNavExpanded: boolean;
+    mobileNavExpanded?: boolean;
+    logsExpanded?: boolean;
+}
+
+export interface TickerListProps {
+    sync: Sync;
 }

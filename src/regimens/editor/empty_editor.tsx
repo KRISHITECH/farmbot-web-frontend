@@ -8,6 +8,10 @@ interface EmptyEditorProps {
     actually edit). */
 export function EmptyEditor({}: EmptyEditorProps) {
     return <div>
-        <p> {t("Please click 'Add' to start editing a regimen.")} </p>
+        <p> {
+            t(`
+            You don't have any Regimens yet. Click "Add" from the Regimens 
+            widget to create and edit your first Regimen.
+            `)} </p>
     </div>;
 }

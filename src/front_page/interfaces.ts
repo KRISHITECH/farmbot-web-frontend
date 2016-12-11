@@ -3,11 +3,13 @@ export interface FrontPageState {
     regEmail?: string;
     regPassword?: string;
     regConfirmation?: string;
-    loginEmail?: string;
+    email?: string;
     loginPassword?: string;
     showServerOpts?: boolean;
     serverURL?: string;
     serverPort?: string;
+    forgotPassword?: boolean;
+    forgotPasswordEmail?: string;
 }
 
 export interface FrontPageProps { };

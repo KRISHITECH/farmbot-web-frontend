@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { ToggleButton } from "../controls/toggle_button";
 import { CalibrationButton } from "./components/calibration_button";
-import { BotLog, BotState } from "../devices/interfaces";
+import { RpcBotLog as BotLog, BotState } from "../devices/interfaces";
 import * as moment from "moment";
 import { Everything } from "../interfaces";
 import {
@@ -17,7 +17,6 @@ import {
     reboot,
     powerOff,
     checkArduinoUpdates,
-    clearLogs,
     updateConfig
 } from "./actions";
 import { t } from "i18next";
@@ -526,56 +525,6 @@ class DevicesPage extends React.Component<Everything, any> {
                                     </div>
                                 </div>
                             </div>
-                            <div className="row">
-                                <div className="col-md-10 col-sm-12 col-xs-12 col-md-offset-1">
-                                    <div>
-                                        <div className="widget-wrapper">
-                                            <div className="row">
-                                                <div className="col-sm-12">
-                                                    <div className="row">
-                                                        <div className="col-sm-12">
-                                                            <button type="submit"
-                                                                className="button-like green widget-control"
-                                                                onClick={() => this.props.dispatch(clearLogs())}>
-                                                                {t("Clear Logs")}
-                                                            </button>
-                                                            <div className="widget-header">
-                                                                <h5>{t("Logs")}</h5>
-                                                                <i className="fa fa-question-circle widget-help-icon">
-                                                                    <div className="widget-help-text">{t(`All messages from
-                                your FarmBot are shown in these logs. Note: these
-                                are not currently saved anywhere so if you refresh
-                                the app this table will be cleared.`)}</div>
-                                                                </i>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="row">
-                                                        <div className="col-sm-12">
-                                                            <table>
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th width="15%">
-                                                                            <label>{t("TIME")}</label>
-                                                                        </th>
-                                                                        <th width="75%">
-                                                                            <label>{t("MESSAGE")}</label>
-                                                                        </th>
-                                                                        <th width="10%">
-                                                                            <label>{t("COORDINATES")}</label>
-                                                                        </th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <Logs logs={this.props.bot.logQueue} />
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -598,9 +547,10 @@ function Logs({logs}: LogsProps) {
 
         function displayCoordinates(log: BotLog) {
             // Stringify coords bcuz 0 is falsy in JS.
-            let [x, y, z] = [log.status.location[0],
-            log.status.location[1],
-            log.status.location[2]].map((i) => String(i));
+            let x = log.meta.x;
+            let y = log.meta.y;
+            let z = log.meta.z;
+
             if (x && y && z) {
                 return `${x}, ${y}, ${z}`;
             } else {
@@ -608,11 +558,10 @@ function Logs({logs}: LogsProps) {
             }
         }
 
-
         return <tbody>
             {
                 logs.map((log, i) => <tr key={i}>
-                    <td> {displayTime(log.time)} </td>
+                    <td> {displayTime(log.created_at)} </td>
                     <td> {log.message} </td>
                     <td> {displayCoordinates(log)} </td>
                 </tr>)

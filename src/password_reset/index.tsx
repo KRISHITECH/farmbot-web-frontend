@@ -1,17 +1,9 @@
-/// <reference path="../typings/index.d.ts" />
 import * as React from "react";
 import { render } from "react-dom";
-import { RootComponent } from "./routes";
-import { store } from "./redux/store";
-import { ready } from "./config/actions";
-import { detectLanguage } from "./i18n";
+import { detectLanguage } from "../i18n";
+import { PasswordReset } from "./password_reset";
 import * as i18next from "i18next";
-
-if (process.env.NPM_ADDON) { require(process.env.NPM_ADDON); }
-
-let r = (process.env.REVISION as string) || "REVISION INFO NOT AVAILABLE";
-console.log(r);
-
+import "../css/_index.scss";
 
 detectLanguage().then((config) => {
     i18next.init(config, (err, t) => {
@@ -19,7 +11,7 @@ detectLanguage().then((config) => {
         node.id = "root";
         document.body.appendChild(node);
 
-        let reactElem = React.createElement(RootComponent, { store });
+        let reactElem = React.createElement(PasswordReset, {});
         let domElem = document.getElementById("root");
 
         if (domElem) {
@@ -27,6 +19,5 @@ detectLanguage().then((config) => {
         } else {
             throw new Error(t("Add a div with id `root` to the page first."));
         };
-        store.dispatch(ready());
     });
 });
