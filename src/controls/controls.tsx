@@ -138,7 +138,7 @@ export class Controls extends React.Component<Everything, ControlsState> {
     clearURL() {
         this.props.dispatch({
             type: "CHANGE_WEBCAM_URL",
-            payload: "/"
+            payload: "http://"
         });
         let urlInput = document
             .querySelector(".webcam-url-input") as HTMLInputElement;

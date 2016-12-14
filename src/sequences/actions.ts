@@ -130,8 +130,8 @@ export function removeStep(index: number): RemoveStep {
     };
 }
 
-export function saveSequence(sequence: Sequence): Thunk {
-    return function (dispatch) {
+export function saveSequence(sequence: Sequence, notify = true): Thunk {
+    return function(dispatch) {
         let url = API.current.sequencesPath;
         let method: Function;
         if (sequence.id) {
@@ -141,12 +141,15 @@ export function saveSequence(sequence: Sequence): Thunk {
             method = axios.post;
         };
         return method(url, sequence)
-            .then(function (resp: { data: Sequence }) {
-                success(i18next.t("Saved '{{SequenceName}}'",
-                    { SequenceName: (sequence.name || "sequence") }));
+            .then(function(resp: { data: Sequence }) {
+                if (notify) {
+                    success(i18next.t("Saved '{{SequenceName}}'",
+                        { SequenceName: (sequence.name || "sequence") }));
+                }
                 dispatch(saveSequenceOk(resp.data));
+                return resp.data;
             })
-            .catch(function (err: {
+            .catch(function(err: {
                 response: {
                     data: { [reason: string]: string };
                 }
@@ -156,6 +159,7 @@ export function saveSequence(sequence: Sequence): Thunk {
                 error(prettyPrintApiErrors(err),
                     i18next.t(template, context));
                 dispatch(saveSequenceNo(err));
+                return Promise.reject(err);
             });
     };
 };
@@ -205,13 +209,13 @@ export function addComment(step: Step, index: number, comment: string) {
 }
 
 export function deleteSequence(index: number) {
-    // use cases: 
+    // use cases:
     // unsaved sequence. (in state)
     // saved sequence  (http DELETE)
-    // misc errors 
-    // dependency error. 
+    // misc errors
+    // dependency error.
 
-    return function (dispatch: Function, getState: Function) {
+    return function(dispatch: Function, getState: Function) {
         let state: Everything = getState();
 
         let sequence: Sequence = state.sequences.all[index];

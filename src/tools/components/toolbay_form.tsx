@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ListAndFormProps, ToolBayFormState } from "../interfaces";
 import { Widget, WidgetBody, WidgetHeader, Select } from "../../ui";
-import { BlurableInput } from "../../ui";
+import { Col, BlurableInput } from "../../ui";
 import {
     saveToolSlots,
     destroySlot,
@@ -132,7 +132,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                 </td>
                 <td>
                     <button
-                        className="button-like widget-control red"
+                        className="button-like red"
                         onClick={() => {
                             /** TODO: This isn't right, but if I make the id 
                              *  required, TS throws errors everywhere. I'll
@@ -159,7 +159,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
         let { dispatch } = this.props;
         let { tool_bays, tools, tool_slots } = this.props.all;
         let stopEdit = () => { dispatch(stopEditingToolBays()); };
-        return <div className="tool-bay-form">
+        return <Col>
             {tool_bays.map((bay, index) => {
                 index++;
                 let { name } = bay;
@@ -173,13 +173,13 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                           FarmBot hardware configuration.`)}
                         title={name}>
                         <button
-                            className="green button-like widget-control"
+                            className="green button-like"
                             onClick={() => { saveAll(tool_bay_id); } }>
                             {t("SAVE")}
                             {bay.dirty && ("*")}
                         </button>
                         <button
-                            className="gray button-like widget-control"
+                            className="gray button-like"
                             onClick={stopEdit}>
                             {t("BACK")}
                         </button>
@@ -261,7 +261,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                                     <td>
                                         <button
                                             className={`button-like
-                                                    widget-control green`}
+                                                    green`}
                                             onClick={() => addToolSlot(
                                                 tool_bay_id
                                             )}>
@@ -274,6 +274,6 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                     </WidgetBody>
                 </Widget>;
             })}
-        </div >;
+        </Col >;
     }
 };

@@ -85,6 +85,7 @@ export interface IStepInput {
   | "sub_sequence_id";
   dispatch: Function;
   index: number;
+  onChange?: any;
 }
 
 export interface StepParams {
@@ -110,7 +111,7 @@ let Pending = ({ dispatch, index }: StepParams) => {
   </div>;
 };
 
-export let stepTiles: StepDictionary = {
+export let stepTiles: any = {
   emergency_stop: Pending,
   home_all: Pending,
   home_x: Pending,

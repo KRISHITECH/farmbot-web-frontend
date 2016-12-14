@@ -1,10 +1,10 @@
 import * as React from "react";
 import { mount } from "enzyme";
-import { ChangePassword } from "../change_password";
-import { ChangePwPropTypes } from "../../interfaces";
+import { ChangePassword } from "../components";
+import { ChangePwPropTypes } from "../interfaces";
 
-describe("<ChangePassword/>", function() {
-    it("saves", function() {
+describe("<ChangePassword/>", function () {
+    it("saves new user password", function () {
         let props: ChangePwPropTypes = {
             password: "wow",
             new_password: "wow",

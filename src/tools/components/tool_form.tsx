@@ -9,6 +9,7 @@ import {
 } from "../actions";
 import { t } from "i18next";
 import {
+    Col,
     Widget,
     WidgetBody,
     WidgetHeader,
@@ -48,19 +49,19 @@ export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
         let { dispatch } = this.props;
         let { tools } = this.props.all;
         let stopEdit = () => { dispatch(stopEditingTools()); };
-        return <div>
+        return <Col>
             <Widget>
                 <WidgetHeader
                     helpText="Tools are for tooling."
                     title="TOOLS">
                     <button
-                        className="green button-like widget-control"
+                        className="green button-like"
                         onClick={() => { save(); } }>
                         {t("SAVE")}
                         {tools.dirty && ("*")}
                     </button>
                     <button
-                        className="gray button-like widget-control"
+                        className="gray button-like"
                         onClick={stopEdit}>
                         {t("BACK")}
                     </button>
@@ -88,7 +89,7 @@ export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
                                     <td>
                                         <button
                                             className={`button-like 
-                                                widget-control red`}
+                                                red`}
                                             onClick={() => {
                                                 dispatch(destroyTool(id));
                                             } }>
@@ -108,7 +109,7 @@ export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
                                 <td>
                                     <button
                                         className={`button-like 
-                                                widget-control green`}
+                                                green`}
                                         onClick={() => { dispatch(add); } }>
                                         <i className="fa fa-plus"></i>
                                     </button>
@@ -118,6 +119,6 @@ export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
                     </table>
                 </WidgetBody>
             </Widget>
-        </div>;
+        </Col>;
     }
 };

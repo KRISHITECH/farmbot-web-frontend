@@ -9,7 +9,7 @@ import * as RR from "react-router";
 export class SpeciesInfo extends React.Component<Everything, any> {
     drag(e: React.DragEvent<any>) {
         var img = document.createElement("img");
-        img.src = "/img/icons/seed.png";
+        img.src = "/app-resources/img/icons/seed.png";
         (e.dataTransfer as any)["setDragImage"](img, 12, 48);
     }
 

@@ -59,10 +59,9 @@ let createToast = (message: string, title: string, color: string) => {
         titleEl.classList.add("toast-title");
         messageEl.classList.add("toast-message");
         loaderEl.classList.add("toast-loader");
-        leftLoaderEl.classList.add("toast-loader-right");
+        leftLoaderEl.classList.add("toast-loader-left");
         leftLoaderEl.classList.add(color);
-        rightLoaderEl.classList.add("toast-loader-left");
-        rightLoaderEl.classList.add(color);
+        rightLoaderEl.classList.add("toast-loader-right");
         spinnerLoaderEl.classList.add("toast-loader-spinner");
 
         /** Add events */
@@ -105,11 +104,11 @@ let createToast = (message: string, title: string, color: string) => {
             if (timer <= 7) {
                 toastEl.classList.add("active");
             }
-            if (!isHovered && timer <= 2) {
+            if (!isHovered && timer <= .800) {
                 toastEl.classList.add("poof");
             }
             if (!isHovered) {
-                timer--;
+                timer -= 0.100;
                 if (timer <= 0) {
                     clearInterval(int);
                     if (toastEl && toastEl.parentNode === tc) {
@@ -121,7 +120,7 @@ let createToast = (message: string, title: string, color: string) => {
                     }
                 }
             }
-        }, 1000);
+        }, 100);
     }
 
 };

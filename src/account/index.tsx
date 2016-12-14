@@ -4,7 +4,7 @@ import { Everything } from "../interfaces";
 import { updateUser, deleteUser } from "./actions";
 import { Settings, DeleteAccount, ChangePassword } from "./components";
 import { UserAccountUpdate } from "./interfaces";
-import { Page } from "../ui";
+import { Page, Col } from "../ui";
 
 @connect((state: Everything) => state)
 export class Account extends React.Component<Everything, UserAccountUpdate> {
@@ -50,23 +50,25 @@ export class Account extends React.Component<Everything, UserAccountUpdate> {
 
     render() {
         return (
-            <Page>
-                <Settings name={this.state.name || ""}
-                    email={this.state.email || ""}
-                    set={this.set.bind(this)}
-                    save={this.saveUser.bind(this)} />
-                <ChangePassword
-                    password={this.state.password || ""}
-                    new_password={this.state.new_password || ""}
-                    new_password_confirmation=
-                    {this.state.new_password_confirmation || ""}
-                    set={this.set.bind(this)}
-                    save={this.savePassword.bind(this)} />
-                <DeleteAccount
-                    deletion_confirmation=
-                    {this.state.deletion_confirmation || ""}
-                    set={this.set.bind(this)}
-                    save={this.enactDeletion.bind(this)} />
+            <Page className="account-settings">
+                <Col md="6">
+                    <Settings name={this.state.name || ""}
+                        email={this.state.email || ""}
+                        set={this.set.bind(this)}
+                        save={this.saveUser.bind(this)} />
+                    <ChangePassword
+                        password={this.state.password || ""}
+                        new_password={this.state.new_password || ""}
+                        new_password_confirmation=
+                        {this.state.new_password_confirmation || ""}
+                        set={this.set.bind(this)}
+                        save={this.savePassword.bind(this)} />
+                    <DeleteAccount
+                        deletion_confirmation=
+                        {this.state.deletion_confirmation || ""}
+                        set={this.set.bind(this)}
+                        save={this.enactDeletion.bind(this)} />
+                </Col>
             </Page>
         );
     }

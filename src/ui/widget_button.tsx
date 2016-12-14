@@ -10,7 +10,7 @@ interface ButtonProps {
 }
 
 export function WidgetButton(props: ButtonProps) {
-    let baseClasses = "button-like widget-control";
+    let baseClasses = "button-like";
     let classes = `${baseClasses} ${props.className}`;
 
     return <button

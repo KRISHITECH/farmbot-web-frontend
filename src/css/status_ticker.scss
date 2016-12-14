@@ -1,42 +1,60 @@
 // CSS for the Status Ticker in the main nav
-nav>.status-ticker-wrapper {
-    position: absolute;
-    top: 0;
-    background: #000;
-    left: 0;
-    right: 0;
-    padding: 0.8rem 0 0.3rem 3rem;
-    margin: 0;
-    pointer-events: none;
-    z-index: 2;
-    .fa {
-        position: absolute;
-        right: 2rem;
-        font-size: 2rem;
-        transition: all 0.4s ease-in-out;
-    }
-    label {
-        padding-top: 0.3rem;
-    }
-}
-
 .ticker-list {
     position: absolute;
     z-index: 1;
     left: 0;
     right: 0;
-    padding: 0 0 0 0;
     top: 0;
     overflow: scroll;
     height: 3.2rem;
-    background: rgba(0, 0, 0, 0.8);
+    background: #000;
     transition: all 0.4s ease-in-out;
+    .status-ticker-wrapper:first-child {
+        background: #000;
+        padding: .8rem 3.4rem 0.2rem;
+        z-index: 3;
+        position: absolute;
+        left: 0;
+        right: 0;
+        .status-ticker-message,
+        .status-ticker-created-at {
+            padding: 0.2rem;
+        }
+        .status-ticker-message *,
+        .status-ticker-created-at {
+            opacity: 1 !important;
+            text-transform: uppercase !important;
+            font-size: 1.2rem !important;
+            font-weight: bold;
+        }
+        .saucer {
+            opacity: 1;
+            width: 1.8rem;
+            height: 1.8rem;
+        }
+        &:hover {
+            background: #000;
+        }
+        .markdown p {
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+    }
+    .status-ticker-wrapper:nth-child(2) {
+        margin-top: 5rem;
+    }
     a {
         padding: 0;
         text-decoration: underline !important;
     }
     &:hover,
     &:active {
+        transition: all 0.4s ease-in-out;
+        height: 22rem;
+        box-shadow: 0px 0px 16px #000;
+        background: rgba(0, 0, 0, 0.8);
+        padding-bottom: 5rem;
         .status-ticker-message * {
             transition: all 0.4s ease-in-out;
             opacity: 1 !important;
@@ -49,17 +67,12 @@ nav>.status-ticker-wrapper {
             transition: all 0.4s ease-in-out;
             opacity: 1 !important;
         }
-        transition: all 0.4s ease-in-out;
-        padding: 5rem 0;
-        height: 22rem;
-        box-shadow: 0px 0px 16px #000;
         &:before,
         &:after {
             transition: all 0.4s ease-in-out;
             transform: translateY(0);
         }
     }
-    &:before,
     &:after {
         transition: all 0.4s ease-in-out;
         content: "";
@@ -68,23 +81,20 @@ nav>.status-ticker-wrapper {
         top: 0;
         left: 0;
         right: 0;
-        background: linear-gradient(to bottom, black 0%, transparent 20%);
         height: 22rem;
         z-index: 2;
         pointer-events: none;
-    }
-    &:after {
         background: linear-gradient(to top, black 0%, transparent 30%);
     }
     .status-ticker-wrapper {
         display: block;
         position: relative;
-        padding: 0 3.4rem;
+        padding: 0.2rem 3.4rem;
         margin-bottom: 0.6rem;
         transition: all 0.4s ease-in-out;
         &:hover {
             transition: all 0.4s ease-in-out;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.6);
         }
         .status-ticker-message * {
             transition: all 0.4s ease-in-out;

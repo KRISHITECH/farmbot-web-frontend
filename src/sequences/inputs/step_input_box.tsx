@@ -29,10 +29,12 @@ const CHOICES: InputChoiceDict = {
 export function StepInputBox({step,
     field,
     dispatch,
-    index}: IStepInput) {
+    index,
+    onChange}: IStepInput) {
     let Comp = CHOICES[field] || InputUnknown;
     return <Comp step={step}
         field={field}
         dispatch={dispatch}
-        index={index} />;
+        index={index}
+        onChange={onChange} />;
 };

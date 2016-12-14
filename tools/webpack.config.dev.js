@@ -1,6 +1,9 @@
 var webpack = require('webpack');
 var generateConfig = require("./webpack.config.base");
 var exec = require("child_process").execSync;
+var fs = require("fs");
+var path = require("path");
+var configPath = path.join(process.cwd(), "src/config.json");
 global.WEBPACK_ENV = "development";
 
 c = function() {
@@ -23,6 +26,14 @@ c = function() {
             'process.env.REVISION': JSON.stringify(
                 exec('git log --pretty=format:"%h%n%ad%n%f" -1').toString())
         }));
+
+    if (fs.existsSync(configPath)) {
+        var config = require(configPath);
+        conf.plugins.push(new webpack.DefinePlugin({
+            "process.env.CONFIG": JSON.stringify(config)
+        }));
+    }
+
     return conf;
 };
 

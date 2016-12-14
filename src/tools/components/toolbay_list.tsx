@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ListAndFormProps } from "../interfaces";
-import { Widget, WidgetBody, WidgetHeader } from "../../ui";
+import { Col, Widget, WidgetBody, WidgetHeader } from "../../ui";
 import { startEditingToolBays } from "../actions";
 import * as _ from "lodash";
 import { t } from "i18next";
@@ -38,7 +38,7 @@ export class ToolBayList extends React.Component<ListAndFormProps, {}> {
     render() {
         let onClick = () => { this.props.dispatch(startEditingToolBays()); };
         let { tool_bays } = this.props.all;
-        return <div>
+        return <Col>
             {tool_bays.map((bay, index) => {
                 index++;
                 let { id, name } = bay;
@@ -50,7 +50,7 @@ export class ToolBayList extends React.Component<ListAndFormProps, {}> {
                           FarmBot hardware configuration.`)}
                         title={name}>
                         <button
-                            className="gray button-like widget-control"
+                            className="gray button-like"
                             onClick={onClick}>
                             {t("EDIT")}
                         </button>
@@ -73,6 +73,6 @@ export class ToolBayList extends React.Component<ListAndFormProps, {}> {
                     </WidgetBody>
                 </Widget>;
             })}
-        </div>;
+        </Col>;
     }
 };

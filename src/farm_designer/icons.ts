@@ -32,7 +32,7 @@ export let ICONS = [
     "/img/icons/Maple Leaf-96.png",
     "/img/icons/Melon-96.png",
     "/img/icons/Mushroom-96.png",
-    "/img/icons/Natural Food-96.png",
+    "/img/icons/Natural-Food-96.png",
     "/img/icons/Nut-96.png",
     "/img/icons/Oak Leaf-96.png",
     "/img/icons/Olive-96.png",

@@ -4,19 +4,26 @@
     margin-bottom: 1.5rem;
     margin-top: 1.5rem;
     border-radius: 3px;
-    .channel-fields {
+    .bottom-content {
         display: flex;
-        justify-content: space-around;
-        margin: 0 0 1rem 0;
-        input,
-        label {
-            width: auto;
-            cursor: pointer;
-            display: inline-block;
+        fieldset {
+            text-align: right;
         }
-        input {
-            margin: 0 0 0 0.5rem;
-            box-shadow: none;
+        .channel-options {
+            flex: 1;
+        }
+        .channel-fields {
+            flex: 1;
+            input,
+            label {
+                width: auto;
+                cursor: pointer;
+                display: inline-block;
+            }
+            input {
+                margin-left: 1rem;
+                box-shadow: none;
+            }
         }
     }
 }

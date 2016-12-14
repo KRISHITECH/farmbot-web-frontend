@@ -5,15 +5,7 @@ interface WidgetProps {
 }
 
 export function Widget(props: WidgetProps) {
-    return <div className="col-xs-12">
-        <div>
-            <div className="widget-wrapper">
-                <div className="row">
-                    <div>
-                        {props.children}
-                    </div>
-                </div>
-            </div>
-        </div>
+    return <div className="widget">
+        {props.children}
     </div>;
 }

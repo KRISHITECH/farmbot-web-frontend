@@ -103,7 +103,7 @@ export function emergencyUnlock() {
 
 export function sync(): Thunk {
     let noun = "Sync";
-    return function (dispatch, getState) {
+    return function(dispatch, getState) {
         devices
             .current
             .sync()
@@ -118,14 +118,13 @@ export function sync(): Thunk {
 
 export function execSequence(sequence: Sequence) {
     const noun = "Sequence execution";
-    console.warn("Fix this / remove any type here!");
     return devices
         .current
-        .execSequence(sequence as any)
+        .execSequence({ steps: [], ...sequence })
         .then(commandOK(noun), commandErr(noun));
 }
 
-export let saveAccountChanges: Thunk = function (dispatch, getState) {
+export let saveAccountChanges: Thunk = function(dispatch, getState) {
     let state = getState();
     let bot = getState().bot.account;
     let url = API.current.baseUrl;
@@ -315,7 +314,7 @@ export function changeStepSize(integer: number) {
 }
 
 export function commitAxisChanges() {
-    return function (
+    return function(
         dispatch: Function,
         getState: () => Everything) {
         let {axisBuffer, hardware} = getState().bot;
@@ -342,7 +341,7 @@ export function commitAxisChanges() {
 }
 
 export function commitSettingsChanges() {
-    return function (dispatch: Function,
+    return function(dispatch: Function,
         getState: () => Everything) {
         let { settingsBuffer, configBuffer, hardware } = getState().bot;
         let mcuPacket = _({})
@@ -379,7 +378,7 @@ export function changeAxisBuffer(key: string, val: number) {
 }
 
 export function clearLogs(): Thunk {
-    return function (dispatch, getState) {
+    return function(dispatch, getState) {
         dispatch({ type: "CLEAR_BOT_LOG", payload: {} });
     };
 }

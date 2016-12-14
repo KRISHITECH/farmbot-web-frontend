@@ -5,9 +5,7 @@ interface WidgetBodyProps {
 }
 
 export function WidgetBody(props: WidgetBodyProps) {
-    return <div className="col-sm-12">
-        <div className="widget-content">
-            {props.children}
-        </div>
+    return <div className="widget-body">
+        {props.children}
     </div>;
 }

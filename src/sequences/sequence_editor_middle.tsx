@@ -75,29 +75,34 @@ let handleNameUpdate = (dispatch: Function) =>
         dispatch(editCurrentSequence({ name }));
     };
 
-let save = function (dispatch: Function, sequence: Sequence) {
-    return (e: React.SyntheticEvent<HTMLButtonElement>) =>
+let save = function(dispatch: Function, sequence: Sequence) {
+    return (e: React.SyntheticEvent<HTMLButtonElement>) => {
         dispatch(saveSequence(sequence));
+    };
 };
 
-let copy = function (dispatch: Function, sequence: Sequence) {
+let copy = function(dispatch: Function, sequence: Sequence) {
     return (e: React.SyntheticEvent<HTMLButtonElement>) =>
         dispatch(copySequence(sequence));
 };
 
-let destroy = function (dispatch: Function,
+let destroy = function(dispatch: Function,
     sequence: Sequence,
     inx: number) {
     return () => dispatch(deleteSequence(inx));
 };
 
-let performSeq = (dispatch: Function, sequence: Sequence) =>
-    (e: React.FormEvent<HTMLButtonElement>) => execSequence(sequence);
+export let performSeq = (dispatch: Function, s: Sequence) => {
+    return () => {
+        dispatch(saveSequence(s, false))
+            .then(() => execSequence(s));
+    };
+};
 
 export function SequenceEditorMiddle({sequences, dispatch}: Everything) {
     let inx = sequences.current;
     let sequence: Sequence = sequences.all[inx] || nullSequence();
-    let fixThisToo = function (key: string) {
+    let fixThisToo = function(key: string) {
         let xfer = dispatch(stepGet(key)) as DataXferObj;
         if (xfer.draggerId === NULL_DRAGGER_ID) {
             dispatch(pushStep(xfer.value));
@@ -117,9 +122,9 @@ export function SequenceEditorMiddle({sequences, dispatch}: Everything) {
                         onClick={save(dispatch, sequence)}>
                         {t("Save")} {sequence.dirty ? " *" : ""}
                     </button>
-                    <button className="yellow button-like widget-control"
+                    <button className="green button-like widget-control"
                         onClick={performSeq(dispatch, sequence)}>
-                        {t("Test")}
+                        {t("Save & Run")}
                     </button>
                     <button className="red button-like widget-control"
                         onClick={destroy(dispatch, sequence, inx)}>

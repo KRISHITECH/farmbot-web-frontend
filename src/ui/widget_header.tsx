@@ -8,9 +8,9 @@ interface WidgetHeaderProps {
 }
 
 export function WidgetHeader(props: WidgetHeaderProps) {
-    return <div className="col-sm-12">
+    return <div className="widget-header">
         {props.children}
-        <div className="widget-header">
+        <div>
             <h5>{t(props.title)}</h5>
             <i className="fa fa-question-circle widget-help-icon">
                 <div className="widget-help-text">
