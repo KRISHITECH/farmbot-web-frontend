@@ -1,7 +1,6 @@
 import * as React from "react";
-import { Everything } from "./interfaces";
 
-export class FourOhFour extends React.Component<Everything, {}> {
+export class FourOhFour extends React.Component<{}, {}> {
     render() {
         return (
             <div className="404">

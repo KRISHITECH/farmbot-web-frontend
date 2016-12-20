@@ -5,8 +5,7 @@ import { Everything } from "../interfaces";
 import {
     NavButtonProps,
     DropDownProps,
-    NavBarState,
-    TickerListProps
+    NavBarState
 } from "./interfaces";
 import { EStopButton } from "../devices/components/e_stop_btn";
 import { connect } from "react-redux";
@@ -74,39 +73,15 @@ let links = [
     { name: "Tools", icon: "wrench", url: "/app/tools" }
 ];
 
-let TickerList = ({sync}: TickerListProps) => {
-    return <div className="ticker-list"
-        /** Don't let user scroll when ticker list is shown */
-        onMouseEnter={() => { document.body.classList.toggle("freeze"); } }
-        onMouseLeave={() => { document.body.classList.toggle("freeze"); } }>
-        {sync.logs.map((log, index) => {
-            /** TODO: This should be refactored to reuse the Ticker component,
-             * the tickers in the list get their information just slightly
-             * different, as well as their styles.
-             */
-            let time = moment.utc(log.created_at).format("HH:mma");
-            /** If the first number is 0, ditch it. */
-            if (time.charAt(0) === "0") {
-                time = time.substr(1);
-            }
-            return <div key={index} className="status-ticker-wrapper">
-                <div className={`saucer ${log.meta.type}`} />
-                <label className="status-ticker-message">
-                    <Markdown>{log.message.toString() || "Loading"}</Markdown>
-                </label>
-                <label className="status-ticker-created-at">
-                    {time}
-                </label>
-            </div>;
-        })}
-    </div>;
-};
-
 @connect((state: Everything) => state)
 export class NavBar extends React.Component<Everything, NavBarState> {
     constructor() {
         super();
-        this.state = { mobileNavExpanded: false };
+        this.state = {
+            mobileNavExpanded: false,
+            tickerExpanded: false
+        };
+        this.toggleTicker = this.toggleTicker.bind(this);
         this.toggleNav = this.toggleNav.bind(this);
         this.logout = this.logout.bind(this);
     }
@@ -124,10 +99,20 @@ export class NavBar extends React.Component<Everything, NavBarState> {
         location.reload(true);
     }
 
+    toggleTicker() {
+        /** Don't let user scroll when nav is open */
+        document.body.classList.toggle("freeze");
+        this.setState({
+            tickerExpanded: !this.state.tickerExpanded
+        });
+    }
+
     render() {
         let mobileMenuClass = this.state.mobileNavExpanded ? "expanded" : "";
         let pageName = this.props.location.pathname.split("/").pop() || "";
-        let { toggleNav, logout } = this;
+        let { toggleNav, logout, toggleTicker } = this;
+        let isActive = this.state.tickerExpanded ? "active" : "";
+
         return <nav role="navigation">
             <button
                 onClick={() => { toggleNav(); } }>
@@ -187,7 +172,29 @@ export class NavBar extends React.Component<Everything, NavBarState> {
             </div>
             <SyncButton { ...this.props } />
             <EStopButton { ...this.props } />
-            <TickerList {...this.props} />
+
+            <div className={`ticker-list ${isActive}`}
+                onClick={() => { toggleTicker(); } }
+                onMouseEnter={() => { toggleTicker(); } }
+                onMouseLeave={() => { toggleTicker(); } }>
+                {this.props.sync.logs.map((log, index) => {
+                    let time = moment.utc(log.created_at).format("HH:mma");
+                    /** Otherwise yields "03:15PM"" etc. */
+                    if (time.charAt(0) === "0") { time = time.substr(1); }
+                    return <div key={index} className="status-ticker-wrapper">
+                        <div className={`saucer ${log.meta.type}`} />
+                        <label className="status-ticker-message">
+                            <Markdown>
+                                {log.message.toString() || "Loading"}
+                            </Markdown>
+                        </label>
+                        <label className="status-ticker-created-at">
+                            {time}
+                        </label>
+                    </div>;
+                })}
+            </div>
+
             <DropDown onClick={logout} { ...this.props } />
             <div className={`underlay ${mobileMenuClass}`}
                 onClick={() => { toggleNav(); } }></div>

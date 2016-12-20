@@ -75,18 +75,18 @@ let handleNameUpdate = (dispatch: Function) =>
         dispatch(editCurrentSequence({ name }));
     };
 
-let save = function(dispatch: Function, sequence: Sequence) {
+let save = function (dispatch: Function, sequence: Sequence) {
     return (e: React.SyntheticEvent<HTMLButtonElement>) => {
         dispatch(saveSequence(sequence));
     };
 };
 
-let copy = function(dispatch: Function, sequence: Sequence) {
+let copy = function (dispatch: Function, sequence: Sequence) {
     return (e: React.SyntheticEvent<HTMLButtonElement>) =>
         dispatch(copySequence(sequence));
 };
 
-let destroy = function(dispatch: Function,
+let destroy = function (dispatch: Function,
     sequence: Sequence,
     inx: number) {
     return () => dispatch(deleteSequence(inx));
@@ -102,7 +102,7 @@ export let performSeq = (dispatch: Function, s: Sequence) => {
 export function SequenceEditorMiddle({sequences, dispatch}: Everything) {
     let inx = sequences.current;
     let sequence: Sequence = sequences.all[inx] || nullSequence();
-    let fixThisToo = function(key: string) {
+    let fixThisToo = function (key: string) {
         let xfer = dispatch(stepGet(key)) as DataXferObj;
         if (xfer.draggerId === NULL_DRAGGER_ID) {
             dispatch(pushStep(xfer.value));
@@ -154,7 +154,7 @@ export function SequenceEditorMiddle({sequences, dispatch}: Everything) {
                 <div className="col-sm-12">
                     <div className="widget-content no-bottom-padding">
                         <div className="row">
-                            <div className="col-sm-11">
+                            <div className="col-sm-11 col-xs-11">
                                 <BlurableInput value={sequence.name}
                                     onCommit={handleNameUpdate(dispatch)} />
                             </div>

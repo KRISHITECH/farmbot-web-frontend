@@ -12,7 +12,7 @@ c = function() {
         .module
         .loaders
         .push({
-            test: /\.scss$/,
+            test: [/\.scss$/, /\.css$/],
             loader: ExtractTextPlugin.extract('style', 'css-loader!sass-loader')
         });
 

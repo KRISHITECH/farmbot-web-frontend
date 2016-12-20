@@ -32,13 +32,8 @@ function updateColor({dispatch, regimen}: RegimenProps) {
 };
 export function RegimenNameInput({regimen, dispatch}: RegimenProps) {
     let value = (regimen && regimen.name) || "";
-    // return <input id="right-label"
-    //   placeholder= {t("Regimen Name")}
-    //   type="text"
-    //   onChange={ write({ dispatch, regimen }) }
-    //   value={ value }/>;
     return (<div className="row">
-        <div className="col-sm-10">
+        <div className="col-sm-10 col-xs-10">
             <input id="right-label"
                 placeholder={t("Regimen Name")}
                 type="text"

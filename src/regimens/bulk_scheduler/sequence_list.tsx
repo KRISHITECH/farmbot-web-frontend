@@ -1,6 +1,8 @@
 import * as React from "react";
 import { Sequence } from "../../sequences/interfaces";
 import { setSequence } from "./actions";
+import { Select } from "../../ui";
+import * as _ from "lodash";
 
 interface SequenceListProps {
     sequences: Sequence[];
@@ -8,40 +10,39 @@ interface SequenceListProps {
     dispatch: Function;
 }
 
-let NULL_ITEM = <SeqListItem s={{ name: "Select Sequence" }} i={-1} key={-1} />;
+let options: {}[] = [];
 
 export function SequenceList({sequences,
     current,
     dispatch}: SequenceListProps) {
-    // Handles issue of [{}].indexOf({}) == -1.
+
     let selectedValue = current ? sequences.indexOf(
-        _.findWhere(sequences, current)) : -1;
+        _.findWhere(sequences, current)) : 0;
+
+    sequences.map((sequence, index) => {
+        let target = { label: sequence.name, value: index.toString() };
+        if (!_.some(options, target)) {
+            options.push({
+                label: sequence.name,
+                value: index.toString()
+            });
+        }
+    });
+
     return <div>
         <label>Sequence</label>
-        <div className="select-wrapper">
-            <select value={selectedValue.toString()}
-                onChange={change(dispatch, sequences)}>
-                {[NULL_ITEM]
-                    .concat(sequences.map((s, i) => {
-                        return <SeqListItem
-                            s={s} i={i} key={i} />;
-                    }))
-                }
-            </select>
-        </div>
-
+        <Select value={selectedValue.toString()}
+            onChange={change(dispatch, sequences)}
+            options={options}
+            placeholder="Select Sequence">
+        </Select>
     </div>;
 }
 
-function SeqListItem({s, i}: { s: { name: string }, i: number }) {
-    return <option key={i}
-        value={i.toString()}>
-        {s.name}
-    </option>;
-}
 function change(dispatch: Function, sequences: Sequence[]) {
-    return (event: React.FormEvent<HTMLSelectElement>) => {
-        let i = _.parseInt(event.currentTarget.value || "-999");
+    // TODO: Solve react-select types issue. Everything breaks.
+    return (event: any) => {
+        let i = _.parseInt(event.value || "-999");
         dispatch(setSequence(sequences[i]));
     };
 }

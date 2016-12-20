@@ -10,7 +10,7 @@
   "scripts": {
     "build": "node_modules/webpack/bin/webpack.js --config tools/webpack.config.prd.js --display-error-details",
     "start": "webpack-dev-server --config tools/webpack.config.dev.js --content-base public/ --host 0.0.0.0",
-    "test": "jest --coverage --no-cache"
+    "test": "jest --coverage --no-cache && node remap_coverage.js"
   },
   "keywords": [
     "farmbot"
@@ -21,6 +21,7 @@
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
+    "@types/fastclick": "^1.0.28",
     "@types/handlebars": "^4.0.31",
     "@types/history": "^2.0.39",
     "@types/i18next": "^2.3.32",
@@ -31,6 +32,7 @@
     "@types/react-dom": "^0.14.18",
     "@types/react-redux": "^4.4.32",
     "@types/react-router": "^2.0.38",
+    "@types/react-select": "^1.0.37",
     "@types/redux": "^3.6.31",
     "@types/redux-thunk": "^2.1.31",
     "axios": "^0.14.0",
@@ -38,6 +40,7 @@
     "css-loader": "^0.25.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "farmbot": "2.4.0",
+    "fastclick": "^1.0.6",
     "handlebars": "^4.0.5",
     "handlebars-loader": "^1.4.0",
     "i18next": "^3.4.3",
@@ -52,6 +55,7 @@
     "react-dom": "^15.0.0",
     "react-redux": "^4.4.1",
     "react-router": "^2.0.1",
+    "react-select": "^1.0.0-rc.2",
     "redux": "^3.3.1",
     "redux-immutable-state-invariant": "^1.2.3",
     "redux-thunk": "^2.0.1",
@@ -89,8 +93,8 @@
       "src/**/*.{ts,tsx}"
     ],
     "coverageReporters": [
-      "html"
-    ],
-    "verbose": true
+      "html",
+      "json"
+    ]
   }
 }

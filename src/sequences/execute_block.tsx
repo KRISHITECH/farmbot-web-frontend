@@ -4,6 +4,7 @@ import { Step, Sequence } from "./interfaces";
 import { changeStep } from "./actions";
 import { t } from "i18next";
 import * as _ from "lodash";
+import { Select } from "../ui";
 
 /** Removes un-executable sequences, such as "self" or unsaved ones */
 function filterSequenceList(sequences: Sequence[], sequence: Sequence) {
@@ -32,25 +33,28 @@ function SequenceSelectBox({dispatch,
 
     let eligibleSequences: Sequence[] = filterSequenceList(sequences, sequence);
 
-    function iter(seq: Sequence) {
+    let finalOptions: {}[] = [];
+
+    eligibleSequences.map((seq: Sequence) => {
         if (seq.id) {
-            return <option value={seq.id.toString()}
-                key={seq.id} > {seq.name} </option>;
+            finalOptions.push({
+                label: seq.name,
+                value: seq.id.toString()
+            });
         } else {
             throw new Error("Sequence must have ID.");
         }
-    };
+    });
 
-    function change(e: React.FormEvent<HTMLSelectElement>) {
-        let val = e.currentTarget.value;
-        let sub_sequence_id = parseInt(val, 10);
+    // TODO: Take care of this any
+    function change(e: any) {
+        let val = e.value;
+        let sub_sequence_id = parseInt(val.toString(), 10);
         let update = { args: { sub_sequence_id } };
         let newStep = Object.assign({}, step, update);
 
         dispatch(changeStep(index, newStep));
     };
-
-    let choices = eligibleSequences.map(iter);
 
     if (step.kind === "execute" || step.kind === "if_statement") {
         var ssid = step.args.sub_sequence_id;
@@ -62,14 +66,14 @@ function SequenceSelectBox({dispatch,
         id: ""
     };
 
-    return <select onChange={change}
-        value={(subSeq.id || "").toString()}>
-        <option value="">Pick a sequence (or save a new one) </option>
-        {choices}
-    </select>;
+    return <Select onChange={change}
+        value={(subSeq.id || "").toString()}
+        options={finalOptions}
+        placeholder="Pick a sequence (or save a new one)">
+    </Select>;
 }
 
-export function ExecuteBlock({dispatch, step, index, sequence, sequences}: 
+export function ExecuteBlock({dispatch, step, index, sequence, sequences}:
     StepParams) {
     return (<div>
         <div className="step-wrapper">

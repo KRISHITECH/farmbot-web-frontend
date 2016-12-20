@@ -3,19 +3,25 @@
     display: inline-block;
     float: right;
     margin-left: 2rem;
-}
-
-.help-text {
-    position: absolute;
-    z-index: 999;
-    padding: 2px;
-    font-style: normal;
-    background-color: $dark_gray;
-    color: $off_white;
-    border-radius: 3px;
-    padding: .5rem .8rem;
-    width: 250px;
-    margin-left: -125px;
+    &:hover,
+    &:active {
+        .help-text {
+            display: block;
+        }
+    }
+    .help-text {
+        position: absolute;
+        z-index: 999;
+        padding: 2px;
+        font-style: normal;
+        background-color: $dark_gray;
+        color: $off_white;
+        border-radius: 3px;
+        padding: .5rem .8rem;
+        width: 250px;
+        margin-left: -125px;
+        display: none;
+    }
 }
 
 .colorpicker {
@@ -23,7 +29,7 @@
     position: relative;
     float: left;
     cursor: pointer;
-    &:hover {
+    &.active {
         .colorpicker-body {
             top: 3rem;
             opacity: 1;
@@ -49,14 +55,9 @@
     display: flex;
     transition: all 0.3s ease;
     pointer-events: none;
-    &:hover {
-        top: 3rem;
-        opacity: 1;
-        pointer-events: all;
-        &:after {
-            top: -1rem;
-        }
-    }
+    width: 12.4rem;
+    display: flex;
+    flex-wrap: wrap;
     div {
         padding: 0.4rem;
         cursor: pointer;
@@ -73,5 +74,24 @@
         z-index: -1;
         border-width: 0 10px 16px 10px;
         border-color: transparent transparent $dark_gray transparent;
+    }
+}
+
+
+/* Mobile */
+
+@media (max-width: 568px) {
+    .colorpicker,
+    .colorpicker.active {
+        .colorpicker-body {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            left: -14rem;
+            top: -2.5rem;
+            &:after {
+                transform: rotate(90deg);
+                top: 2.8rem;
+                right: -1.6rem;
+            }
+        }
     }
 }

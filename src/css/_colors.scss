@@ -86,7 +86,8 @@ $darkest_red: #900;
 }
 
 .green,
-.success {
+.success,
+.saucer-success {
     background: $green !important;
 }
 
@@ -95,26 +96,31 @@ $darkest_red: #900;
 }
 
 .dark-red,
-.error {
+.error,
+.saucer-error {
     background: $dark_red !important;
 }
 
 .dark-orange,
-.warn {
+.warn,
+.saucer-warn {
     background: $dark_orange !important;
 }
 
 .yellow,
-.busy {
+.busy,
+.saucer-busy {
     background: $yellow !important;
 }
 
 .blue,
-.info {
+.info,
+.saucer-info {
     background: $blue !important;
 }
 
 .dark-blue,
-.fun {
+.fun,
+.saucer-fun {
     background: $dark_blue !important;
 }

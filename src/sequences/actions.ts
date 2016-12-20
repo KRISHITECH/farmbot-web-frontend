@@ -5,7 +5,8 @@ import {
     SequenceOptions,
     Step,
     Sequence,
-    ChanParams
+    ChanParams,
+    MessageParams
 } from "./interfaces";
 import { success, error } from "../ui";
 import { prettyPrintApiErrors, AxiosErrorResponse } from "../util";
@@ -20,12 +21,21 @@ export function addChan({channel_name, index}: ChanParams) {
         payload: { channel_name, index }
     };
 }
+
 export function removeChan({channel_name, index}: ChanParams) {
     return {
         type: "REMOVE_CHANNEL",
         payload: { channel_name, index }
     };
 }
+
+export function updateMessageType({value, index}: MessageParams) {
+    return {
+        type: "UPDATE_MESSAGE_TYPE",
+        payload: { value, index }
+    };
+}
+
 export function nullSequence(): Sequence {
     return {
         color: "gray",
@@ -116,6 +126,26 @@ export function changeStep(index: number, step: Step): ChangeStep {
     };
 }
 
+type CHANGE_STEP_SELECT = "CHANGE_STEP_SELECT";
+export interface ChangeStepSelect {
+    type: CHANGE_STEP_SELECT;
+    payload: {
+        value: number | string;
+        index: number
+        field: string;
+    };
+}
+
+export function changeStepSelect(
+    value: string | number,
+    index: number,
+    field: string): ChangeStepSelect {
+    return {
+        type: "CHANGE_STEP_SELECT",
+        payload: { value, index, field }
+    };
+}
+
 export interface RemoveStep {
     type: "REMOVE_STEP";
     payload: {
@@ -131,7 +161,7 @@ export function removeStep(index: number): RemoveStep {
 }
 
 export function saveSequence(sequence: Sequence, notify = true): Thunk {
-    return function(dispatch) {
+    return function (dispatch) {
         let url = API.current.sequencesPath;
         let method: Function;
         if (sequence.id) {
@@ -141,7 +171,7 @@ export function saveSequence(sequence: Sequence, notify = true): Thunk {
             method = axios.post;
         };
         return method(url, sequence)
-            .then(function(resp: { data: Sequence }) {
+            .then(function (resp: { data: Sequence }) {
                 if (notify) {
                     success(i18next.t("Saved '{{SequenceName}}'",
                         { SequenceName: (sequence.name || "sequence") }));
@@ -149,7 +179,7 @@ export function saveSequence(sequence: Sequence, notify = true): Thunk {
                 dispatch(saveSequenceOk(resp.data));
                 return resp.data;
             })
-            .catch(function(err: {
+            .catch(function (err: {
                 response: {
                     data: { [reason: string]: string };
                 }
@@ -215,7 +245,7 @@ export function deleteSequence(index: number) {
     // misc errors
     // dependency error.
 
-    return function(dispatch: Function, getState: Function) {
+    return function (dispatch: Function, getState: Function) {
         let state: Everything = getState();
 
         let sequence: Sequence = state.sequences.all[index];

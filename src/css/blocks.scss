@@ -4,19 +4,41 @@
     margin-bottom: 1.5rem;
     button {
         box-shadow: 0 0px 10px $light_gray;
+        transition: all 0.2s ease-out;
         &:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 10px $translucent;
             transition: all 0.2s ease-out;
+            .block-control {
+                transition: all 0.2s ease-out;
+                opacity: 1;
+            }
+        }
+    }
+}
+
+@media only screen and (min-width: 992px) {
+    .block-wrapper {
+        button {
+            &:hover {
+                width: 108%;
+            }
+            .block-control {
+                position: absolute;
+                padding: 0;
+                top: 0.3rem;
+                right: 0.3rem;
+            }
         }
     }
 }
 
 .block-control {
+    transition: all 0.2s ease-out;
     color: $dark_gray;
-    display: none!important;
+    opacity: 0;
     float: right;
-    font-size: 1.5rem!important;
+    font-size: 1.4rem !important;
     padding-left: 1rem;
 }
 

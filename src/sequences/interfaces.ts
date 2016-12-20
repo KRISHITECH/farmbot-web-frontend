@@ -17,6 +17,7 @@ export const NUMERIC_FIELDS = ["x", "y", "z", "speed", "pin_number",
   "pin_value", "pin_mode", "milliseconds",
   "sub_sequence_id", "rhs", "sub_sequence_id"];
 type userVariables = FarmBotJsuserVariables;
+
 export interface Sequence extends SequenceNode {
   color: Color;
   name: string;
@@ -100,6 +101,7 @@ export interface SendMessageNode extends BasicNode {
   kind: "send_message";
   args: {
     message: string;
+    message_type: string;
   };
   body?: ChannelNode[] | undefined;
 }
@@ -150,7 +152,17 @@ export interface ChanParams {
   index: number;
 };
 
-export interface ColorPickerProps {
+/** Used when dispatching an updated message type. */
+export interface MessageParams {
+  value: string | number;
+  index: number;
+};
+
+export interface PickerProps {
   current: Color;
   onChange?: (color: Color) => any;
+}
+
+export interface PickerState {
+  isOpen: boolean;
 }

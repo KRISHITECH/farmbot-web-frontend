@@ -63,48 +63,48 @@ let initialState: BotState = {
 
 export let botReducer = generateReducer<BotState>(initialState)
     .add<HardwareState>("SETTING_TOGGLE_OK",
-    function (state: BotState, action: ReduxAction<HardwareState>) {
+    function (s: BotState, action: ReduxAction<HardwareState>) {
 
         let hardware = action.payload;
         return Object.assign({},
-            state, {
+            s, {
                 hardware: hardware
             }, {
                 status: status.READY()
             });
     })
-    .add<{}>("CLEAR_BOT_LOG", function (state, action) {
-        state.logQueue = [];
-        return state;
+    .add<{}>("CLEAR_BOT_LOG", function (s, a) {
+        s.logQueue = [];
+        return s;
     })
-    .add<{}>("COMMIT_SETTINGS_OK", function (state, action) {
-        let nextState = Object.assign({}, state, {
+    .add<{}>("COMMIT_SETTINGS_OK", function (s, a) {
+        let nextState = Object.assign({}, s, {
             settingsBuffer: {}
         });
         return nextState;
     })
-    .add<Sequence>("SAVE_SEQUENCE_OK", function (state, action) {
-        state.dirty = false;
-        return state;
+    .add<Sequence>("SAVE_SEQUENCE_OK", function (s, a) {
+        s.dirty = false;
+        return s;
     })
-    .add<Sequence>("DELETE_SEQUENCE_OK", function (state, action) {
-        state.dirty = false;
-        return state;
+    .add<Sequence>("DELETE_SEQUENCE_OK", function (s, a) {
+        s.dirty = false;
+        return s;
     })
-    .add<Regimen>("SAVE_REGIMEN_OK", function (state, action) {
-        state.dirty = false;
-        return state;
+    .add<Regimen>("SAVE_REGIMEN_OK", function (s, a) {
+        s.dirty = false;
+        return s;
     })
-    .add<Regimen>("DELETE_REGIMEN_OK", function (state, action) {
-        state.dirty = false;
-        return state;
+    .add<Regimen>("DELETE_REGIMEN_OK", function (s, a) {
+        s.dirty = false;
+        return s;
     })
-    .add<{}>("BOT_SYNC_OK", function (state, action) {
-        state.dirty = false;
-        return state;
+    .add<{}>("BOT_SYNC_OK", function (s, a) {
+        s.dirty = false;
+        return s;
     })
-    .add<{}>("COMMIT_AXIS_CHANGE_OK", function (oldState, action) {
-        let hardware = Object.assign({}, oldState.hardware, action.payload);
+    .add<{}>("COMMIT_AXIS_CHANGE_OK", function (oldState, a) {
+        let hardware = Object.assign({}, oldState.hardware, a.payload);
         let state = Object.assign<{}, BotState>({}, oldState);
 
         return Object.assign({}, state, {
@@ -113,66 +113,66 @@ export let botReducer = generateReducer<BotState>(initialState)
         });
     })
     .add<{ key: "x" | "y" | "z", val: string }>("CHANGE_AXIS_BUFFER",
-    function (state, action) {
-        state.axisBuffer[action.payload.key] = action.payload.val;
-        return Object.assign({}, state, {
-            axisBuffer: state.axisBuffer
+    function (s, a) {
+        s.axisBuffer[a.payload.key] = a.payload.val;
+        return Object.assign({}, s, {
+            axisBuffer: s.axisBuffer
         });
     })
-    .add<Configuration>("CHANGE_CONFIG_BUFFER", function (state, action) {
-        let old_buffer = state.configBuffer;
-        let new_buffer = action.payload;
+    .add<Configuration>("CHANGE_CONFIG_BUFFER", function (s, a) {
+        let old_buffer = s.configBuffer;
+        let new_buffer = a.payload;
         Object.assign(old_buffer, new_buffer);
-        let new_state = Object.assign({}, state, { config_buffer: new_buffer });
+        let new_state = Object.assign({}, s, { config_buffer: new_buffer });
         return new_state; // I am doing something wrong.
     })
     .add<ChangeSettingsBuffer>("CHANGE_SETTINGS_BUFFER",
-    function (state, action) {
-        let newVal = action.payload.val;
+    function (s, a) {
+        let newVal = a.payload.val;
         if (newVal) {
-            state.settingsBuffer[action.payload.key] = action.payload.val.toString();
+            s.settingsBuffer[a.payload.key] = a.payload.val.toString();
         } else {
-            delete state.settingsBuffer[action.payload.key];
+            delete s.settingsBuffer[a.payload.key];
         }
-        return Object.assign({}, state, {
-            settingsBuffer: state.settingsBuffer
+        return Object.assign({}, s, {
+            settingsBuffer: s.settingsBuffer
         });
     })
-    .add<number>("CHANGE_STEP_SIZE", function (state, action) {
-        return Object.assign({}, state, {
-            stepSize: action.payload
+    .add<number>("CHANGE_STEP_SIZE", function (s, a) {
+        return Object.assign({}, s, {
+            stepSize: a.payload
         });
     })
     .add<HardwareState>("BOT_CHANGE",
-    function (state, action) {
-        state.hardware = action.payload;
-        return state;
+    function (s, a) {
+        s.hardware = a.payload;
+        return s;
     })
     .add<DeviceAccountSettings>("CHANGE_DEVICE", function (s, a) {
         Object.assign(s.account, a.payload, { dirty: true });
         return s;
     })
-    .add<any>("FETCH_DEVICE", function (state, action) {
-        return state;
+    .add<any>("FETCH_DEVICE", function (s, a) {
+        return s;
     })
-    .add<any>("FETCH_DEVICE_OK", function (state, { payload }) {
+    .add<any>("FETCH_DEVICE_OK", function (s, { payload }) {
         return Object.assign({},
-            state,
+            s,
             payload, {
                 status: status.AWAITING_WEBSOCKET
             });
     })
-    .add<any>("FETCH_DEVICE_ERR", function (state, action) {
+    .add<any>("FETCH_DEVICE_ERR", function (s, a) {
         // TODO: Toast messages do not belong in a reducer.
         return Object.assign({},
-            state, {
+            s, {
                 status: status.API_ERROR
             });
     })
-    .add<any>("SAVE_DEVICE_ERR", function (state, action) {
-        switch (action.payload.status) {
+    .add<any>("SAVE_DEVICE_ERR", function (s, a) {
+        switch (a.payload.status) {
             case 422:
-                let errors = _.map(action.payload.responseJSON, v => v)
+                let errors = _.map(a.payload.responseJSON, v => v)
                     .join(". ");
                 error(errors, i18next.t("Couldn\'t save device."));
                 break;
@@ -180,10 +180,10 @@ export let botReducer = generateReducer<BotState>(initialState)
                 error(i18next.t("Error while saving device."));
                 break;
         }
-        return state;
+        return s;
     })
-    .add<any>("SAVE_DEVICE_OK", function (state, action) {
-        return Object.assign({}, state, action.payload, {
+    .add<any>("SAVE_DEVICE_OK", function (s, a) {
+        return Object.assign({}, s, a.payload, {
             dirty: false
         });
     })

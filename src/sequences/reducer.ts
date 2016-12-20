@@ -2,7 +2,8 @@ import {
     Step,
     Sequence,
     SequenceReducerState,
-    ChanParams
+    ChanParams,
+    MessageParams
 } from "./interfaces";
 import {
     nullSequence,
@@ -69,6 +70,16 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
         }
         return s;
     })
+    .add<MessageParams>("UPDATE_MESSAGE_TYPE", function (s, a) {
+        let { value, index} = a.payload;
+        let seq = s.all[s.current];
+        seq.dirty = true;
+        let step = seq.body[index];
+        if (step.kind === "send_message") {
+            step.args.message_type = value.toString();
+        }
+        return s;
+    })
     .add<{ index: number, comment: string }>("ADD_COMMENT", function (s, a) {
         let seq = s.all[s.current];
         let node = seq.body[a.payload.index];
@@ -92,8 +103,8 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
         populate(state);
         return state;
     })
-    .add<EditCurrentSequence>("EDIT_CURRENT_SEQUENCE", 
-        function (state, action) {
+    .add<EditCurrentSequence>("EDIT_CURRENT_SEQUENCE",
+    function (state, action) {
         let currentSequence = state.all[state.current] || populate(state);
         currentSequence.name = action.payload.name || currentSequence.name;
         currentSequence.color = action.payload.color || currentSequence.color;
@@ -101,7 +112,7 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
         return state;
     })
     .add<{ step: Step, index: number }>("CHANGE_STEP",
-        function (state, action) {
+    function (state, action) {
         /// DELETE THIS!?!?!?!?
         // let steps = state.all[state.current].body || populate(state).body;
         // let index = action.payload.index;
@@ -112,6 +123,16 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
         let currentStep = currentSequence.body[action.payload.index];
         markDirty(state);
         _.assign(currentStep, action.payload.step);
+        return state;
+    })
+    .add<{ value: string | number, index: number, field: string }>(
+    "CHANGE_STEP_SELECT", function (state, action) {
+        markDirty(state);
+        let currentSequence = state.all[state.current];
+        let currentStep = currentSequence.body[action.payload.index];
+        /** Why isn't this interface working?? */
+        let args: any = currentStep.args;
+        args[action.payload.field] = action.payload.value;
         return state;
     })
     .add<{ index: number }>("REMOVE_STEP", function (state, action) {

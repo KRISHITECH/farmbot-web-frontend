@@ -13,8 +13,8 @@ c = function() {
         .module
         .loaders
         .push({
-            test: /\.scss$/,
-            loader: 'style-loader!css-loader!sass-loader'
+            test: [/\.scss$/, /\.css$/],
+            loader: 'style!css!sass'
         });
 
     conf.devtool = 'source-map';

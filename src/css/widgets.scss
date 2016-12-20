@@ -56,7 +56,8 @@ i.widget-help-icon {
     transition-delay: 0.1s;
 }
 
-.widget-help-icon:hover .widget-help-text {
+.widget-help-icon:hover .widget-help-text,
+.widget-help-icon:active .widget-help-text {
     opacity: 100;
     padding: 0.5rem 0.3rem;
     max-height: 200px;
