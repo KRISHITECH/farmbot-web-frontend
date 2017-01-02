@@ -1,4 +1,4 @@
-import { Step } from "../sequences/interfaces";
+import { CeleryNode as Step } from "../sequences/corpus";
 
 /** An entry in the data transfer table. Used to transfer data from a "draggable"
  * to a "dropable". For type safety, this is a "tagged union". See Typescript
@@ -11,7 +11,7 @@ export interface DataXferBase {
     /** "who"" started the drag event*/
     draggerId: number;
     /** "what" you are dragging and dropping. This could technically be generic.
-     * TODO: Refactor this to be type <T> instead of Step if we drag/drop 
+     * TODO: Refactor this to be type <T> instead of Step if we drag/drop
      * things other than `Step`s */
     value: Step;
     /** "where" to find it in the state object (when it is dropped). */

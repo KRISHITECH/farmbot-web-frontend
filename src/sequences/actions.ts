@@ -1,9 +1,8 @@
 import * as axios from "axios";
 import { Everything } from "../interfaces";
-import { AuthState } from "../auth/interfaces";
+import { CeleryNode as Step, LATEST_VERSION } from "./corpus";
 import {
     SequenceOptions,
-    Step,
     Sequence,
     ChanParams,
     MessageParams
@@ -41,7 +40,9 @@ export function nullSequence(): Sequence {
         color: "gray",
         name: "New Sequence",
         kind: "sequence",
-        args: {},
+        args: {
+            version: LATEST_VERSION
+        },
         body: [],
         dirty: false
     };
@@ -143,6 +144,13 @@ export function changeStepSelect(
     return {
         type: "CHANGE_STEP_SELECT",
         payload: { value, index, field }
+    };
+}
+
+export function updateMoveAbsStep(data: {}, index: number): any {
+    return {
+        type: "UPDATE_MOVE_ABSOLUTE_STEP",
+        payload: { data, index }
     };
 }
 

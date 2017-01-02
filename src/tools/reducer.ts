@@ -64,9 +64,13 @@ export let toolsReducer = generateReducer<ToolsState>(initialState)
         s.tool_slots.push(a.payload);
         return s;
     })
-    .add<ToolSlot>("SAVE_TOOL_SLOTS_OK", function (s, a) {
-        let index = _.findIndex(s.tool_slots, { id: a.payload.id });
-        s.tool_slots.splice(index, 1, a.payload);
+    .add<ToolSlot[]>("SAVE_TOOL_SLOTS_OK", function (s, a) {
+        // CHRIS I MADE CHANGES HERE. Please review.
+        //  - Rick 12/30/16
+        a.payload.map(function (ts) {
+            let index = _.findIndex(s.tool_slots, { id: ts.id });
+            s.tool_slots.splice(index, 1, ts);
+        });
         s.editorMode = false;
         return s;
     })
@@ -77,13 +81,13 @@ export let toolsReducer = generateReducer<ToolsState>(initialState)
         return s;
     })
     .add<UpdateToolSlotPayl>("UPDATE_TOOL_SLOT", function (s, a) {
-        let { id, name, value } = a.payload;
-        let slot = _.findWhere(s.tool_slots, { id });
+        let { name, value } = a.payload;
+        // CHRIS I MADE CHANGES HERE PLEASE REVIEW.
+        // - Rick 12/30/16
+        let slot = _.find(s.tool_slots, { id: a.payload.id });
         let bay = _.findWhere(s.tool_bays, { id: slot.tool_bay_id });
-        slot.dirty = true;
         bay.dirty = true;
-        /** ??? TODO: Tried changing interfaces but can't seem to please TS */
-        (slot as any)[name] = value;
+        _.assign(slot, { [name]: value, dirty: true });
         return s;
     })
     /** Tools */
@@ -104,7 +108,7 @@ export let toolsReducer = generateReducer<ToolsState>(initialState)
         s.tools.all.push({ name, id });
         return s;
     })
-    .add<Tool>("SAVE_TOOL_OK", function (s, a) {
+    .add<Tool[]>("SAVE_TOOLS_OK", function (s, a) {
         s.tools.dirty = false;
         s.tools.isEditing = false;
         return s;

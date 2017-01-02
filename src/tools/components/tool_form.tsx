@@ -52,7 +52,8 @@ export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
         return <Col>
             <Widget>
                 <WidgetHeader
-                    helpText="Tools are for tooling."
+                    helpText={t(`This is a list of all your FarmBot Tools.
+                      Click the Edit button to add, edit, or delete tools.`)}
                     title="TOOLS">
                     <button
                         className="green button-like"

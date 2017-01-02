@@ -22,6 +22,9 @@ export interface SelectOptionsParams {
     label: string;
     value: string | number;
     field?: string;
+    x?: number;
+    y?: number;
+    z?: number;
 }
 
 export interface Log {

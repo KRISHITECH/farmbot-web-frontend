@@ -1,19 +1,20 @@
 import * as React from "react";
 import { changeStep, removeStep, pushStep } from "../actions";
 import { assign } from "lodash";
-import { Step, NUMERIC_FIELDS } from "../interfaces";
+import { CeleryNode as Step } from "../corpus";
+import { NUMERIC_FIELDS } from "../interfaces";
 import { Help } from "../../ui";
 import { ExecuteBlock } from "../execute_block";
 import { Sequence } from "../interfaces";
 import { defensiveClone } from "../../util";
-import { t } from "i18next";
-import { TileIfStatment } from "./tile_if_statement";
+import { TileIf } from "./tile_if";
 import { TileWait } from "./tile_wait";
 import { TileMoveAbsolute } from "./tile_move_absolute";
 import { TileMoveRelative } from "./tile_move_relative";
 import { TileReadPin } from "./tile_read_pin";
 import { TileSendMessage } from "./tile_send_message";
 import { TileWritePin } from "./tile_write_pin";
+import { ToolsState } from "../../tools/interfaces";
 import * as _ from "lodash";
 
 interface CopyParams {
@@ -93,6 +94,7 @@ export interface StepParams {
     index: number;
     sequence: Sequence;
     sequences: Sequence[];
+    tools: ToolsState;
 }
 
 export interface CustomOptionProps {
@@ -101,6 +103,9 @@ export interface CustomOptionProps {
     isFocused: Function;
     option: {
         value: string;
+        x?: number;
+        y?: number;
+        z?: number;
     };
     className: string;
     children: JSX.Element;
@@ -124,9 +129,7 @@ let Pending = ({ dispatch, index }: StepParams) => {
             onClick={() => remove({ dispatch, index })} />
     </div>;
 };
-
-/** TODO: Change to correct type */
-export let stepTiles: any = {
+export let stepTiles: { [name: string]: React.ReactType | undefined } = {
     emergency_stop: Pending,
     home_all: Pending,
     home_x: Pending,
@@ -136,7 +139,7 @@ export let stepTiles: any = {
     write_parameter: Pending,
     read_parameter: Pending,
     execute: ExecuteBlock,
-    if_statement: TileIfStatment,
+    _if: TileIf,
     move_relative: TileMoveRelative,
     move_absolute: TileMoveAbsolute,
     write_pin: TileWritePin,

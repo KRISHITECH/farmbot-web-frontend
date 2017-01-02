@@ -17,6 +17,7 @@ c = function() {
         });
 
     conf.devtool = 'source-map';
+    conf.devtoolLineToLine = true;
 
     conf
         .plugins

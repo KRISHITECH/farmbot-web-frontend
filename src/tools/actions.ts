@@ -74,10 +74,6 @@ export function saveToolSlotOk(toolSlot: ToolSlot): ReduxAction<{}> {
     return { type: "SAVE_TOOL_SLOTS_OK", payload: toolSlot };
 }
 
-export function saveToolSlotNo(error: AxiosErrorResponse): ErrorPayl {
-    return { type: "SAVE_TOOL_SLOT_NO", payload: error };
-}
-
 export function updateToolSlotOk(toolSlot: ToolSlot): ReduxAction<{}> {
     return { type: "UPDATE_TOOL_SLOT_OK", payload: toolSlot };
 }
@@ -111,19 +107,15 @@ export function addToolSlot(slot: ToolSlot, tool_bay_id: number): Thunk {
 
 export function saveToolSlots(toolSlots: ToolSlot[]): Thunk {
     return (dispatch, getState) => {
-        Promise.all(
-            toolSlots.filter(allSlots => !!allSlots.dirty).map(dirtySlot => {
-                let url = API.current.toolSlotsPath + dirtySlot.id;
-                axios
-                    .put<ToolSlot>(url, dirtySlot)
-                    .then(resp => {
-                        dispatch(saveToolSlotOk(resp.data));
-                    }, (e: Error) => {
-                        dispatch(saveToolSlotNo(e));
-                    });
-            })).then(function () {
+        let dirtSlots = {
+            tool_slots: toolSlots.filter(allSlots => !!allSlots.dirty)
+        };
+        let url = API.current.toolSlotsPath;
+        axios.post<ToolSlot[]>(url, dirtSlots)
+            .then(resp => {
                 success(t("ToolBay saved."));
-            }).catch(function (e: Error) {
+                dispatch(saveToolSlotOk(resp.data));
+            }, (e: Error) => {
                 error(prettyPrintApiErrors(e));
             });
     };
@@ -147,8 +139,8 @@ export function updateTool(id: number, value: string): ReduxAction<{}> {
     return { type: "UPDATE_TOOL", payload: { id, value } };
 }
 
-export function saveToolOk(tool: Tool): ReduxAction<{}> {
-    return { type: "SAVE_TOOL_OK", payload: tool };
+export function saveToolsOk(tools: Tool[]): ReduxAction<{}> {
+    return { type: "SAVE_TOOLS_OK", payload: tools };
 }
 
 export function saveToolNo(error: AxiosErrorResponse): ErrorPayl {
@@ -172,21 +164,21 @@ export function destroyToolNo(error: AxiosErrorResponse): ErrorPayl {
 }
 
 export function saveTools(tools: Tool[]): Thunk {
+
     return (dispatch, getState) => {
-        Promise.all(
-            tools.filter(allTools => !!allTools.dirty).map(dirtyTool => {
-                let url = API.current.toolsPath + dirtyTool.id;
-                axios
-                    .put<Tool>(url, dirtyTool)
-                    .then(resp => {
-                        dispatch(saveToolOk(resp.data));
-                    }, (e: Error) => {
-                        dispatch(saveToolNo(e));
-                    });
-            })).then(function () {
-                success(t("Tools saved."));
-                dispatch(stopEditingTools());
-            }).catch(function (e: Error) {
+        function finish() {
+            success(t("Tools saved."));
+            dispatch(stopEditingTools());
+        }
+        let dirtyTools = tools.filter(allTools => !!allTools.dirty);
+        // Return early if API call not required.
+        if (!dirtyTools.length) { return finish(); }
+        axios.post<Tool[]>(API.current.toolsPath, { tools: dirtyTools })
+            .then(resp => {
+                finish();
+                dispatch(saveToolsOk(resp.data));
+            }, (e: Error) => {
+                dispatch(saveToolNo(e));
                 error(prettyPrintApiErrors(e));
             });
     };

@@ -11,12 +11,18 @@ import { Help, Select, Saucer } from "../../ui";
 import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
 import { addChan, removeChan, updateMessageType } from "../actions";
+import { CHANNEL_NAME } from "../interfaces";
+import { SendMessage } from "../corpus";
 import * as _ from "lodash";
 
 export function TileSendMessage({dispatch, step, index}: StepParams) {
-    /** TODO: Hack?, is this node not getting the SendMessage interface? 
-    * says step.args.* does not exist. */
-    let args = step.args as any;
+    if (step.kind !== "send_message") {
+        throw new Error("TileSendMessage expects send_message");
+    } else {
+
+    }
+    step = step as SendMessage;
+    let args = step.args;
     let message = args.message;
     let type = args.message_type;
 
@@ -88,7 +94,8 @@ export function TileSendMessage({dispatch, step, index}: StepParams) {
     };
 
     let choices = channels.map(function (pair, key) {
-        let name_list = _.pluck((step.body || []), "args.channel_name");
+        let name_list = (step.kind === "send_message") ?
+            (step.body || []).map(x => x.args.channel_name) : [];
         let [name, label] = pair;
         let isChecked = name_list.includes(name);
         /** TODO: Temporary. Once features are available, enable them. */
@@ -119,10 +126,10 @@ export function TileSendMessage({dispatch, step, index}: StepParams) {
                             onClick={() => copy({ dispatch, step })} />
                         <i className="fa fa-trash step-control"
                             onClick={() => remove({ dispatch, index })} />
-                        <Help text={(`The Send Message step instructs 
-                                FarmBot to send a custom message to the logs. 
-                                This can help you with debugging your sequences. 
-                                Eventually you will be able to receive push 
+                        <Help text={(`The Send Message step instructs
+                                FarmBot to send a custom message to the logs.
+                                This can help you with debugging your sequences.
+                                Eventually you will be able to receive push
                                 notifications and email alerts of these
                                 messages!`)} />
                     </div>

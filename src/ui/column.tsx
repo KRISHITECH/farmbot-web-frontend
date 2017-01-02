@@ -1,18 +1,21 @@
 import * as React from "react";
+import { parseClassNames } from "./util";
 
 interface ColumnProps {
     children?: JSX.Element | undefined;
-    sm?: string;
-    md?: string;
-    lg?: string;
+    /** {[col-size, offset]} or just {col-size} */
+    xs?: number[] | number;
+    /** {[col-size, offset]} or just {col-size} */
+    sm?: number[] | number;
+    /** {[col-size, offset]} or just {col-size} */
+    md?: number[] | number;
+    /** {[col-size, offset]} or just {col-size} */
+    lg?: number[] | number;
 }
 
 export function Col(props: ColumnProps) {
-    let finalClassName = "fb-col";
-    if (props.sm) { finalClassName += ` sm-${props.sm}`; }
-    if (props.md) { finalClassName += ` md-${props.md}`; }
-    if (props.lg) { finalClassName += ` lg-${props.lg}`; }
-    return <div className={finalClassName}>
+    let classNames = parseClassNames(props, "");
+    return <div className={classNames}>
         {props.children}
     </div>;
 }

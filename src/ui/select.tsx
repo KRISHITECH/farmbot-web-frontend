@@ -4,7 +4,7 @@ import * as ReactSelect from "react-select";
 interface SelectProps {
     children?: JSX.Element | undefined;
     onChange?: (e: React.SyntheticEvent<HTMLSelectElement>) => void;
-    value?: string;
+    value?: string | number;
     id?: string;
     options?: {}[];
     // TODO: Values for anys

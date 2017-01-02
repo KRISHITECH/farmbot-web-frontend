@@ -9,6 +9,7 @@ interface BIProps {
     /** Allow the user to empty out the form control. If unset, form control
      * will reset itself to previous value. */
     allowEmpty?: boolean;
+    disabled?: boolean;
 }
 
 interface BIState {
@@ -47,6 +48,8 @@ export class BlurableInput extends React.Component<BIProps, BIState> {
             onBlur={this.maybeCommit.bind(this)}
             name={this.props.name}
             id={this.props.id}
-            type={this.props.type || "text"} />;
+            type={this.props.type || "text"}
+            disabled={this.props.disabled}
+            />;
     }
 }

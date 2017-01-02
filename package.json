@@ -10,7 +10,7 @@
   "scripts": {
     "build": "node_modules/webpack/bin/webpack.js --config tools/webpack.config.prd.js --display-error-details",
     "start": "webpack-dev-server --config tools/webpack.config.dev.js --content-base public/ --host 0.0.0.0",
-    "test": "jest --coverage --no-cache && node remap_coverage.js"
+    "test": "jest --coverage --no-cache"
   },
   "keywords": [
     "farmbot"

@@ -1,168 +1,95 @@
-import {
-  userVariables as FarmBotJsuserVariables
-} from "farmbot/dist/interfaces";
-// import { BasicNode } from "../ast/interfaces";
 import { Color } from "../interfaces";
-
-/** TODO: Move this into FarmBotjs or celery
- *  script NPM pacakge. */
-export interface BasicNode {
-  kind: string;
-  args: {};
-  body?: BasicNode[] | undefined;
-  comment?: string;
-};
+import { SelectOptionsParams } from "../interfaces";
+import {
+    Sequence as CeleryScriptSequence,
+    MoveAbsolute,
+    MoveRelative,
+    WritePin,
+    ReadPin,
+    Wait,
+    SendMessage,
+    If,
+    Execute
+} from "./corpus";
+export type CHANNEL_NAME = "toast" | "ticker";
 
 export const NUMERIC_FIELDS = ["x", "y", "z", "speed", "pin_number",
-  "pin_value", "pin_mode", "milliseconds",
-  "sub_sequence_id", "rhs", "sub_sequence_id"];
-type userVariables = FarmBotJsuserVariables;
+    "pin_value", "pin_mode", "milliseconds",
+    "sub_sequence_id", "rhs", "sub_sequence_id"];
 
-export interface Sequence extends SequenceNode {
-  color: Color;
-  name: string;
-  dirty?: boolean;
-  id?: number;
-  body: Step[];
+/** CeleryScript nodes allowed within a Sequence node's `body` attr. */
+export type SequenceBodyMember = MoveAbsolute
+    | MoveRelative
+    | WritePin
+    | ReadPin
+    | Wait
+    | SendMessage
+    | If
+    | Execute;
+
+export interface Sequence extends CeleryScriptSequence {
+    color: Color;
+    name: string;
+    dirty?: boolean;
+    id?: number;
 }
 
-type Steps = Step[];
-
-// Typescript does not have subset types.
-// If you are reading this in the future and subset types exist, 
-// refactor this code.
-export interface SequenceOptions {
-  color?: Color;
-  name?: string;
-  body?: Step[];
-  dirty?: boolean;
-}
-
-export type possibleKind = "move_absolute"
-  | "move_relative"
-  | "write_pin"
-  | "read_pin"
-  | "wait"
-  | "send_message"
-  | "execute"
-  | "if_statement"
-  | "sub_sequence_id";
+export type SequenceOptions = {[P in keyof Sequence]?: Sequence[P]; };
 
 export interface SequenceReducerState {
-  all: Array<Sequence>;
-  current: number;
+    all: Array<Sequence>;
+    current: number;
 };
 
-interface MoveAbsoluteNode extends BasicNode {
-  kind: "move_absolute";
-  args: {
-    x: number;
-    y: number;
-    z: number;
-    speed: number;
-  };
+export interface UpdateAbsoluteStepPayl {
+    data: {
+        label?: string;
+        tool_id: number;
+        value: string | number;
+        options: [
+            {
+                label: string;
+                value: string | number;
+                x: number;
+                y: number;
+                z: number;
+            }
+        ],
+        offset: string;
+        x: number;
+        y: number;
+        z: number;
+        speed: number;
+    };
+    index: number;
 }
-
-interface MoveRelativeNode extends BasicNode {
-  kind: "move_relative";
-  args: {
-    x: number;
-    y: number;
-    z: number;
-    speed: number;
-  };
-}
-
-interface WritePinNode extends BasicNode {
-  kind: "write_pin";
-  args: {
-    pin_number: number;
-    pin_value: number;
-    pin_mode: number;
-  };
-}
-
-interface ReadPinNode extends BasicNode {
-  kind: "read_pin";
-  args: {
-    pin_number: number;
-    data_label: string;
-  };
-}
-
-interface WaitNode extends BasicNode {
-  kind: "wait";
-  args: {
-    milliseconds: number;
-  };
-}
-
-export interface SendMessageNode extends BasicNode {
-  kind: "send_message";
-  args: {
-    message: string;
-    message_type: string;
-  };
-  body?: ChannelNode[] | undefined;
-}
-
-interface ExecuteNode extends BasicNode {
-  kind: "execute";
-  args: {
-    sub_sequence_id: number;
-  };
-}
-
-interface IfStatementNode extends BasicNode {
-  kind: "if_statement";
-  args: {
-    lhs: userVariables | number
-    op: ">" | "<" | "is" | "not";
-    rhs: number;
-    sub_sequence_id: number;
-  };
-}
-
-export type Step = MoveAbsoluteNode
-  | MoveRelativeNode
-  | WritePinNode
-  | ReadPinNode
-  | WaitNode
-  | SendMessageNode
-  | ExecuteNode
-  | IfStatementNode
-  | ChannelNode;
-
-export interface ChannelNode extends BasicNode {
-  kind: "channel";
-  args: {
-    channel_name: string;
-  };
-}
-
-export interface SequenceNode extends BasicNode {
-  kind: "sequence";
-  args: {};
-  body: Step[] | undefined;
-};
 
 /** Used when dispatching ADD_CHANNEL / REMOVE_CHANNEL actions. */
 export interface ChanParams {
-  channel_name: string;
-  index: number;
+    channel_name: string;
+    index: number;
 };
 
-/** Used when dispatching an updated message type. */
+// /** Used when dispatching an updated message type. */
 export interface MessageParams {
-  value: string | number;
-  index: number;
+    value: string | number;
+    index: number;
 };
 
 export interface PickerProps {
-  current: Color;
-  onChange?: (color: Color) => any;
+    current: Color;
+    onChange?: (color: Color) => any;
 }
 
 export interface PickerState {
-  isOpen: boolean;
+    isOpen: boolean;
+}
+
+export interface MoveAbsState {
+    options?: SelectOptionsParams[];
+    value?: string | number;
+    x?: number;
+    y?: number;
+    z?: number;
+    speed?: number;
 }

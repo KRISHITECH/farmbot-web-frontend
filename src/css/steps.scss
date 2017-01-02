@@ -101,7 +101,7 @@
 .step-content {
     border-color: $light_gray;
     color: $dark_gray;
-    padding: 1.25rem 1.25rem 0;
+    padding: 1.25rem 1.25rem;
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
     &.move-relative-step {
@@ -128,10 +128,19 @@
     }
     &.if-step {
         background: $light_purple;
+        h4 {
+            margin: 0 0 0.4rem;
+            font-style: italic;
+            &:not(.top) {
+                margin: 1.4rem 0 0.4rem;
+            }
+        }
+        input {
+            height: 34px;
+        }
     }
     input,
     select {
-        margin-bottom: 1.25rem;
         width: 100%;
     }
 }

@@ -17,22 +17,6 @@
     }
 }
 
-@media only screen and (min-width: 992px) {
-    .block-wrapper {
-        button {
-            &:hover {
-                width: 108%;
-            }
-            .block-control {
-                position: absolute;
-                padding: 0;
-                top: 0.3rem;
-                right: 0.3rem;
-            }
-        }
-    }
-}
-
 .block-control {
     transition: all 0.2s ease-out;
     color: $dark_gray;

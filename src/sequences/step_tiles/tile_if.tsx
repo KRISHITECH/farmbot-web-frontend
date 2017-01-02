@@ -7,15 +7,19 @@ import { changeStepSelect } from "../actions";
 import { StepTitleBar } from "./step_title_bar";
 import { StepInputBox } from "../inputs/step_input_box";
 import { SelectOptionsParams } from "../../interfaces";
+import { If } from "../corpus";
 
-export function TileIfStatment({dispatch, step, index, sequences, sequence}:
+export function TileIf({dispatch, step, index, sequences, sequence}:
     StepParams) {
-
-    /** TODO: Hack?, is this node not getting the SendMessage interface? 
-    * says step.args.* does not exist. */
-    let args = step.args as any;
-    let { lhs, op, sub_sequence_id } = args;
-
+    step = step as If;
+    let args = step.args;
+    let { lhs, op } = args;
+    let sub_sequence_id: number | undefined;
+    if (args._then.kind === "execute") {
+        sub_sequence_id = args._then.args.sub_sequence_id;
+    } else {
+        sub_sequence_id = undefined;
+    };
     let LHSOptions: SelectOptionsParams[] = [
         { value: "busy", label: "Busy Status (0, 1)", field: "lhs" },
         { value: "pin0", label: "Pin 0", field: "lhs" },
@@ -55,11 +59,13 @@ export function TileIfStatment({dispatch, step, index, sequences, sequence}:
     // TODO: Anys coming from react-select events
     let update = (e: any) => {
         let { field, value } = e;
+        console.dir(`Changed to: ${String(field)}, ${String(value)}`);
         dispatch(changeStepSelect(value, index, field));
     };
 
-    let isRecursive = args.sub_sequence_id == sequence.id;
-    return (<div>
+    let isRecursive = sub_sequence_id == sequence.id;
+    console.log(`ssid is ${String(sub_sequence_id)}`);
+    return <div>
         <div className="step-wrapper">
             <div className="row">
                 <div className="col-sm-12">
@@ -76,7 +82,7 @@ export function TileIfStatment({dispatch, step, index, sequences, sequence}:
                         {isRecursive && (
                             <span>
                                 <i className="fa fa-exclamation-triangle"></i>
-                                &nbsp;Sub sequence is recursive.
+                                &nbsp;Recursive sequence.
                             </span>
                         )}
                     </div>
@@ -86,8 +92,11 @@ export function TileIfStatment({dispatch, step, index, sequences, sequence}:
                 <div className="col-sm-12">
                     <div className="step-content if-step">
                         <div className="row">
-                            <div className="col-xs-6 col-md-3">
-                                <label>{t("LHS")}</label>
+                            <div className="col-xs-12 col-md-12">
+                                <h4 className="top">IF...</h4>
+                            </div>
+                            <div className="col-xs-4 col-md-4">
+                                <label>{t("Variable")}</label>
                                 <Select
                                     options={LHSOptions}
                                     placeholder="LHS..."
@@ -95,8 +104,8 @@ export function TileIfStatment({dispatch, step, index, sequences, sequence}:
                                     value={lhs}
                                     />
                             </div>
-                            <div className="col-xs-6 col-md-3">
-                                <label>{t("OPERATOR")}</label>
+                            <div className="col-xs-4 col-md-4">
+                                <label>{t("Operator")}</label>
                                 <Select
                                     options={OperatorOptions}
                                     placeholder="Condition..."
@@ -104,15 +113,30 @@ export function TileIfStatment({dispatch, step, index, sequences, sequence}:
                                     value={op}
                                     />
                             </div>
-                            <div className="col-xs-6 col-md-3">
-                                <label>{t("RHS")}</label>
+                            <div className="col-xs-4 col-md-4">
+                                <label>{t("Value")}</label>
                                 <StepInputBox dispatch={dispatch}
                                     step={step}
                                     index={index}
                                     field="rhs" />
                             </div>
-                            <div className="col-xs-6 col-md-3">
-                                <label>{t("Sub Sequence")}</label>
+                            <div className="col-xs-12 col-md-12">
+                                <h4>THEN...</h4>
+                            </div>
+                            <div className="col-xs-12 col-md-12">
+                                <label>{t("Execute Sequence")}</label>
+                                <Select
+                                    options={sequenceOptions}
+                                    placeholder="Sequence..."
+                                    onChange={update}
+                                    value={sub_sequence_id}
+                                    />
+                            </div>
+                            <div className="col-xs-12 col-md-12">
+                                <h4>ELSE...</h4>
+                            </div>
+                            <div className="col-xs-12 col-md-12">
+                                <label>{t("Execute Sequence")}</label>
                                 <Select
                                     options={sequenceOptions}
                                     placeholder="Sequence..."
@@ -125,5 +149,5 @@ export function TileIfStatment({dispatch, step, index, sequences, sequence}:
                 </div>
             </div>
         </div>
-    </div>);
+    </div>;
 }

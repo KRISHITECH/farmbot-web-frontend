@@ -1,6 +1,6 @@
 import * as React from "react";
 import { StepDragger, NULL_DRAGGER_ID } from "../../draggable/step_dragger";
-import { Step } from "../interfaces";
+import { CeleryNode as Step } from "../corpus";
 import { pushStep } from "../actions";
 
 interface StepButtonParams {
@@ -17,7 +17,7 @@ let click = (dispatch: Function, step: Step) =>
 
 export function StepButton({ children, step, color, dispatch}:
     StepButtonParams) {
-    return <div className="col-xs-6">
+    return <div className="col-xs-6 col-sm-12">
         <div className="block-wrapper">
             <StepDragger dispatch={dispatch}
                 step={step}

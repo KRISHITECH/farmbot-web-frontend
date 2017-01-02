@@ -81,7 +81,8 @@ export class NavBar extends React.Component<Everything, NavBarState> {
             mobileNavExpanded: false,
             tickerExpanded: false
         };
-        this.toggleTicker = this.toggleTicker.bind(this);
+        this.hoverToggleTicker = this.hoverToggleTicker.bind(this);
+        this.clickToggleTicker = this.clickToggleTicker.bind(this);
         this.toggleNav = this.toggleNav.bind(this);
         this.logout = this.logout.bind(this);
     }
@@ -99,7 +100,23 @@ export class NavBar extends React.Component<Everything, NavBarState> {
         location.reload(true);
     }
 
-    toggleTicker() {
+    hoverToggleTicker() {
+        /** Hack to prevent ui bugs */
+        var width = Math.max(document.documentElement.clientWidth,
+            window.innerWidth || 0);
+        if (width <= 830) { return; }
+        /** Don't let user scroll when nav is open */
+        document.body.classList.toggle("freeze");
+        this.setState({
+            tickerExpanded: !this.state.tickerExpanded
+        });
+    }
+
+    clickToggleTicker() {
+        /** Hack to prevent ui bugs */
+        var width = Math.max(document.documentElement.clientWidth,
+            window.innerWidth || 0);
+        if (width >= 830) { return; }
         /** Don't let user scroll when nav is open */
         document.body.classList.toggle("freeze");
         this.setState({
@@ -110,7 +127,7 @@ export class NavBar extends React.Component<Everything, NavBarState> {
     render() {
         let mobileMenuClass = this.state.mobileNavExpanded ? "expanded" : "";
         let pageName = this.props.location.pathname.split("/").pop() || "";
-        let { toggleNav, logout, toggleTicker } = this;
+        let { toggleNav, logout, hoverToggleTicker, clickToggleTicker } = this;
         let isActive = this.state.tickerExpanded ? "active" : "";
 
         return <nav role="navigation">
@@ -174,9 +191,9 @@ export class NavBar extends React.Component<Everything, NavBarState> {
             <EStopButton { ...this.props } />
 
             <div className={`ticker-list ${isActive}`}
-                onClick={() => { toggleTicker(); } }
-                onMouseEnter={() => { toggleTicker(); } }
-                onMouseLeave={() => { toggleTicker(); } }>
+                onClick={() => { clickToggleTicker(); } }
+                onMouseEnter={() => { hoverToggleTicker(); } }
+                onMouseLeave={() => { hoverToggleTicker(); } }>
                 {this.props.sync.logs.map((log, index) => {
                     let time = moment.utc(log.created_at).format("HH:mma");
                     /** Otherwise yields "03:15PM"" etc. */

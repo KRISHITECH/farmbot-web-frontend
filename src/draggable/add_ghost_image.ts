@@ -12,9 +12,11 @@ export function addGhostImage(
     // RELEVANT READING:
     // http://www.kryogenix.org/code/browser/custom-drag-image.html
     el.classList.add(cssClass);
-    el.style.top = "-300px";
+    el.style.left = "-300px";
     el.style.position = "absolute";
-    el.ondragend = el.remove;
+    document.body.addEventListener("dragend", function () {
+        el.remove();
+    });
     document.body.appendChild(el);
     // TS doesn't seem to recognize this member on ev.dataTransfer...
     (ev.dataTransfer as any).setDragImage(el, 0, 0);

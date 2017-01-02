@@ -1,9 +1,11 @@
+import { CeleryNode as Step, LATEST_VERSION, MoveAbsolute } from "./corpus";
 import {
-    Step,
     Sequence,
     SequenceReducerState,
     ChanParams,
-    MessageParams
+    MessageParams,
+    UpdateAbsoluteStepPayl,
+    SequenceBodyMember
 } from "./interfaces";
 import {
     nullSequence,
@@ -30,7 +32,7 @@ const initialState: SequenceReducerState = {
         {
             color: "red",
             kind: "sequence",
-            args: {},
+            args: { version: LATEST_VERSION },
             name: "New Sequence",
             body: [],
             dirty: false
@@ -40,11 +42,28 @@ const initialState: SequenceReducerState = {
 };
 
 export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
+    .add<UpdateAbsoluteStepPayl>("UPDATE_MOVE_ABSOLUTE_STEP", function (s, a) {
+        let { data, index } = a.payload;
+        let seq = s.all[s.current];
+        seq.dirty = true;
+        let step = (seq.body || [])[index] as MoveAbsolute;
+
+        delete step.args.location;
+        if (data.value === "---") {
+            let { x, y, z } = data;
+            step.args.location = { args: { x, y, z }, kind: "coordinate" };
+        } else {
+            let { value } = data;
+            value = parseInt(value.toString(), 10);
+            step.args.location = { args: { tool_id: value }, kind: "tool" };
+        }
+        return s;
+    })
     .add<ChanParams>("ADD_CHANNEL", function (s, a) {
         let { index, channel_name} = a.payload;
         let seq = s.all[s.current];
         seq.dirty = true;
-        let step = seq.body[index];
+        let step = (seq.body || [])[index];
         if (step.kind === "send_message") {
             step.body = step.body || [];
             step.body.push({ kind: "channel", args: { channel_name } });
@@ -58,7 +77,7 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
         let { index, channel_name} = a.payload;
         let seq = s.all[s.current];
         seq.dirty = true;
-        let step = seq.body[index];
+        let step = (seq.body || [])[index];
         if (step.kind === "send_message") {
             step.body = step.body || [];
             step.body.push({ kind: "channel", args: { channel_name } });
@@ -74,7 +93,7 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
         let { value, index} = a.payload;
         let seq = s.all[s.current];
         seq.dirty = true;
-        let step = seq.body[index];
+        let step = (seq.body || [])[index];
         if (step.kind === "send_message") {
             step.args.message_type = value.toString();
         }
@@ -82,7 +101,7 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
     })
     .add<{ index: number, comment: string }>("ADD_COMMENT", function (s, a) {
         let seq = s.all[s.current];
-        let node = seq.body[a.payload.index];
+        let node = (seq.body || [])[a.payload.index];
         markDirty(s);
         node.comment = a.payload.comment;
         // API complains about empty values.
@@ -95,8 +114,8 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
             .all[state.current] || populate(state);
         markDirty(state);
         let { step } = action.payload;
-        let stepp = step;
-        current_sequence.body.push(stepp);
+        let stepp = step as SequenceBodyMember;
+        (current_sequence.body || []).push(stepp);
         return state;
     })
     .add<void>("ADD_SEQUENCE", function (state, action) {
@@ -113,32 +132,38 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
     })
     .add<{ step: Step, index: number }>("CHANGE_STEP",
     function (state, action) {
-        /// DELETE THIS!?!?!?!?
-        // let steps = state.all[state.current].body || populate(state).body;
-        // let index = action.payload.index;
-        // let current_step = steps[index];
-        // steps[index] = assign<{}, Step>(current_step, action.payload.step);
-        // state.all[state.current].dirty = true;
         let currentSequence = state.all[state.current];
-        let currentStep = currentSequence.body[action.payload.index];
+        let currentStep = (currentSequence.body || [])[action.payload.index];
         markDirty(state);
         _.assign(currentStep, action.payload.step);
         return state;
     })
     .add<{ value: string | number, index: number, field: string }>(
     "CHANGE_STEP_SELECT", function (state, action) {
+        // CHRIS: I MADE SOME (stub) CHANGES HERE. Let's talk about this one.
+        //        proceed with caution, there may be issues with my changes.
+        //        - Rick wuz here. 12/29/16
         markDirty(state);
         let currentSequence = state.all[state.current];
-        let currentStep = currentSequence.body[action.payload.index];
-        /** Why isn't this interface working?? */
-        let args: any = currentStep.args;
-        args[action.payload.field] = action.payload.value;
-        return state;
+        let currentStep = (currentSequence.body || [])[action.payload.index];
+        if (currentStep.kind === "_if") {
+            let sub_sequence_id = parseInt(action.payload.value.toString(), 10);
+            currentStep.args._then = {
+                kind: "execute",
+                args: { sub_sequence_id }
+            };
+            // TODO Come back and add `_else` feature.
+            currentStep.args._else = { kind: "nothing", args: {} };
+            return state;
+        } else {
+            console.warn(`Unexpectedly got a '${currentStep.kind}' step.`);
+            return state;
+        }
     })
     .add<{ index: number }>("REMOVE_STEP", function (state, action) {
         let seq = state.all[state.current];
         let index = action.payload.index;
-        seq.body = _.without(seq.body, seq.body[index]);
+        seq.body = _.without((seq.body || []), (seq.body || [])[index]);
         markDirty(state);
         return state;
     })
@@ -188,16 +213,16 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
     .add<MoveStepPayl>("MOVE_STEP", function (s, a) {
         let { from, to } = a.payload;
         markDirty(s);
-        s.all[s.current].body = move<Step>(s.all[s.current].body,
+        s.all[s.current].body = move<Step>((s.all[s.current].body || []),
             a.payload.from,
-            a.payload.to);
+            a.payload.to) as SequenceBodyMember[];
         if (from < to) {
             // EDGE CASE: If you drag a step upwards, it will end up in the
             // wrong slot. As a fix, I swap the "to" index with the item below
             // it an vice versa.
             // I KNOW THERE ARE SHORTER WAYS TO SWAP AN ARRAY.
             // DO NOT OPTOMIZE. INTENTIONALLY LENGTHENED FOR CLARITY.
-            let list = s.all[s.current].body;
+            let list = (s.all[s.current].body || []);
             let topIndex = to;
             let bottomIndex = to - 1;
             let top = list[topIndex];
@@ -209,7 +234,9 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
     })
     .add<SpliceStepPayl>("SPLICE_STEP", function (s, a) {
         markDirty(s);
-        s.all[s.current].body.splice(a.payload.insertBefore, 0, a.payload.step);
+        let body = s.all[s.current].body || [];
+        let step = a.payload.step as SequenceBodyMember;
+        body.splice(a.payload.insertBefore, 0, step);
         return s;
     });
 

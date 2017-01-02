@@ -1,7 +1,7 @@
 import { addGhostImage } from "./add_ghost_image";
 import * as React from "react";
 import { stepPut } from "./actions";
-import { Step } from "../sequences/interfaces";
+import { CeleryNode as Step } from "../sequences/corpus";
 import { DataXferIntent } from "./interfaces";
 
 /** Magic number to indicate that the draggerId was not provided or can't be

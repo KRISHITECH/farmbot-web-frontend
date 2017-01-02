@@ -5,8 +5,8 @@ import { devices } from "../../device";
 const blue: Color = "blue";
 const sequence: "sequence" = "sequence";
 
-describe("performSeq()", function() {
-    it("saves new user password", function() {
+describe("performSeq()", function () {
+    it("saves new user password", function () {
         devices.current.publish = jest.fn();
         devices.current.send = jest.fn();
         let seq = {
@@ -14,10 +14,10 @@ describe("performSeq()", function() {
             kind: sequence,
             name: "wow",
             dirty: true,
-            args: {},
+            args: { version: 9 },
             body: []
         };
-        let spy = jest.fn(function() {
+        let spy = jest.fn(function () {
             return Promise.resolve();
         });
         let innerFunction = performSeq(spy, seq);

@@ -1,6 +1,6 @@
 /* Styles used throughout the frontend */
 
-::-webkit-scrollbar {
+.ticker-list::-webkit-scrollbar {
     display: none;
 }
 
@@ -15,6 +15,20 @@ input[type=time] {
     border-radius: 0;
 }
 
+.page {
+    padding-top: 2rem;
+}
+
+.page>.row>*>.row {
+    margin-bottom: 20px;
+}
+
+@media (max-width: 830px) {
+    .app {
+        overflow: hidden !important;
+    }
+}
+
 .Select-control {
     border-radius: 0 !important;
     font-size: 1.2rem !important;
@@ -25,8 +39,32 @@ input[type=time] {
     box-shadow: 0px 0px 10px $light_gray !important;
 }
 
+.Select-option {
+    padding: 0.4rem 1rem !important;
+}
+
+.Select-menu {
+    padding: 0.8rem 0;
+}
+
 .Select-menu-outer {
-    z-index: 99999 !important;
+    position: relative;
+    &:after,
+    &:before {
+        content: "";
+        pointer-events: none;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: 0;
+    }
+    &:before {
+        background: linear-gradient(to bottom, #fff 0%, transparent 10%)
+    }
+    &:after {
+        background: linear-gradient(to top, #fff 0%, transparent 10%)
+    }
 }
 
 .Select-option,
@@ -41,6 +79,10 @@ input[type=time] {
 
 .Select-clear-zone {
     display: none !important;
+}
+
+.Select-value-params {
+    float: right;
 }
 
 body {
@@ -74,10 +116,6 @@ body {
     .all-content-wrapper {
         padding: 2.5rem 0rem 0rem 0rem;
     }
-}
-
-.app {
-    overflow: hidden !important;
 }
 
 .hide {
@@ -342,6 +380,10 @@ button,
 select,
 input {
     outline: none !important;
+}
+
+input:disabled {
+    background: rgba(0, 0, 0, 0.1) !important;
 }
 
 ul {

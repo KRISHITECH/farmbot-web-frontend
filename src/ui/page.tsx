@@ -6,9 +6,11 @@ interface PageProps {
 }
 
 export function Page(props: PageProps) {
-    let finalClassName = "page";
+    let finalClassName = "page container";
     if (props.className) { finalClassName += ` ${props.className}`; }
     return <div className={finalClassName}>
-        {props.children}
+        <div className="row">
+            {props.children}
+        </div>
     </div>;
 }

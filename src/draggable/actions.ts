@@ -1,6 +1,6 @@
 import { DataXfer, DataXferIntent, DataXferBase } from "./interfaces";
 import { uuid as id } from "farmbot/dist/util";
-import { Step } from "../sequences/interfaces";
+import { CeleryNode as Step } from "../sequences/corpus";
 import { Everything } from "../interfaces";
 import { ReduxAction } from "../redux/interfaces";
 import * as React from "react";

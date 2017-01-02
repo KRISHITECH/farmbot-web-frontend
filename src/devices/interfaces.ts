@@ -3,7 +3,7 @@ import {
   Configuration,
   configKey
 } from "farmbot/dist/interfaces";
-
+import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES } from "../sequences/corpus";
 /** How the device is stored in the API side.
  * This is what comes back from the API as JSON.
  */
@@ -24,14 +24,14 @@ export interface RpcBotLog {
   /** Unix timestamp of when the log was created. */
   created_at: number;
   /** Array of channels where this message is supposed to show up. */
-  channels: RpcBotLogChannel[];
+  channels: ALLOWED_CHANNEL_NAMES[];
   /** Meta data about the message. */
   meta: Meta;
 }
 
 /** Meta information about a log message. */
 interface Meta {
-  type: RpcBotLogType;
+  type: ALLOWED_MESSAGE_TYPES;
   /** Bot Position X */
   x: number | undefined;
   /** Bot Position Y */
@@ -39,17 +39,6 @@ interface Meta {
   /** Bot Position Z */
   z: number | undefined;
 }
-
-/** The different channels on which a notification can be sent. */
-type RpcBotLogChannel = "toast";
-
-/** Different types of messages. */
-type RpcBotLogType = "success"
-  | "busy"
-  | "warn"
-  | "error"
-  | "info"
-  | "fun"
 
 /** Typescript does not have partial types yet.
  *  When it does, we can pull this out*/

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Step } from "../interfaces";
+import { CeleryNode as Step } from "../corpus";
 import { addComment } from "../actions";
 
 interface StepTitleBarProps {
