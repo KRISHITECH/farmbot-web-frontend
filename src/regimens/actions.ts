@@ -6,6 +6,7 @@ import { regimenSerializer } from "./serializers";
 import { prettyPrintApiErrors } from "../util";
 import { t } from "i18next";
 import { API } from "../api";
+import { UnsafeError } from "../interfaces";
 
 export function copyRegimen(payload: Regimen) {
   return {
@@ -43,7 +44,7 @@ function saveRegimenOk(regimen: Regimen) {
   return { type: "SAVE_REGIMEN_OK", payload: regimen };
 }
 
-function saveRegimenErr(err: any) {
+function saveRegimenErr(err: UnsafeError) {
   error(prettyPrintApiErrors(err),
     t("Unable to save regimen."));
 }

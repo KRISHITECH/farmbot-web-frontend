@@ -100,4 +100,13 @@ i.widget-help-icon {
     &.no-bottom-padding {
         padding-bottom: 0px;
     }
+    td {
+        vertical-align: top;
+        button:not(.toggle-button) {
+            float: left;
+        }
+    }
+    p {
+        padding-top: 0.2rem;
+    }
 }

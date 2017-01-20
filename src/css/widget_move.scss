@@ -1,7 +1,4 @@
-// Styles for the MOVE Widget
-///////////////////////////////
-// MOVE AMOUNT (mm) selector //
-///////////////////////////////
+// MOVE AMOUNT (mm) selector
 .text-center {
     text-align: center;
     width: 100%;
@@ -49,9 +46,7 @@
     }
 }
 
-//////////////////
-// JOG CONTROLS //
-//////////////////
+// JOG CONTROLS
 .jog-table {
     margin: auto;
     margin-top: 15px;
@@ -74,9 +69,7 @@
     }
 }
 
-////////////////////
-// ABSOLUTE MOVES //
-////////////////////
+// ABSOLUTE MOVES
 input {
     &.move-input {
         font-size: 1rem;

@@ -4,10 +4,9 @@ import { t } from "i18next";
 import { error as log, init as logInit } from "../ui";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
-import { PasswordResetState, PasswordResetProps } from "./interfaces";
+import { State, Props } from "./interfaces";
 
-export class PasswordReset extends React.Component<PasswordResetProps,
-    PasswordResetState> {
+export class PasswordReset extends React.Component<Props, State> {
     constructor() {
         super();
         this.state = {

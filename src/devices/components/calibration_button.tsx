@@ -1,27 +1,22 @@
 import * as React from "react";
 import { t } from "i18next";
-import { CalibrationTarget } from "farmbot/dist/bot_commands";
 import { devices } from "../../device";
+type Axis = "x" | "y" | "z" | "all";
 
-interface CalibrationButtonProps {
-    target: CalibrationTarget;
-}
-
-function calibrate(target: CalibrationTarget) {
+function calibrate(axis: Axis) {
     devices
         .current
-        .calibrate(target)
-        .then(function() {
-            console.log("WOO HOO!");
-        }, function() {
-            console.log("Doh!");
-        });
+        .calibrate({ axis })
+        .then(() => console.log("WOO HOO!"), () => console.log("Doh!"));
 }
 
-export function CalibrationButton({target}: CalibrationButtonProps) {
+interface CalibrationButtonProps {
+    axis: Axis;
+}
+export function CalibrationButton({axis}: CalibrationButtonProps) {
     return <button type="button"
         className="button-like yellow"
-        onClick={() => calibrate(target)}>
-        {t("CALIBRATE {{target}}", { target })}
+        onClick={() => calibrate(axis)}>
+        {t("CALIBRATE {{axis}}", { axis })}
     </button>;
 };

@@ -1,8 +1,8 @@
 import { addGhostImage } from "./add_ghost_image";
 import * as React from "react";
 import { stepPut } from "./actions";
-import { CeleryNode as Step } from "../sequences/corpus";
-import { DataXferIntent } from "./interfaces";
+import { CeleryNode as Step } from "farmbot";
+import { DataXferIntent, StepDraggerProps } from "./interfaces";
 
 /** Magic number to indicate that the draggerId was not provided or can't be
  *  known. */
@@ -28,15 +28,6 @@ export let stepDragEventHandler = (dispatch: Function,
         addGhostImage(ev, ghostCss);
         dispatch(stepPut(step, ev, intent, draggerId));
     };
-
-interface StepDraggerProps {
-    dispatch: Function;
-    step: Step;
-    intent: DataXferIntent;
-    ghostCss: string;
-    children?: JSX.Element | undefined;
-    draggerId: number;
-}
 
 export function StepDragger({dispatch,
     step,

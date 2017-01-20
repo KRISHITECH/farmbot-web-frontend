@@ -1,13 +1,15 @@
 import * as React from "react";
-import { parseClassNames } from "./util";
+// import { parseClassNames } from "./util";
 
 interface WidgetProps {
     children?: JSX.Element | undefined;
+    className?: string;
 }
 
 export function Widget(props: WidgetProps) {
-    // let classNames = parseClassNames(props, "widget");
-    return <div className="widget">
+    let finalClass = `widget `;
+    if (props.className) { finalClass += props.className; }
+    return <div className={finalClass}>
         {props.children}
     </div>;
 }

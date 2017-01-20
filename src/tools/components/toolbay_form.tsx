@@ -92,7 +92,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
     }
 
     renderSlots(tool_bay_id: number | undefined) {
-        return this.props.all.tool_slots.map((slot, index) => {
+        return _.sortBy(this.props.all.tool_slots, "id").map((slot, index) => {
             index++;
             let { x, y, z, tool_id } = slot;
             let slot_id = slot.id;
@@ -107,7 +107,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                         name="x"
                         value={(x || "0").toString()}
                         onCommit={this.updateCoordinate}
-                        />
+                    />
                 </td>
                 <td>
                     <BlurableInput
@@ -116,7 +116,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                         name="y"
                         value={(y || "0").toString()}
                         onCommit={this.updateCoordinate}
-                        />
+                    />
                 </td>
                 <td>
                     <BlurableInput
@@ -125,7 +125,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                         name="z"
                         value={(z || "0").toString()}
                         onCommit={this.updateCoordinate}
-                        />
+                    />
                 </td>
                 <td>
                     {this.renderTools(tool_id, slot_id)}
@@ -134,12 +134,12 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                     <button
                         className="button-like red"
                         onClick={() => {
-                            /** TODO: This isn't right, but if I make the id 
+                            /** TODO: This isn't right, but if I make the id
                              *  required, TS throws errors everywhere. I'll
                              *  have to come back to this. -CV
                             */
                             this.props.dispatch(destroySlot(slot_id || 0));
-                        } }>
+                        }}>
                         <i className="fa fa-times"></i>
                     </button>
                 </td>
@@ -174,7 +174,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                         title={name}>
                         <button
                             className="green button-like"
-                            onClick={() => { saveAll(tool_bay_id); } }>
+                            onClick={() => { saveAll(tool_bay_id); }}>
                             {t("SAVE")}
                             {bay.dirty && ("*")}
                         </button>
@@ -196,7 +196,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                                             value={name}
                                             onCommit={updateToolBayName}
                                             id={(tool_bay_id || "").toString()}
-                                            />
+                                        />
                                     </td>
                                 </tr>
                             </tbody>
@@ -221,7 +221,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                                             type="number"
                                             name="x"
                                             onCommit={set}
-                                            />
+                                        />
                                     </td>
                                     <td>
                                         <BlurableInput
@@ -229,7 +229,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                                             type="number"
                                             name="y"
                                             onCommit={set}
-                                            />
+                                        />
                                     </td>
                                     <td>
                                         <BlurableInput
@@ -237,7 +237,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                                             type="number"
                                             name="z"
                                             onCommit={set}
-                                            />
+                                        />
                                     </td>
                                     <td>
                                         <Select onChange={updateToolSelect}

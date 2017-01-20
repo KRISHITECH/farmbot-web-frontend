@@ -48,7 +48,7 @@ export function StepButtonCluster({dispatch}: { dispatch: Function }) {
                 args: {
                     pin_number: 0,
                     pin_mode: 0,
-                    data_label: "---"
+                    label: "---"
                 }
             }}
             color="yellow" >
@@ -90,7 +90,7 @@ export function StepButtonCluster({dispatch}: { dispatch: Function }) {
         <StepButton dispatch={dispatch}
             step={{
                 kind: "execute",
-                args: { sub_sequence_id: 0 }
+                args: { sequence_id: 0 }
             }}
             color="gray" >
             {t("EXECUTE")}

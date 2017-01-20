@@ -192,17 +192,17 @@ button {
 
 .plus-button {
     border-radius: 50%;
-    bottom: 7rem;
-    right: 10rem;
+    bottom: 5rem;
     width: 5rem;
     height: 5rem;
     color: $off_white;
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: 9rem;
     text-align: center;
     cursor: pointer;
     border-bottom-width: 3px!important;
-    position: absolute;
+    position: fixed;
+    left: 0;
+    right: 0;
     i {
         line-height: 5rem;
     }
@@ -216,26 +216,6 @@ button {
             background-color: darken($dark_green, 5%);
         }
     }
-    &.add-group {
-        background-color: $cyan;
-        border-bottom: solid darken($cyan, 10%);
-        &:hover {
-            background-color: darken($cyan, 3%);
-        }
-        &:active {
-            background-color: darken($cyan, 5%);
-        }
-    }
-    &.add-zone {
-        background-color: $dark_brown;
-        border-bottom: solid darken($dark_brown, 10%);
-        &:hover {
-            background-color: darken($dark_brown, 3%);
-        }
-        &:active {
-            background-color: darken($dark_brown, 5%);
-        }
-    }
     &.add-event {
         background-color: $magenta;
         border-bottom: solid darken($magenta, 10%);
@@ -245,5 +225,11 @@ button {
         &:active {
             background-color: darken($magenta, 5%);
         }
+    }
+}
+
+@media (max-width: 768px) {
+    .plus-button {
+        margin: 0 auto;
     }
 }

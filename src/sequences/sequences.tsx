@@ -5,8 +5,8 @@ import { SequenceEditorMiddle } from "./sequence_editor_middle";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
 
-@connect((state: any) => state)
-export class Sequences extends React.Component<any, any> {
+@connect((state: Everything) => state)
+export class Sequences extends React.Component<any, Everything> {
     render() {
         return (
             <div className="all-content-wrapper">

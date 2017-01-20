@@ -1,7 +1,7 @@
 import * as React from "react";
 import { changeStep, removeStep, pushStep } from "../actions";
 import { assign } from "lodash";
-import { CeleryNode as Step } from "../corpus";
+import { CeleryNode as Step } from "farmbot";
 import { NUMERIC_FIELDS } from "../interfaces";
 import { Help } from "../../ui";
 import { ExecuteBlock } from "../execute_block";
@@ -77,13 +77,13 @@ export interface IStepInput {
     | "z"
     | "stub" // For unimplemented features.
     | "variable"
-    | "data_label"
+    | "label"
     | "milliseconds"
     | "message"
     | "lhs"
     | "op"
     | "rhs"
-    | "sub_sequence_id";
+    | "sequence_id";
     dispatch: Function;
     index: number;
 }

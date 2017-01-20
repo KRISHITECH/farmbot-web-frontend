@@ -82,7 +82,7 @@ export function saveAll() {
 }
 
 function handleError(defaultMsg: string) {
-    return function (x: any) {
+    return function (x: {}) {
         let message = _.get(x, "response.data.error", t(defaultMsg));
         error(message);
     };

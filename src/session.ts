@@ -26,9 +26,10 @@ export namespace Session {
     }
 
     /** clear localstorage and sessionstorage*/
-    export function clear() {
+    export function clear(_redirectToFrontPage = false) {
         console.warn("Clearing session storage.");
         localStorage.clear();
         sessionStorage.clear();
+        window.location.href = window.location.origin;
     }
 }

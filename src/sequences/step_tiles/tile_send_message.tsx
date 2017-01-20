@@ -11,9 +11,9 @@ import { Help, Select, Saucer } from "../../ui";
 import { t } from "i18next";
 import { StepInputBox } from "../inputs/step_input_box";
 import { addChan, removeChan, updateMessageType } from "../actions";
-import { CHANNEL_NAME } from "../interfaces";
-import { SendMessage } from "../corpus";
+import { SendMessage } from "farmbot";
 import * as _ from "lodash";
+import { Option } from "react-select";
 
 export function TileSendMessage({dispatch, step, index}: StepParams) {
     if (step.kind !== "send_message") {
@@ -80,10 +80,13 @@ export function TileSendMessage({dispatch, step, index}: StepParams) {
         );
     };
 
-    // TODO: Take care of this any
-    let handleOptionChange = (event: any) => {
+    let handleOptionChange = (event: Option) => {
         let { value } = event;
-        dispatch(updateMessageType({ value, index }));
+        if (value) {
+            dispatch(updateMessageType({ value, index }));
+        } else {
+            throw new Error("Must provide a value");
+        }
     };
 
     let handleChannelChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -107,9 +110,9 @@ export function TileSendMessage({dispatch, step, index}: StepParams) {
                 disabled={isDisabled}
                 onChange={(event: React.SyntheticEvent<HTMLInputElement>) => {
                     handleChannelChange(event);
-                } }
+                }}
                 checked={isChecked}
-                />
+            />
         </fieldset>;
     });
 
@@ -148,7 +151,7 @@ export function TileSendMessage({dispatch, step, index}: StepParams) {
                                     step={step}
                                     index={index}
                                     field="message"
-                                    />
+                                />
                                 <div className="bottom-content">
                                     <div className="channel-options">
                                         <Select
@@ -157,7 +160,7 @@ export function TileSendMessage({dispatch, step, index}: StepParams) {
                                             options={options}
                                             optionComponent={optionComponent}
                                             valueComponent={valueComponent}
-                                            />
+                                        />
                                     </div>
                                     <div className="channel-fields">
                                         <fieldset>
@@ -168,7 +171,7 @@ export function TileSendMessage({dispatch, step, index}: StepParams) {
                                                 id="ticker"
                                                 disabled
                                                 checked
-                                                />
+                                            />
                                         </fieldset>
                                         {choices}
                                     </div>

@@ -1,6 +1,6 @@
 import * as axios from "axios";
 import { Everything } from "../interfaces";
-import { CeleryNode as Step, LATEST_VERSION } from "./corpus";
+import { CeleryNode as Step, LATEST_VERSION } from "farmbot";
 import {
     SequenceOptions,
     Sequence,
@@ -127,14 +127,24 @@ export function changeStep(index: number, step: Step): ChangeStep {
     };
 }
 
-type CHANGE_STEP_SELECT = "CHANGE_STEP_SELECT";
+type CHANGE_STEP_SELECT = "CHANGE_STEP_SELECT" |
+    "UPDATE_SUB_SEQUENCE";
+
 export interface ChangeStepSelect {
     type: CHANGE_STEP_SELECT;
     payload: {
         value: number | string;
-        index: number
+        index: number;
         field: string;
+        type?: string;
     };
+}
+
+export interface SelectPayl {
+    value: number | string;
+    index: number;
+    field: string;
+    type?: string;
 }
 
 export function changeStepSelect(
@@ -147,7 +157,17 @@ export function changeStepSelect(
     };
 }
 
-export function updateMoveAbsStep(data: {}, index: number): any {
+export function updateSubSequence(
+    value: string | number,
+    index: number,
+    field: string, type: string): ChangeStepSelect {
+    return {
+        type: "UPDATE_SUB_SEQUENCE",
+        payload: { value, index, field, type }
+    };
+}
+
+export function updateMoveAbsStep(data: {}, index: number): ReduxAction<{}> {
     return {
         type: "UPDATE_MOVE_ABSOLUTE_STEP",
         payload: { data, index }

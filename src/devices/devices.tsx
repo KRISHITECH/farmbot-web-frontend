@@ -5,6 +5,7 @@ import { CalibrationButton } from "./components/calibration_button";
 import { RpcBotLog as BotLog, BotState } from "../devices/interfaces";
 import * as moment from "moment";
 import { Everything } from "../interfaces";
+import { success } from "../ui";
 import {
     saveAccountChanges,
     changeDevice,
@@ -16,11 +17,14 @@ import {
     checkControllerUpdates,
     reboot,
     powerOff,
+    factoryReset,
     checkArduinoUpdates,
     updateConfig
 } from "./actions";
 import { t } from "i18next";
 import * as _ from "lodash";
+import { McuParams } from "farmbot";
+import { WeedDetector } from "./components/weed_detector";
 
 interface UpdateButtonProps {
     bot: BotState;
@@ -33,33 +37,29 @@ let OsUpdateButton = ({bot}: UpdateButtonProps) => {
     if (bot.currentOSVersion != undefined) {
         if (bot.currentOSVersion ===
             bot.hardware.informational_settings.controller_version) {
-            buttonStr = t("Controller Up to date!");
+            buttonStr = t("UP TO DATE");
             buttonColor = "gray";
         } else {
-            buttonStr = t("Controller Update Available!");
+            buttonStr = t("UPDATE");
             buttonColor = "green";
         }
     } else {
         buttonStr = "Can't Connect to release server";
     }
-    return (
-        <div>
-            <button className={"button-like " + buttonColor}
-                onClick={() => checkControllerUpdates()}>
-                {buttonStr}
-            </button >
-            <p> {t("OS Auto Updates")}
-                <ToggleButton toggleval=
-                    {String(osUpdateBool) || "undefined"}
-                    toggleAction={() => {
-                        updateConfig({
-                            os_auto_update: !osUpdateBool
-                        });
-                    }
-                    } />
-            </p>
-        </div>
-    );
+    return <div className="updates">
+        <p>
+            {t("Auto Updates?")}
+        </p>
+        <ToggleButton toggleval={String(osUpdateBool) ||
+            "undefined"}
+            toggleAction={() => {
+                updateConfig({ os_auto_update: !osUpdateBool });
+            }} />
+        <button className={`button-like ${buttonColor}`}
+            onClick={() => checkControllerUpdates()}>
+            {buttonStr}
+        </button>
+    </div>;
 };
 
 let FwUpdateButton = ({bot}: UpdateButtonProps) => {
@@ -69,32 +69,30 @@ let FwUpdateButton = ({bot}: UpdateButtonProps) => {
     if (bot.currentFWVersion != undefined) {
         if (bot.currentFWVersion == (
             bot.hardware.mcu_params.param_version || "").toString()) {
-            buttonStr = t("Firmware Up to date!");
+            buttonStr = t("UP TO DATE");
             buttonColor = "gray";
         } else {
-            buttonStr = t("Firmware Update Available!");
+            buttonStr = t("UPDATE");
             buttonColor = "green";
         }
     }
-    return (
-        <div>
-            <button className={"button-like " + buttonColor}
-                onClick={() => checkArduinoUpdates()}>
-                {buttonStr}
-            </button >
-            <p> {t("OS Auto Updates")}
-                <ToggleButton toggleval=
-                    {String(fwUpdateBool) || "undefined"}
-                    toggleAction={() => {
-                        updateConfig({
-                            fw_auto_update: !fwUpdateBool
-                        });
-                    } } />
-            </p>
-        </div>);
+    return <div className="updates">
+        <p>
+            {t("Auto Updates?")}
+        </p>
+        <ToggleButton toggleval=
+            {String(fwUpdateBool) || "undefined"}
+            toggleAction={() => {
+                updateConfig({ fw_auto_update: !fwUpdateBool });
+            }} />
+        <button className={`button-like ${buttonColor}`}
+            onClick={() => checkArduinoUpdates()}>
+            {buttonStr}
+        </button>
+    </div>;
 };
 
-export class ConfigInputBox extends React.Component<any, any> {
+export class ConfigInputBox extends React.Component<any, {}> {
     primary() {
         return this.props.bot.configBuffer[this.props.setting];
     }
@@ -129,8 +127,7 @@ export class ConfigInputBox extends React.Component<any, any> {
     }
 }
 
-export class McuInputBox extends React.Component<any, any> {
-
+export class McuInputBox extends React.Component<any, {}> {
     primary() {
         return this.props.bot.settingsBuffer[this.props.setting];
     }
@@ -149,7 +146,7 @@ export class McuInputBox extends React.Component<any, any> {
         };
     }
 
-    change(key: any, dispatch: Function) {
+    change(key: keyof McuParams, dispatch: Function) {
         return function (event: React.FormEvent<HTMLInputElement>) {
             let formInput = event.currentTarget.value;
             dispatch(changeSettingsBuffer(key, formInput));
@@ -172,7 +169,8 @@ export class McuInputBox extends React.Component<any, any> {
 // TODO HACK : This is the biggest refactor target in the app right now.
 // Numerous issues: uses local variables instead of component state, references
 // Farmbot object and Redux .bot property (redundant).
-class DevicesPage extends React.Component<Everything, any> {
+@connect((state: Everything) => state)
+export class Devices extends React.Component<Everything, {}> {
 
     updateBot(e: React.MouseEvent<{}>) {
         this.props.dispatch(saveAccountChanges);
@@ -194,154 +192,172 @@ class DevicesPage extends React.Component<Everything, any> {
     }
 
     render() {
-
         if (this.props.auth) {
-            return (
-                <div>
-                    <div className="all-content-wrapper">
-                        <div>
+            return <div className="all-content-wrapper">
+                <div className="row">
+                    <div className={`col-md-6 col-sm-6 col-xs-12 col-sm-12`}>
+                        <div className="widget-wrapper devices-widget">
                             <div className="row">
-                                <div className={`col-md-5 col-sm-6 col-xs-12 
-                                    col-md-offset-1`}>
-                                    <div>
-                                        <div className="widget-wrapper">
-                                            <div className="row">
-                                                <div className="col-sm-12">
-                                                    <form onSubmit={this.saveBot.bind(this)}>
-                                                        <div className="row">
-                                                            <div className="col-sm-12">
-                                                                <button type="submit"
-                                                                    className="button-like green widget-control"
-                                                                    onClick={this.updateBot.bind(this)}>
-                                                                    {t("SAVE")} {this.props.bot.account.dirty ? "*" : ""}
-                                                                </button>
-                                                                <div className="widget-header">
-                                                                    <h5>{t("DEVICE")}</h5>
-                                                                    <i className="fa fa-question-circle widget-help-icon">
-                                                                        <div className="widget-help-text">
-                                                                            {t(`This widget shows device information.`)}
-                                                                        </div>
-                                                                    </i>
-                                                                </div>
-                                                            </div>
+                                <div className="col-sm-12">
+                                    <form onSubmit={this.saveBot.bind(this)}>
+                                        <div className="row">
+                                            <div className="col-sm-12">
+                                                <button type="submit"
+                                                    className={`button-like
+                                                        green widget-control`}
+                                                    onClick={this.updateBot
+                                                        .bind(this)}>
+                                                    {t("SAVE")} {
+                                                        this.props.bot.account
+                                                            .dirty ? "*" : ""}
+                                                </button>
+                                                <div className="widget-header">
+                                                    <h5>{t("DEVICE")}</h5>
+                                                    <i className={`fa
+                                                        fa-question-circle
+                                                        widget-help-icon`}>
+                                                        <div className={`
+                                                            widget-help-text`}>
+                                                            {t(`This widget
+                                                                shows device
+                                                                information.`)}
                                                         </div>
-                                                        <div className="row">
-                                                            <div className="col-sm-12">
-                                                                <div className="widget-content">
-                                                                    <table className="plain">
-                                                                        <tbody>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <label>{t("FARMBOT NAME")}</label>
-                                                                                </td>
-                                                                                <td colSpan={2}>
-                                                                                    <input name="name"
-                                                                                        onChange={this.changeBot.bind(this)}
-                                                                                        value={this.props.bot.account.name} />
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <label>{t("NETWORK")}</label>
-                                                                                </td>
-                                                                                <td colSpan={2}>
-                                                                                    <p> {`mqtt://${this.props.auth.token.unencoded.mqtt}`} </p>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <label>{t("CONTROLLER")}</label>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <p>
-                                                                                        {String(this.props.bot.hardware
-                                                                                            .informational_settings.controller_version)
-                                                                                            || t("Not Connected to bot")}
-                                                                                    </p>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <OsUpdateButton { ...this.props } />
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <label>{t("FIRMWARE")}</label>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <p>
-                                                                                        {t("Version")} {
-                                                                                            String(this.props.bot.hardware.mcu_params.param_version)
-                                                                                            || t("Not Connected to bot")
-                                                                                        }
-                                                                                    </p>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <FwUpdateButton { ...this.props } />
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <label>{t("RESTART FARMBOT")} </label>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <p>
-                                                                                        {t(`This will restart FarmBot's Raspberry
-                                            Pi and controller software`)}
-                                                                                    </p>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <button type="button"
-                                                                                        className="button-like yellow"
-                                                                                        onClick={reboot}>
-                                                                                        {t("RESTART")}
-                                                                                    </button>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <tr>
-                                                                                <td>
-                                                                                    <label>{t("SHUTDOWN FARMBOT")}</label>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <p>
-                                                                                        {t(`This will shutdown FarmBot's Raspberry Pi.
-                                              To turn it back on, unplug FarmBot
-                                              and plug it back in.`)}
-                                                                                    </p>
-                                                                                </td>
-                                                                                <td>
-                                                                                    <button type="button"
-                                                                                        className="button-like red"
-                                                                                        onClick={powerOff} >
-                                                                                        {t("SHUTDOWN")}
-                                                                                    </button>
-                                                                                </td>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </form>
+                                                    </i>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                        <div className="row">
+                                            <div className="col-sm-12">
+                                                <div className="widget-content">
+                                                    <table className="plain">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <label>
+                                                                        {t("NAME")}
+                                                                    </label>
+                                                                </td>
+                                                                <td colSpan={2}>
+                                                                    <input name="name"
+                                                                        onChange={this.changeBot.bind(this)}
+                                                                        value={this.props.bot.account.name} />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <label>{t("NETWORK")}</label>
+                                                                </td>
+                                                                <td colSpan={2}>
+                                                                    <p> {`mqtt://${this.props.auth.token.unencoded.mqtt}`} </p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <label>{t("CONTROLLER")}</label>
+                                                                </td>
+                                                                <td className="devices-pad">
+                                                                    <p>
+                                                                        {t("Version")} {String(this.props.bot.hardware
+                                                                            .informational_settings.controller_version)
+                                                                            || t("Not Connected to bot")}
+                                                                    </p>
+                                                                    <OsUpdateButton { ...this.props } />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <label>{t("FIRMWARE")}</label>
+                                                                </td>
+                                                                <td className="devices-pad">
+                                                                    <p>
+                                                                        {t("Version")} {
+                                                                            String(this.props.bot.hardware.mcu_params.param_version)
+                                                                            || t("Not Connected to bot")
+                                                                        }
+                                                                    </p>
+                                                                    <FwUpdateButton { ...this.props } />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <label>{t("RESTART FARMBOT")} </label>
+                                                                </td>
+                                                                <td>
+                                                                    <p>
+                                                                        {t(`This will restart FarmBot's Raspberry
+                                            Pi and controller software.`)}
+                                                                    </p>
+                                                                </td>
+                                                                <td>
+                                                                    <button type="button"
+                                                                        className="button-like yellow"
+                                                                        onClick={reboot}>
+                                                                        {t("RESTART")}
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <label>{t("SHUTDOWN FARMBOT")}</label>
+                                                                </td>
+                                                                <td>
+                                                                    <p>
+                                                                        {t(`This will shutdown FarmBot's Raspberry Pi.
+                                              To turn it back on, unplug FarmBot
+                                              and plug it back in.`)}
+                                                                    </p>
+                                                                </td>
+                                                                <td>
+                                                                    <button type="button"
+                                                                        className="button-like red"
+                                                                        onClick={powerOff} >
+                                                                        {t("SHUTDOWN")}
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <label>{t("Factory Reset")}</label>
+                                                                </td>
+                                                                <td>
+                                                                    <p>
+                                                                        {t(`
+Factory resetting your FarmBot will destroy all data on the device, revoking your FarmBot's abilily to connect to your web app account and your home wifi. Upon factory resetting, your device will restart into Conflgurator mode. Factory resetting your FarmBot will not affect any data or settings from your web app account, allowing you to do a complete restore to your device once it is back online and paired with your web app account.`)}
+                                                                    </p>
+                                                                </td>
+                                                                <td>
+                                                                    <button type="button"
+                                                                        className="button-like red"
+                                                                        onClick={factoryReset} >
+                                                                        {t("RESET")}
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
-                                <div className="col-md-5 col-sm-6 col-xs-12">
-                                    <div>
-                                        <div className="widget-wrapper hardware-widget">
-                                            <div className="row">
-                                                <div className="col-sm-12">
-                                                    <button className="green button-like widget-control"
-                                                        onClick={() => this.props.dispatch(commitSettingsChanges())} >
-                                                        {t("SAVE")}
-                                                        {Object.keys(this.props.bot.settingsBuffer).length ? "*" : ""}
-                                                    </button>
-                                                    <div className="widget-header">
-                                                        <h5>Hardware</h5>
-                                                        <i className="fa fa-question-circle widget-help-icon">
-                                                            <div className="widget-help-text">
-                                                                {t(`Change settings
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6 col-xs-12">
+                        <div>
+                            <div className="widget-wrapper hardware-widget">
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        <button className="green button-like widget-control"
+                                            onClick={() => this.props.dispatch(commitSettingsChanges())} >
+                                            {t("SAVE")}
+                                            {Object.keys(this.props.bot.settingsBuffer).length ? "*" : ""}
+                                        </button>
+                                        <div className="widget-header">
+                                            <h5>Hardware</h5>
+                                            <i className="fa fa-question-circle widget-help-icon">
+                                                <div className="widget-help-text">
+                                                    {t(`Change settings
                             of your FarmBot hardware with the fields below.
                             Caution: Changing these settings to extreme
                             values can cause hardware malfunction. Make
@@ -350,185 +366,185 @@ class DevicesPage extends React.Component<Everything, any> {
                             FarmBot after changing settings and test a few sequences
                             to verify that everything works as expected. Note:
                             Currently not all settings can be changed.`)}
-                                                            </div>
-                                                        </i>
-                                                    </div>
-                                                    <div className="row">
-                                                        <div className="col-sm-12">
-                                                            <label>{t("STEPS PER MM")}</label>
-                                                            <ConfigInputBox setting="steps_per_mm" {...this.props} />
-                                                            <table className="plain">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th width="32%" />
-                                                                        <th width="22%">
-                                                                            <label>{t("X AXIS")}</label>
-                                                                        </th>
-                                                                        <th width="22%">
-                                                                            <label>{t("Y AXIS")}</label>
-                                                                        </th>
-                                                                        <th width="22%">
-                                                                            <label>{t("Z AXIS")}</label>
-                                                                        </th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <label>{t("MAX SPEED (mm/s)")}</label>
-                                                                        </td>
-                                                                        <McuInputBox setting="movement_max_spd_x" {...this.props} />
-                                                                        <McuInputBox setting="movement_max_spd_y" {...this.props} />
-                                                                        <McuInputBox setting="movement_max_spd_z" {...this.props} />
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <label>{t("ACCELERATE FOR (steps)")}</label>
-                                                                        </td>
-                                                                        <McuInputBox setting="movement_steps_acc_dec_x"
-                                                                            {...this.props} />
-                                                                        <McuInputBox setting="movement_steps_acc_dec_y"
-                                                                            {...this.props} />
-                                                                        <McuInputBox setting="movement_steps_acc_dec_z"
-                                                                            {...this.props} />
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <label>{t("TIMEOUT AFTER (seconds)")}</label>
-                                                                        </td>
-                                                                        <McuInputBox setting="movement_timeout_x"
-                                                                            {...this.props} />
-                                                                        <McuInputBox setting="movement_timeout_y"
-                                                                            {...this.props} />
-                                                                        <McuInputBox setting="movement_timeout_z"
-                                                                            {...this.props} />
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <label>{t("LENGTH (m)")}</label>
-                                                                        </td>
-                                                                        <McuInputBox setting="movement_axis_nr_steps_x"
-                                                                            {...this.props} />
-                                                                        <McuInputBox setting="movement_axis_nr_steps_y"
-                                                                            {...this.props} />
-                                                                        <McuInputBox setting="movement_axis_nr_steps_z"
-                                                                            {...this.props} />
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <label>{t("CALIBRATION")}</label>
-                                                                        </td>
-                                                                        <td>
-                                                                            <CalibrationButton target="x" />
-                                                                        </td>
-                                                                        <td>
-                                                                            <CalibrationButton target="y" />
-                                                                        </td>
-                                                                        <td>
-                                                                            <CalibrationButton target="z" />
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <label>{t("INVERT ENDPOINTS")}</label>
-                                                                        </td>
-                                                                        <td>
-                                                                            <ToggleButton
-                                                                                toggleval={this.props.bot.hardware.mcu_params.movement_invert_endpoints_x}
-                                                                                toggleAction={() =>
-                                                                                    settingToggle("movement_invert_endpoints_x",
-                                                                                        this.props.bot)} />
-                                                                        </td>
-                                                                        <td>
-                                                                            <ToggleButton
-                                                                                toggleval={this.props.bot.hardware.mcu_params.movement_invert_endpoints_y}
-                                                                                toggleAction={() =>
-                                                                                    settingToggle("movement_invert_endpoints_y",
-                                                                                        this.props.bot)} />
-                                                                        </td>
-                                                                        <td>
-                                                                            <ToggleButton
-                                                                                toggleval={this.props.bot.hardware.mcu_params.movement_invert_endpoints_z}
-                                                                                toggleAction={() =>
-                                                                                    settingToggle("movement_invert_endpoints_z",
-                                                                                        this.props.bot)} />
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <label>{t("INVERT MOTORS")}</label>
-                                                                        </td>
-                                                                        <td>
-                                                                            <ToggleButton
-                                                                                toggleval={this.props.bot.hardware.mcu_params.movement_invert_motor_x}
-                                                                                toggleAction={() => settingToggle("movement_invert_motor_x", this.props.bot)} />
-                                                                        </td>
-                                                                        <td>
-                                                                            <ToggleButton
-                                                                                toggleval={this.props.bot.hardware.mcu_params.movement_invert_motor_y}
-                                                                                toggleAction={() => settingToggle("movement_invert_motor_y", this.props.bot)} />
-                                                                        </td>
-                                                                        <td>
-                                                                            <ToggleButton
-                                                                                toggleval={this.props.bot.hardware.mcu_params.movement_invert_motor_z}
-                                                                                toggleAction={() => settingToggle("movement_invert_motor_z", this.props.bot)} />
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <label>{t("ALLOW NEGATIVES")}</label>
-                                                                        </td>
-                                                                        <td>
-                                                                            <ToggleButton
-                                                                                toggleval={this.props.bot.hardware.mcu_params.movement_home_up_x}
-                                                                                toggleAction={() => settingToggle("movement_home_up_x", this.props.bot)} />
-                                                                        </td>
-                                                                        <td>
-                                                                            <ToggleButton
-                                                                                toggleval={this.props.bot.hardware.mcu_params.movement_home_up_y}
-                                                                                toggleAction={() => settingToggle("movement_home_up_y", this.props.bot)} />
-                                                                        </td>
-                                                                        <td>
-                                                                            <ToggleButton
-                                                                                toggleval={this.props.bot.hardware.mcu_params.movement_home_up_z}
-                                                                                toggleAction={() => settingToggle("movement_home_up_z", this.props.bot)} />
-                                                                        </td>
-                                                                    </tr>
-
-                                                                    <tr>
-                                                                        <td>
-                                                                            <label>{t("ENABLE ENCODERS")}</label>
-                                                                        </td>
-                                                                        <td>
-                                                                            <ToggleButton
-                                                                                toggleval={this.props.bot.hardware.mcu_params.encoder_enabled_x}
-                                                                                toggleAction={() => settingToggle("encoder_enabled_x", this.props.bot)} />
-                                                                        </td>
-                                                                        <td>
-                                                                            <ToggleButton
-                                                                                toggleval={this.props.bot.hardware.mcu_params.encoder_enabled_y}
-                                                                                toggleAction={() => settingToggle("encoder_enabled_y", this.props.bot)} />
-                                                                        </td>
-                                                                        <td>
-                                                                            <ToggleButton
-                                                                                toggleval={this.props.bot.hardware.mcu_params.encoder_enabled_z}
-                                                                                toggleAction={() => settingToggle("encoder_enabled_z", this.props.bot)} />
-                                                                        </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
                                                 </div>
+                                            </i>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-sm-12">
+                                                {/* Steps per mm needs to be three boxes. disable for now --connor
+                                                <label>{t("STEPS PER MM")}</label>
+                                                <ConfigInputBox setting="steps_per_mm" {...this.props} />
+                                                */}
+                                                <table className="plain">
+                                                    <thead>
+                                                        <tr>
+                                                            <th width="32%" />
+                                                            <th width="22%">
+                                                                <label>{t("X AXIS")}</label>
+                                                            </th>
+                                                            <th width="22%">
+                                                                <label>{t("Y AXIS")}</label>
+                                                            </th>
+                                                            <th width="22%">
+                                                                <label>{t("Z AXIS")}</label>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <label>{t("MAX SPEED (mm/s)")}</label>
+                                                            </td>
+                                                            <McuInputBox setting="movement_max_spd_x" {...this.props} />
+                                                            <McuInputBox setting="movement_max_spd_y" {...this.props} />
+                                                            <McuInputBox setting="movement_max_spd_z" {...this.props} />
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <label>{t("ACCELERATE FOR (steps)")}</label>
+                                                            </td>
+                                                            <McuInputBox setting="movement_steps_acc_dec_x"
+                                                                {...this.props} />
+                                                            <McuInputBox setting="movement_steps_acc_dec_y"
+                                                                {...this.props} />
+                                                            <McuInputBox setting="movement_steps_acc_dec_z"
+                                                                {...this.props} />
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <label>{t("TIMEOUT AFTER (seconds)")}</label>
+                                                            </td>
+                                                            <McuInputBox setting="movement_timeout_x"
+                                                                {...this.props} />
+                                                            <McuInputBox setting="movement_timeout_y"
+                                                                {...this.props} />
+                                                            <McuInputBox setting="movement_timeout_z"
+                                                                {...this.props} />
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <label>{t("LENGTH (m)")}</label>
+                                                            </td>
+                                                            <McuInputBox setting="movement_axis_nr_steps_x"
+                                                                {...this.props} />
+                                                            <McuInputBox setting="movement_axis_nr_steps_y"
+                                                                {...this.props} />
+                                                            <McuInputBox setting="movement_axis_nr_steps_z"
+                                                                {...this.props} />
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <label>{t("CALIBRATION")}</label>
+                                                            </td>
+                                                            <td>
+                                                                <CalibrationButton axis="x" />
+                                                            </td>
+                                                            <td>
+                                                                <CalibrationButton axis="y" />
+                                                            </td>
+                                                            <td>
+                                                                <CalibrationButton axis="z" />
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <label>{t("INVERT ENDPOINTS")}</label>
+                                                            </td>
+                                                            <td>
+                                                                <ToggleButton
+                                                                    toggleval={this.props.bot.hardware.mcu_params.movement_invert_endpoints_x}
+                                                                    toggleAction={() =>
+                                                                        settingToggle("movement_invert_endpoints_x",
+                                                                            this.props.bot)} />
+                                                            </td>
+                                                            <td>
+                                                                <ToggleButton
+                                                                    toggleval={this.props.bot.hardware.mcu_params.movement_invert_endpoints_y}
+                                                                    toggleAction={() =>
+                                                                        settingToggle("movement_invert_endpoints_y",
+                                                                            this.props.bot)} />
+                                                            </td>
+                                                            <td>
+                                                                <ToggleButton
+                                                                    toggleval={this.props.bot.hardware.mcu_params.movement_invert_endpoints_z}
+                                                                    toggleAction={() =>
+                                                                        settingToggle("movement_invert_endpoints_z",
+                                                                            this.props.bot)} />
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <label>{t("INVERT MOTORS")}</label>
+                                                            </td>
+                                                            <td>
+                                                                <ToggleButton
+                                                                    toggleval={this.props.bot.hardware.mcu_params.movement_invert_motor_x}
+                                                                    toggleAction={() => settingToggle("movement_invert_motor_x", this.props.bot)} />
+                                                            </td>
+                                                            <td>
+                                                                <ToggleButton
+                                                                    toggleval={this.props.bot.hardware.mcu_params.movement_invert_motor_y}
+                                                                    toggleAction={() => settingToggle("movement_invert_motor_y", this.props.bot)} />
+                                                            </td>
+                                                            <td>
+                                                                <ToggleButton
+                                                                    toggleval={this.props.bot.hardware.mcu_params.movement_invert_motor_z}
+                                                                    toggleAction={() => settingToggle("movement_invert_motor_z", this.props.bot)} />
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <label>{t("ALLOW NEGATIVES")}</label>
+                                                            </td>
+                                                            <td>
+                                                                <ToggleButton
+                                                                    toggleval={this.props.bot.hardware.mcu_params.movement_home_up_x}
+                                                                    toggleAction={() => settingToggle("movement_home_up_x", this.props.bot)} />
+                                                            </td>
+                                                            <td>
+                                                                <ToggleButton
+                                                                    toggleval={this.props.bot.hardware.mcu_params.movement_home_up_y}
+                                                                    toggleAction={() => settingToggle("movement_home_up_y", this.props.bot)} />
+                                                            </td>
+                                                            <td>
+                                                                <ToggleButton
+                                                                    toggleval={this.props.bot.hardware.mcu_params.movement_home_up_z}
+                                                                    toggleAction={() => settingToggle("movement_home_up_z", this.props.bot)} />
+                                                            </td>
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td>
+                                                                <label>{t("ENABLE ENCODERS")}</label>
+                                                            </td>
+                                                            <td>
+                                                                <ToggleButton
+                                                                    toggleval={this.props.bot.hardware.mcu_params.encoder_enabled_x}
+                                                                    toggleAction={() => settingToggle("encoder_enabled_x", this.props.bot)} />
+                                                            </td>
+                                                            <td>
+                                                                <ToggleButton
+                                                                    toggleval={this.props.bot.hardware.mcu_params.encoder_enabled_y}
+                                                                    toggleAction={() => settingToggle("encoder_enabled_y", this.props.bot)} />
+                                                            </td>
+                                                            <td>
+                                                                <ToggleButton
+                                                                    toggleval={this.props.bot.hardware.mcu_params.encoder_enabled_z}
+                                                                    toggleAction={() => settingToggle("encoder_enabled_z", this.props.bot)} />
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        {/*<WeedDetector {...this.props} />*/}
                     </div>
                 </div>
-            );
+            </div>;
         } else {
             throw new Error("Log in first");
         }
@@ -540,7 +556,7 @@ interface LogsProps {
 }
 
 function Logs({logs}: LogsProps) {
-    function HasLogs(_: any) {
+    function HasLogs(_: LogsProps) {
         function displayTime(t: number): string {
             return moment.unix(t).format("D MMM h:mma");
         }
@@ -569,7 +585,7 @@ function Logs({logs}: LogsProps) {
         </tbody>;
     }
 
-    function NoLogs(_: any) {
+    function NoLogs(_: LogsProps) {
         return <tbody>
             <tr>
                 <td colSpan={3}>
@@ -578,7 +594,5 @@ function Logs({logs}: LogsProps) {
             </tr>
         </tbody>;
     }
-    return (logs.length ? <HasLogs logs={logs} /> : <NoLogs />);
+    return (logs.length ? <HasLogs logs={logs} /> : <NoLogs logs={logs} />);
 }
-
-export let Devices = connect((state: Everything) => state)(DevicesPage);

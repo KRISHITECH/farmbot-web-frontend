@@ -9,19 +9,20 @@ import {
 } from "./regimens/interfaces";
 import { SequenceReducerState, Sequence } from "./sequences/interfaces";
 import { DesignerState, Plant } from "./farm_designer/interfaces";
-import { Color as FarmBotJsColor } from "farmbot/dist/interfaces";
+import { Color as FarmBotJsColor } from "farmbot";
 import { DragableState } from "./draggable/interfaces";
 import { PeripheralState, Peripheral } from "./controls/peripherals/interfaces";
 import { ToolsState, ToolBay, Tool, ToolSlot } from "./tools/interfaces";
-
+import { ImageState, Image } from "./images";
 /** Regimens and sequences may have a "color" which determines how it looks
     in the UI. Only certain colors are valid. */
 export type Color = FarmBotJsColor;
 
 export interface SelectOptionsParams {
     label: string;
-    value: string | number;
+    value: string | number | undefined;
     field?: string;
+    type?: string;
     x?: number;
     y?: number;
     z?: number;
@@ -30,9 +31,7 @@ export interface SelectOptionsParams {
 export interface Log {
     id: number;
     message: string;
-    meta: {
-        type: string;
-    };
+    meta: { type: string; };
     channels: string;
     device_id: number;
     created_at: string;
@@ -69,6 +68,7 @@ export interface Everything {
     peripherals: PeripheralState;
     tools: ToolsState;
     sync: Sync;
+    images: ImageState;
 };
 
 /** A sync object, as returned by a GET request to `/api/sync` */
@@ -89,4 +89,11 @@ export interface Sync {
     tool_slots: ToolSlot[];
     tools: Tool[];
     logs: Log[];
+    images: Image[];
 }
+
+/** There were a few cases where we handle errors that are legitimately unknown.
+ *  In those cases, we can use the `UnsafeError` type instead of `any`, just to
+ *  quiet down the linter and to let others know it is inherently unsafe.
+ */
+export type UnsafeError = any;

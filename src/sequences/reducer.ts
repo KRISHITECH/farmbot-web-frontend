@@ -1,4 +1,4 @@
-import { CeleryNode as Step, LATEST_VERSION, MoveAbsolute } from "./corpus";
+import { CeleryNode as Step, LATEST_VERSION, MoveAbsolute } from "farmbot";
 import {
     Sequence,
     SequenceReducerState,
@@ -11,7 +11,8 @@ import {
     nullSequence,
     EditCurrentSequence,
     SpliceStepPayl,
-    MoveStepPayl
+    MoveStepPayl,
+    SelectPayl
 } from "./actions";
 import { generateReducer } from "../redux/generate_reducer";
 import { move } from "../util";
@@ -19,11 +20,11 @@ import * as _ from "lodash";
 import { Sync } from "../interfaces";
 
 /** Adds an empty sequence to the front of the list. */
-function populate(state: SequenceReducerState): Sequence {
+function populate(s: SequenceReducerState): Sequence {
     // This worries me. What if #current and #all get out of sync?
     let current_sequence = nullSequence();
-    state.all.unshift(current_sequence);
-    state.current = 0;
+    s.all.unshift(current_sequence);
+    s.current = 0;
     return current_sequence;
 }
 
@@ -47,6 +48,12 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
         let seq = s.all[s.current];
         seq.dirty = true;
         let step = (seq.body || [])[index] as MoveAbsolute;
+
+        /** By checking to see if the data is being passed this way,
+         * we're able to keep useful data in Redux alone */
+        if (data.offsetX) { step.args.offset.args.x = data.offsetX; };
+        if (data.offsetY) { step.args.offset.args.y = data.offsetY; };
+        if (data.offsetZ) { step.args.offset.args.z = data.offsetZ; };
 
         delete step.args.location;
         if (data.value === "---") {
@@ -109,89 +116,111 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
         if (!node.comment) { delete node.comment; }
         return s;
     })
-    .add<{ step: Step }>("PUSH_STEP", function (state, action) {
-        let current_sequence = state
-            .all[state.current] || populate(state);
-        markDirty(state);
-        let { step } = action.payload;
+    .add<{ step: Step }>("PUSH_STEP", function (s, a) {
+        let current_sequence = s.all[s.current] || populate(s);
+        markDirty(s);
+        let { step } = a.payload;
         let stepp = step as SequenceBodyMember;
         (current_sequence.body || []).push(stepp);
-        return state;
+        return s;
     })
-    .add<void>("ADD_SEQUENCE", function (state, action) {
-        populate(state);
-        return state;
+    .add<void>("ADD_SEQUENCE", function (s, a) {
+        populate(s);
+        return s;
     })
-    .add<EditCurrentSequence>("EDIT_CURRENT_SEQUENCE",
-    function (state, action) {
-        let currentSequence = state.all[state.current] || populate(state);
-        currentSequence.name = action.payload.name || currentSequence.name;
-        currentSequence.color = action.payload.color || currentSequence.color;
-        markDirty(state);
-        return state;
+    .add<EditCurrentSequence>("EDIT_CURRENT_SEQUENCE", function (s, a) {
+        let currentSequence = s.all[s.current] || populate(s);
+        currentSequence.name = a.payload.name || currentSequence.name;
+        currentSequence.color = a.payload.color || currentSequence.color;
+        markDirty(s);
+        return s;
     })
-    .add<{ step: Step, index: number }>("CHANGE_STEP",
-    function (state, action) {
-        let currentSequence = state.all[state.current];
-        let currentStep = (currentSequence.body || [])[action.payload.index];
-        markDirty(state);
-        _.assign(currentStep, action.payload.step);
-        return state;
+    .add<{ step: Step, index: number }>("CHANGE_STEP", function (s, a) {
+        let currentSequence = s.all[s.current];
+        let currentStep = (currentSequence.body || [])[a.payload.index];
+        markDirty(s);
+        _.assign(currentStep, a.payload.step);
+        return s;
     })
-    .add<{ value: string | number, index: number, field: string }>(
-    "CHANGE_STEP_SELECT", function (state, action) {
-        // CHRIS: I MADE SOME (stub) CHANGES HERE. Let's talk about this one.
-        //        proceed with caution, there may be issues with my changes.
-        //        - Rick wuz here. 12/29/16
-        markDirty(state);
-        let currentSequence = state.all[state.current];
-        let currentStep = (currentSequence.body || [])[action.payload.index];
-        if (currentStep.kind === "_if") {
-            let sub_sequence_id = parseInt(action.payload.value.toString(), 10);
+    .add<SelectPayl>("CHANGE_STEP_SELECT", function (s, a) {
+        markDirty(s);
+        let currentSequence = s.all[s.current];
+        let currentStep = (currentSequence.body || [])[a.payload.index];
+        let { field, value } = a.payload;
+
+        // TODO: Any - replace using `keyof` operator.
+        let raw = currentStep.args as any;
+        raw[field] = value;
+        return s;
+    })
+    .add<SelectPayl>("UPDATE_SUB_SEQUENCE", function (s, a) {
+        markDirty(s);
+        let currentSequence = s.all[s.current];
+        let currentStep = (currentSequence.body || [])[a.payload.index];
+        let { value, type } = a.payload;
+
+        /** This kinda sucks. A lot is because of pleasing TS.
+         * Eligible for a refactor.
+         */
+        if (currentStep.kind === "_if" && type === "_then" && value) {
+            let sequence_id = parseInt(value.toString());
             currentStep.args._then = {
                 kind: "execute",
-                args: { sub_sequence_id }
+                args: { sequence_id }
             };
-            // TODO Come back and add `_else` feature.
-            currentStep.args._else = { kind: "nothing", args: {} };
-            return state;
+        } else if (currentStep.kind === "_if" && type === "_else" && value) {
+            let sequence_id = parseInt(value.toString());
+            currentStep.args._else = {
+                kind: "execute",
+                args: { sequence_id }
+            };
+        } else if (currentStep.kind === "_if" && type === "_then") {
+            currentStep.args._then = {
+                kind: "nothing",
+                args: {}
+            };
+        } else if (currentStep.kind === "_if" && type === "_else") {
+            currentStep.args._else = {
+                kind: "nothing",
+                args: {}
+            };
         } else {
-            console.warn(`Unexpectedly got a '${currentStep.kind}' step.`);
-            return state;
+            throw new Error("Error updating sub sequences.");
         }
+        return s;
     })
-    .add<{ index: number }>("REMOVE_STEP", function (state, action) {
-        let seq = state.all[state.current];
-        let index = action.payload.index;
-        seq.body = _.without((seq.body || []), (seq.body || [])[index]);
-        markDirty(state);
-        return state;
+    .add<{ index: number }>("REMOVE_STEP", function (s, a) {
+        let body = s.all[s.current].body || [];
+        let index = a.payload.index;
+        body.splice(index, 1);
+        markDirty(s);
+        return s;
     })
-    .add<Sequence>("SAVE_SEQUENCE_OK", function (state, action) {
-        state.all[state.current] = action.payload;
-        return state;
+    .add<Sequence>("SAVE_SEQUENCE_OK", function (s, a) {
+        s.all[s.current] = a.payload;
+        return s;
     })
-    .add<Sync>("FETCH_SYNC_OK", function (state, action) {
-        state.all = action.payload.sequences || [];
-        return state;
+    .add<Sync>("FETCH_SYNC_OK", function (s, a) {
+        s.all = a.payload.sequences || [];
+        return s;
     })
-    .add<number>("SELECT_SEQUENCE", function (state, action) {
-        let inx = action.payload;
-        if (state.all[inx]) { state.current = inx; }
-        return state;
+    .add<number>("SELECT_SEQUENCE", function (s, a) {
+        let inx = a.payload;
+        if (s.all[inx]) { s.current = inx; }
+        return s;
     })
-    .add<Sequence>("DELETE_SEQUENCE_OK", function (state, action) {
-        let found = _.find(state.all, { name: action.payload.name });
+    .add<Sequence>("DELETE_SEQUENCE_OK", function (s, a) {
+        let found = _.find(s.all, { name: a.payload.name });
         if (found) {
-            _.pull(state.all, found);
-            state.current = 0;
+            _.pull(s.all, found);
+            s.current = 0;
         } else {
             throw new Error("Tried to delete a sequence that doesn't exist. ");
         }
-        return state;
+        return s;
     })
-    .add<Sequence>("COPY_SEQUENCE", function (state, action) {
-        let seq = action.payload;
+    .add<Sequence>("COPY_SEQUENCE", function (s, a) {
+        let seq = a.payload;
         // Unset the ID to avoid accidentally overwriting parent.
         seq.id = undefined;
         seq.dirty = true;
@@ -199,16 +228,16 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
         let baseName = seq.name.replace(/ \(copy \d*\)/, "");
         // TODO: This function has string typing, regexes and inband signalling.
         // I like to avoid all of those. Possible refactor target?
-        let copies = _.select(state.all, function (item) {
+        let copies = _.select(s.all, function (item) {
             return (item.name.indexOf(baseName) !== -1);
         }).length;
         // Give it a name with the (copy X) stripped out
         seq.name = baseName;
         // Add the (copy X) back
         seq.name += ` (copy ${copies})`;
-        state.current = state.all.length;
-        state.all.push(seq);
-        return state;
+        s.current = s.all.length;
+        s.all.push(seq);
+        return s;
     })
     .add<MoveStepPayl>("MOVE_STEP", function (s, a) {
         let { from, to } = a.payload;

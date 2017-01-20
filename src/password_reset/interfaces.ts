@@ -1,8 +1,8 @@
-export interface PasswordResetState {
+export interface State {
     password?: string;
     passwordConfirmation?: string;
     serverURL?: string;
     serverPort?: string;
 }
 
-export interface PasswordResetProps { };
+export interface Props { };

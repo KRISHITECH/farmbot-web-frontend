@@ -65,13 +65,20 @@ export let toolsReducer = generateReducer<ToolsState>(initialState)
         return s;
     })
     .add<ToolSlot[]>("SAVE_TOOL_SLOTS_OK", function (s, a) {
-        // CHRIS I MADE CHANGES HERE. Please review.
-        //  - Rick 12/30/16
         a.payload.map(function (ts) {
             let index = _.findIndex(s.tool_slots, { id: ts.id });
             s.tool_slots.splice(index, 1, ts);
         });
         s.editorMode = false;
+        // TODO: Find a more elegant solution to this problem: nested resource?
+        // Deactivate all.
+        s.tools.all.map(t => t.status = "inactive");
+        // Activate the ones that have a tool_slot.
+        let activeTools = s.tool_slots.map(x => x.tool_id);
+        s.tools
+            .all
+            .filter(x => activeTools.includes(x.id))
+            .map(x => x.status = "active");
         return s;
     })
     .add<{ id: number }>("DESTROY_TOOL_SLOT_OK", function (s, a) {
@@ -82,8 +89,6 @@ export let toolsReducer = generateReducer<ToolsState>(initialState)
     })
     .add<UpdateToolSlotPayl>("UPDATE_TOOL_SLOT", function (s, a) {
         let { name, value } = a.payload;
-        // CHRIS I MADE CHANGES HERE PLEASE REVIEW.
-        // - Rick 12/30/16
         let slot = _.find(s.tool_slots, { id: a.payload.id });
         let bay = _.findWhere(s.tool_bays, { id: slot.tool_bay_id });
         bay.dirty = true;
@@ -104,8 +109,7 @@ export let toolsReducer = generateReducer<ToolsState>(initialState)
         return s;
     })
     .add<Tool>("ADD_TOOL_OK", function (s, a) {
-        let { name, id } = a.payload;
-        s.tools.all.push({ name, id });
+        s.tools.all.push(a.payload);
         return s;
     })
     .add<Tool[]>("SAVE_TOOLS_OK", function (s, a) {

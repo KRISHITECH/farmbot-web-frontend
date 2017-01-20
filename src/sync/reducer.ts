@@ -20,16 +20,17 @@ const initialState: Sync = {
     tool_slots: [],
     tools: [],
     plants: [],
-    logs: []
+    logs: [],
+    images: []
 };
 
 export let syncReducer = generateReducer<Sync>(initialState)
-    .add<Log>("BOT_LOG", function(state, { payload }) {
+    .add<Log>("BOT_LOG", function (state, { payload }) {
         state.logs.unshift(payload);
         state.logs = _.take(_.uniq(state.logs, JSON.stringify), 50);
         return state;
     })
-    .add<Sync>("FETCH_SYNC_OK", function(s, a) {
+    .add<Sync>("FETCH_SYNC_OK", function (s, a) {
         s = a.payload;
         return s;
     });

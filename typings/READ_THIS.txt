@@ -1,5 +1,4 @@
-I hope that we can someday not use this folder and use all the @types/*
-repositories.
+I hope that we can someday not use this folder and use all the @types/* repositories.
 
 Some (legacy) libraries don't work with the newer typings (eg: Karma).
 

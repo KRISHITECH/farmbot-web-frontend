@@ -1,11 +1,12 @@
 import * as React from "react";
 import { copy, remove, StepParams } from "./step_tiles/index";
-import { CeleryNode as Step } from "./corpus";
+import { CeleryNode as Step, Execute } from "farmbot";
 import { Sequence } from "./interfaces";
 import { changeStep } from "./actions";
 import { t } from "i18next";
 import * as _ from "lodash";
 import { Select } from "../ui";
+import { Option } from "react-select";
 
 /** Removes un-executable sequences, such as "self" or unsaved ones */
 function filterSequenceList(sequences: Sequence[], sequence: Sequence) {
@@ -48,26 +49,19 @@ function SequenceSelectBox({dispatch,
     });
 
     // TODO: Take care of this any
-    function change(e: any) {
+    function change(e: Option) {
         let val = e.value;
-        let sub_sequence_id = parseInt(val.toString(), 10);
-        let update = { args: { sub_sequence_id } };
-        let newStep = Object.assign({}, step, update);
-
-        dispatch(changeStep(index, newStep));
+        if (val) {
+            let sequence_id = parseInt(val.toString(), 10);
+            let update = { args: { sequence_id } };
+            let newStep = Object.assign({}, step, update);
+            dispatch(changeStep(index, newStep));
+        } else {
+            throw new Error("Tried to set a non-existant sequence_id");
+        }
     };
 
-    let ssid: number;
-
-    if (step.kind === "execute") {
-        ssid = step.args.sub_sequence_id;
-    }
-    if (step.kind === "_if" && step.args._then.kind === "execute") {
-        ssid = step.args._then.args.sub_sequence_id;
-    } else {
-        // TODO: CHRIS- this is a stub. Let's talk about it.
-        ssid = -999;
-    };
+    let ssid = (step as Execute).args.sequence_id;
 
     let subSeq = _.find(eligibleSequences, (s) => s.id === ssid) || {
         id: ""

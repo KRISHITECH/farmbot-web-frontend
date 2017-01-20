@@ -23,6 +23,7 @@ export interface ToolBay {
     name: string;
     isEditing?: boolean;
     dirty?: boolean;
+    created_at?: string | undefined;
 }
 
 export interface ToolBayFormState {
@@ -58,6 +59,7 @@ export interface Tool {
     id: number;
     name: string;
     dirty?: boolean;
+    status?: undefined | "unknown" | "active" | "inactive";
 }
 
 /** Actions */

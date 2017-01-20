@@ -38,8 +38,7 @@ export function deleteUser(payload: DeletionRequest): Thunk {
             })
                 .then(resp => {
                     alert("We're sorry to see you go. :(");
-                    Session.clear();
-                    window.location.href = "/";
+                    Session.clear(true);
                 })
                 .catch((e: AxiosErrorResponse) => {
                     error(prettyPrintApiErrors(e));

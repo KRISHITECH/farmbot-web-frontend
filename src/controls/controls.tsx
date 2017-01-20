@@ -1,30 +1,20 @@
 import * as React from "react";
 import { DirectionButton } from "./direction_button";
 import {
-    homeAll,
-    changeStepSize,
-    commitAxisChanges,
-    changeAxisBuffer
+    homeAll, changeStepSize, commitAxisChanges, changeAxisBuffer
 } from "../devices/actions";
-import { BotState } from "../devices/interfaces";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
+import { AxisInputBoxProps, ControlsState } from "./interfaces";
 import { WebcamSaveBtn } from "./webcam_save_btn";
 import { t } from "i18next";
 import { Peripherals } from "./peripherals";
 import { EStopButton } from "../devices/components/e_stop_btn";
 import * as _ from "lodash";
 import { API } from "../api";
-
-interface AxisInputBoxProps {
-    bot: BotState;
-    axis: string;
-    label: string;
-    dispatch: Function;
-};
+import { TemporaryImageList } from "../images/temporary_image_list";
 
 export class AxisInputBox extends React.Component<AxisInputBoxProps, {}> {
-
     primary(): string {
         return this.props.bot.axisBuffer[this.props.axis] || "";
     }
@@ -117,10 +107,6 @@ const updateWebcamUrl = (dispatch: Function) => (
         payload: event.currentTarget.value
     });
 };
-
-interface ControlsState {
-    isEditingCameraURL: boolean;
-}
 
 @connect((state: Everything) => state)
 export class Controls extends React.Component<Everything, ControlsState> {
@@ -333,6 +319,7 @@ export class Controls extends React.Component<Everything, ControlsState> {
                                             {showUrl(url, dirty)}
                                         </div>
                                     </div>
+                                    <TemporaryImageList images={this.props.sync.images} />
                                 </div>
                             </div>
                         </div>

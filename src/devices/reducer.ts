@@ -11,9 +11,10 @@ import * as i18next from "i18next";
 import { ChangeSettingsBuffer } from "./interfaces";
 import { Sequence } from "../sequences/interfaces";
 import { Regimen } from "../regimens/interfaces";
-import { Configuration } from "farmbot/dist/interfaces";
+import { Configuration } from "farmbot";
 import { Sync } from "../interfaces";
 
+// TODO: Do we even need this anymore after the ticker overhaul?
 let status = {
     NOT_READY: (): string => { return i18next.t("never connected to device"); },
     CONNECTING: (): string => { return i18next.t("initiating connection"); },
@@ -37,8 +38,6 @@ let status = {
 
 let initialState: BotState = {
     account: { id: 0, name: "" },
-    logQueueSize: 20,
-    logQueue: [],
     status: status.NOT_READY(),
     stepSize: 1000,
     hardware: {
@@ -49,8 +48,6 @@ let initialState: BotState = {
         informational_settings: {},
         farm_scheduler: {
             process_info: [],
-            sequence_log: [],
-            current_sequence: null,
         }
     },
     axisBuffer: {},
@@ -72,10 +69,6 @@ export let botReducer = generateReducer<BotState>(initialState)
             }, {
                 status: status.READY()
             });
-    })
-    .add<{}>("CLEAR_BOT_LOG", function (s, a) {
-        s.logQueue = [];
-        return s;
     })
     .add<{}>("COMMIT_SETTINGS_OK", function (s, a) {
         let nextState = Object.assign({}, s, {

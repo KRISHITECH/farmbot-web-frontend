@@ -1,13 +1,17 @@
 import * as React from "react";
 import { t } from "i18next";
-import { BlurableInput, Widget, WidgetHeader, WidgetBody } from "../../ui";
+import {
+    BlurableInput, Widget, WidgetHeader, WidgetBody, Col, Row
+} from "../../ui";
 import { DeleteAccountPropTypes } from "../interfaces";
 
 export class DeleteAccount extends React.Component<DeleteAccountPropTypes, {}> {
     render() {
         let { set, deletion_confirmation } = this.props;
         return <Widget>
-            <WidgetHeader title="Delete Account" />
+            <WidgetHeader
+                title="Delete Account"
+                helpText="Enter your password to delete your account." />
             <WidgetBody>
                 <div>
                     WARNING! Deleting your account will permanently delete
@@ -27,20 +31,28 @@ export class DeleteAccount extends React.Component<DeleteAccountPropTypes, {}> {
                         <br /><br />
                 </div>
                 <form>
-                    <label className="md-5">
-                        {t("Enter Password")}
-                    </label>
-                    <BlurableInput
-                        onCommit={set}
-                        name="deletion_confirmation"
-                        allowEmpty={true}
-                        value={deletion_confirmation || ""}
-                        type="password" />
-                    <button onClick={this.props.save}
-                        className="red button-like"
-                        type="button">
-                        {t("DELETE ACCOUNT")}
-                    </button>
+                    <Row>
+                        <Col md={12} sm={12} xs={12}>
+                            <label>
+                                {t("Enter Password")}
+                            </label>
+                        </Col>
+                        <Col md={8} sm={8} xs={8}>
+                            <BlurableInput
+                                onCommit={set}
+                                name="deletion_confirmation"
+                                allowEmpty={true}
+                                value={deletion_confirmation || ""}
+                                type="password" />
+                        </Col>
+                        <Col xs={4}>
+                            <button onClick={this.props.save}
+                                className="red button-like"
+                                type="button">
+                                {t("DELETE ACCOUNT")}
+                            </button>
+                        </Col>
+                    </Row>
                 </form>
             </WidgetBody>
         </Widget>;

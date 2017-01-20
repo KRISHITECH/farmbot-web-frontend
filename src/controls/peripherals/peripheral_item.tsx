@@ -4,7 +4,7 @@ import { updatePeripheral, destroyPeripheral } from "./actions";
 import { t } from "i18next";
 import { ToggleButton } from "../toggle_button";
 import { pinToggle } from "../../devices/actions";
-import { Pin } from "farmbot/dist/interfaces";
+import { Pin } from "farmbot";
 import { BlurableInput } from "../../ui";
 
 interface PeripheralItemProps {

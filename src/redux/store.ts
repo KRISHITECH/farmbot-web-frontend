@@ -10,8 +10,6 @@ function dev() {
     store = createStore(rootReducer,
         maybeFetchOldState(),
         getMiddleware("development"));
-    // Make store global in dev env in case I need to probe it.
-    (window as any)["store"] = store;
     return store;
 }
 
@@ -21,6 +19,8 @@ function prod() {
 
 export function configureStore(options = {}) {
     let store: Store = (ENV === "production" ? prod() : dev());
+    // Make store global in in case I need to probe it.
+    (window as any)["store"] = store;
     registerSubscribers(store);
     return store;
 }

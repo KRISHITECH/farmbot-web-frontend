@@ -8,9 +8,9 @@ function generateUrl(langCode: string) {
 };
 
 function getUserLang(langCode = "en_us") {
-    return axios.get(generateUrl(langCode))
-        .then((resp: any) => { return langCode.slice(0, 2); })
-        .catch((error: any) => { return "en"; });
+    return axios.get<Map<string, string>>(generateUrl(langCode))
+        .then((resp) => { return langCode.slice(0, 2); })
+        .catch((error) => { return "en"; });
 };
 
 export function detectLanguage() {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Pin, Pins } from "farmbot/dist/interfaces";
+import { Pin, Pins } from "farmbot";
 import { Everything } from "../../interfaces";
 import { TitleBar } from "./title_bar";
 import { PeripheralItem } from "./peripheral_item";

@@ -17,13 +17,13 @@ const CHOICES: InputChoiceDict = {
     z: InputDefault,
     stub: InputDefault,
     variable: InputDefault,
-    data_label: InputDefault,
+    label: InputDefault,
     milliseconds: InputDefault,
     message: InputDefault,
     lhs: InputDefault,
     op: InputDefault,
     rhs: InputDefault,
-    sub_sequence_id: InputDefault
+    sequence_id: InputDefault
 };
 
 export function StepInputBox({step,

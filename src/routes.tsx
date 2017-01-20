@@ -4,30 +4,26 @@ import {
     Provider
 } from "react-redux";
 import {
-    Redirect,
-    IndexRoute,
-    Route,
     Router,
     RedirectFunction,
     RouterState
 } from "react-router";
 import App from "./app";
-import { FourOhFour } from "./404";
-import { Controls } from "./controls/controls";
-import { Devices } from "./devices/devices";
-import { Sequences } from "./sequences/sequences";
-import { Regimens } from "./regimens/index";
-import { FarmDesigner } from "./farm_designer/farm_designer";
-import { Account } from "./account";
-import { Tools } from "./tools";
 import { store } from "./redux/store";
 import { history } from "./history";
 import { Store } from "./redux/interfaces";
 import { ready } from "./config/actions";
 import { Session } from "./session";
+import { isMobile } from "./util";
 
 interface RootComponentProps {
     store: Store;
+}
+
+declare const System: any;
+
+function errorLoading(err: any) {
+    console.error("Dynamic page loading failed", err);
 }
 
 export class RootComponent extends React.Component<RootComponentProps, {}> {
@@ -41,52 +37,156 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
                 store.dispatch(ready());
             };
         } else { // Not logged in yet.
-            location.href = "/";
+            Session.clear(true);
         }
     };
 
-    // Thanks @noahMiller and @jpierson (Github) for this wonderful fix!
-    // Reference:
-    //  https://github.com/reactjs/react-router/issues/2704#issuecomment-174067923.
+    replaceIfDesktop(nextState: RouterState, replaceState: RedirectFunction) {
+        if (nextState.location.pathname === "/app/designer" && !isMobile()) {
+            replaceState(`${nextState.location.pathname}/plants`);
+        }
+    };
 
     /*
       /app                => App
-      /app/designer?p1&p2 => FarmDesigner
+      /app/account        => Account
       /app/controls       => Controls
-      /app/devices        => Devices
-      /app/sequences      => Sequences
+      /app/device         => Devices
+      /app/designer?p1&p2 => FarmDesigner
       /app/regimens       => Regimens
+      /app/sequences      => Sequences
       /app/tools          => Tools
+      /app/404            => 404
     */
 
-    routes = <Route path="app" component={App}>
-        <Route path="designer(?:p1&?:id)"
-            component={FarmDesigner}
-            onEnter={this.requireAuth.bind(this)} />
-        <Route path="controls"
-            component={Controls}
-            onEnter={this.requireAuth.bind(this)} />
-        <Route path="devices"
-            component={Devices}
-            onEnter={this.requireAuth.bind(this)} />
-        <Route path="sequences"
-            component={Sequences}
-            onEnter={this.requireAuth.bind(this)} />
-        <Route path="regimens"
-            component={Regimens}
-            onEnter={this.requireAuth.bind(this)} />
-        <Route path="account"
-            component={Account}
-            onEnter={this.requireAuth.bind(this)} />
-        <Route path="tools"
-            component={Tools}
-            onEnter={this.requireAuth.bind(this)} />
-        <Route path="404"
-            component={FourOhFour} />
-        <IndexRoute
-            component={Controls} />
-        <Redirect path="*" to="404" />
-    </Route>;
+    routes = {
+        component: App,
+        indexRoute: {
+            path: "app/controls",
+            getComponent(location: any, cb: any) {
+                System.import("./controls/controls.tsx").then(
+                    (module: any) => cb(null, module.Controls)
+                ).catch(errorLoading);
+            }
+        },
+        childRoutes: [
+            {
+                path: "app/account",
+                getComponent(location: any, cb: any) {
+                    System.import("./account/index.tsx").then(
+                        (module: any) => cb(null, module.Account)
+                    ).catch(errorLoading);
+                }
+            },
+            {
+                path: "app/controls",
+                getComponent(location: any, cb: any) {
+                    System.import("./controls/controls.tsx").then(
+                        (module: any) => cb(null, module.Controls)
+                    ).catch(errorLoading);
+                }
+            },
+            {
+                path: "app/device",
+                getComponent(location: any, cb: any) {
+                    System.import("./devices/devices.tsx").then(
+                        (module: any) => cb(null, module.Devices)
+                    ).catch(errorLoading);
+                }
+            },
+            {
+                path: "app/designer",
+                onEnter: this.replaceIfDesktop.bind(this),
+                getComponent(location: any, cb: any) {
+                    System.import("./farm_designer/index.tsx").then(
+                        (module: any) => cb(null, module.FarmDesigner)
+                    ).catch(errorLoading);
+                },
+                childRoutes: [
+                    {
+                        path: "plants",
+                        getComponent(location: any, cb: any) {
+                            System.import("./farm_designer/plants/plant_inventory.tsx").then(
+                                (module: any) => cb(null, module.Plants)
+                            ).catch(errorLoading);
+                        },
+                    },
+                    {
+                        path: "plants/add",
+                        getComponent(location: any, cb: any) {
+                            System.import("./farm_designer/plants/species_catalog.tsx").then(
+                                (module: any) => cb(null, module.SpeciesCatalog)
+                            ).catch(errorLoading);
+                        },
+                    },
+                    {
+                        path: "plants/:plant",
+                        getComponent(location: any, cb: any) {
+                            System.import("./farm_designer/plants/plant_info.tsx").then(
+                                (module: any) => cb(null, module.PlantInfo)
+                            ).catch(errorLoading);
+                        },
+                    },
+                    {
+                        path: "plants/:plant/edit",
+                        getComponent(location: any, cb: any) {
+                            System.import("./farm_designer/plants/edit_plant_info.tsx").then(
+                                (module: any) => cb(null, module.EditPlantInfo)
+                            ).catch(errorLoading);
+                        },
+                    },
+                    {
+                        path: "farm_events",
+                        getComponent(location: any, cb: any) {
+                            System.import("./farm_designer/farm_events/farm_events.tsx").then(
+                                (module: any) => cb(null, module.FarmEvents)
+                            ).catch(errorLoading);
+                        }
+                    },
+                    {
+                        path: "farm_events/add",
+                        getComponent(location: any, cb: any) {
+                            System.import("./farm_designer/farm_events/add_farm_event.tsx").then(
+                                (module: any) => cb(null, module.AddFarmEvent)
+                            ).catch(errorLoading);
+                        }
+                    },
+                ]
+            },
+            {
+                path: "app/regimens",
+                getComponent(location: any, cb: any) {
+                    System.import("./regimens/index.tsx").then(
+                        (module: any) => cb(null, module.Regimens)
+                    ).catch(errorLoading);
+                }
+            },
+            {
+                path: "app/sequences",
+                getComponent(location: any, cb: any) {
+                    System.import("./sequences/sequences.tsx").then(
+                        (module: any) => cb(null, module.Sequences)
+                    ).catch(errorLoading);
+                }
+            },
+            {
+                path: "app/tools",
+                getComponent(location: any, cb: any) {
+                    System.import("./tools/index.tsx").then(
+                        (module: any) => cb(null, module.Tools)
+                    ).catch(errorLoading);
+                }
+            },
+            {
+                path: "app/404",
+                getComponent(location: any, cb: any) {
+                    System.import("./404").then(
+                        (module: any) => cb(null, module.FourOhFour)
+                    ).catch(errorLoading);
+                }
+            }
+        ]
+    };
 
     render() {
         return <Provider store={store}>

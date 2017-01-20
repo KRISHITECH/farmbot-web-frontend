@@ -1,12 +1,6 @@
 import * as React from "react";
-import { Everything } from "../interfaces";
 import { moveRelative } from "../devices/actions";
-
-interface DirectionButtonProps extends Everything {
-  axis: "x"|"y"|"z";
-  direction: "up"|"down"|"left"|"right";
-  steps: number;
-}
+import { DirectionButtonProps } from "./interfaces";
 
 export class DirectionButton extends React.Component<DirectionButtonProps, {}> {
   sendCommand() {
@@ -20,12 +14,9 @@ export class DirectionButton extends React.Component<DirectionButtonProps, {}> {
   }
 
   render() {
-    let classes =
-      "button-like fa fa-2x arrow-button radius fa-arrow-" +
-      this.props.direction;
-    return <button onClick={this.sendCommand.bind(this)}
-                   className={classes}>
-             <i/>
+    let classes = `button-like fa fa-2x arrow-button radius 
+    fa-arrow-${this.props.direction}`;
+    return <button onClick={this.sendCommand.bind(this)} className={classes}>
            </button>;
   }
 }

@@ -42,9 +42,6 @@ export function fakeState(dispatcher?: Function): Everything {
             id: 1,
             name: "wow"
         },
-        /** Maximum number of messages to cache. Excess is truncated. */
-        logQueueSize: 0,
-        logQueue: [],
         status: "???",
         dirty: false,
         /** How many steps to move when the user presses a manual movement arrow */
@@ -57,15 +54,15 @@ export function fakeState(dispatcher?: Function): Everything {
         },
         /** Holds settings that the user is currently editing, but has not sent */
         settingsBuffer: {
-            movement_max_spd_x: "",
-            movement_max_spd_y: "",
-            movement_max_spd_z: "",
-            movement_steps_acc_dec_x: "",
-            movement_steps_acc_dec_y: "",
-            movement_steps_acc_dec_z: "",
-            movement_timeout_x: "",
-            movement_timeout_y: "",
-            movement_timeout_z: "",
+            movement_max_spd_x: "0",
+            movement_max_spd_y: "0",
+            movement_max_spd_z: "0",
+            movement_steps_acc_dec_x: "0",
+            movement_steps_acc_dec_y: "0",
+            movement_steps_acc_dec_z: "0",
+            movement_timeout_x: "0",
+            movement_timeout_y: "0",
+            movement_timeout_z: "0",
         },
         configBuffer: {
             os_auto_update: false,
@@ -78,9 +75,7 @@ export function fakeState(dispatcher?: Function): Everything {
             location: [-1, -1, -1],
             pins: {},
             farm_scheduler: {
-                current_sequence: null,
-                process_info: [],
-                sequence_log: []
+                process_info: []
             }
         },
     };
@@ -97,7 +92,7 @@ export function fakeState(dispatcher?: Function): Everything {
             weeks: []
         }
     };
-    let dispatch = dispatcher || function (p: any) { };
+    let dispatch = dispatcher || function () { };
     let config: ConfigState = {
         host: "localhost",
         port: "5555"
@@ -126,7 +121,8 @@ export function fakeState(dispatcher?: Function): Everything {
         tool_slots: [],
         tools: [],
         plants: [],
-        logs: []
+        logs: [],
+        images: []
     };
 
     let draggable = { dataTransfer: {} };
@@ -159,6 +155,8 @@ export function fakeState(dispatcher?: Function): Everything {
         }
     };
 
+    let images = { all: [] };
+
     return {
         location
         , auth
@@ -173,5 +171,6 @@ export function fakeState(dispatcher?: Function): Everything {
         , peripherals
         , sync
         , tools
+        , images
     };
 }

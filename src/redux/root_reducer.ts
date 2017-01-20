@@ -16,6 +16,8 @@ import {
 } from "../regimens/bulk_scheduler/reducer";
 import { combineReducers } from "redux";
 import { ReduxAction } from "./interfaces";
+import { Session } from "../session";
+
 let reducers = combineReducers({
     auth,
     bot,
@@ -37,9 +39,10 @@ export function rootReducer(
     state: {} | any,
     action: ReduxAction<{}>) {
     if (action.type === "LOGOUT") {
-        localStorage.clear();
-        sessionStorage.clear();
-        location.href = "/";
+        console.log(`
+        If you can read this, remove the TODO comment above this line.
+        `);
+        Session.clear(true);
     }
     return reducers(state, action);
 };

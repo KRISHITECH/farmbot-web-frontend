@@ -65,8 +65,8 @@ let createToast = (message: string, title: string, color: string) => {
         spinnerLoaderEl.classList.add("toast-loader-spinner");
 
         /** Add events */
-        toastEl.addEventListener("click", function (e: any) {
-            e.currentTarget.classList.add("poof");
+        toastEl.addEventListener("click", function (e) {
+            (e.currentTarget as Element).classList.add("poof");
             setTimeout(function () {
                 if (!tc) {
                     throw (Error("toast-container is null."));
@@ -75,17 +75,17 @@ let createToast = (message: string, title: string, color: string) => {
                 }
             }, 200);
         });
-        toastEl.addEventListener("mouseenter", function (e: any) {
-            let children = e.currentTarget.children[2].children;
+        toastEl.addEventListener("mouseenter", function (e) {
+            let children = (e.currentTarget as HTMLElement).children[2].children;
             for (let i = 0; i < children.length; i++) {
-                children[i].style.animationPlayState = "paused";
+                (children[i] as HTMLElement).style.animationPlayState = "paused";
             }
             isHovered = true;
         });
-        toastEl.addEventListener("mouseleave", function (e: any) {
-            let children = e.currentTarget.children[2].children;
+        toastEl.addEventListener("mouseleave", function (e) {
+            let children = (e.currentTarget as HTMLElement).children[2].children;
             for (let i = 0; i < children.length; i++) {
-                children[i].style.animationPlayState = "running";
+                (children[i] as HTMLElement).style.animationPlayState = "running";
             }
             isHovered = false;
         });

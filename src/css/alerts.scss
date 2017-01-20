@@ -1,9 +1,0 @@
-// Styles for ALERTS
-.alert-box {
-    &.alert.round {
-        @extend %extend_4;
-    }
-    &.notice.round {
-        @extend %extend_4;
-    }
-}

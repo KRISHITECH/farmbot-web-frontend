@@ -1,4 +1,4 @@
-import { CeleryNode as Step } from "../sequences/corpus";
+import { CeleryNode as Step } from "farmbot";
 
 /** An entry in the data transfer table. Used to transfer data from a "draggable"
  * to a "dropable". For type safety, this is a "tagged union". See Typescript
@@ -46,4 +46,13 @@ export interface DropAreaProps {
 /* State for <DropArea /> */
 export interface DropAreaState {
     isHovered?: boolean;
+}
+
+export interface StepDraggerProps {
+    dispatch: Function;
+    step: Step;
+    intent: DataXferIntent;
+    ghostCss: string;
+    children?: JSX.Element | undefined;
+    draggerId: number;
 }

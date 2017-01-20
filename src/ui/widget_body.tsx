@@ -2,6 +2,7 @@ import * as React from "react";
 
 interface WidgetBodyProps {
     children?: JSX.Element | undefined;
+    className?: string;
 }
 
 export function WidgetBody(props: WidgetBodyProps) {

@@ -21,7 +21,7 @@ export function TileReadPin({dispatch, step, index}: StepParams) {
                         <i className="fa fa-trash step-control"
                             onClick={() => remove({ dispatch, index })} />
                         <Help text={(`The Read Pin step instructs FarmBot to
-                      read the current value of the specified pin. 
+                      read the current value of the specified pin.
                       A Pin Mode of 0 is for on/off control, while
                       a Pin Mode of 1 is for PWM (pulse width modulation).`)} />
                     </div>
@@ -43,7 +43,7 @@ export function TileReadPin({dispatch, step, index}: StepParams) {
                                 <StepInputBox dispatch={dispatch}
                                     step={step}
                                     index={index}
-                                    field="data_label" />
+                                    field="label" />
                             </div>
                             <div className="col-xs-6 col-md-3">
                                 <label>{t("Pin Mode")}</label>

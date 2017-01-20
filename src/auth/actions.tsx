@@ -16,6 +16,7 @@ import * as _ from "lodash";
 import { API } from "../api";
 import { prettyPrintApiErrors } from "../util";
 import { Session } from "../session";
+import { UnsafeError } from "../interfaces";
 
 export function didLogin(authState: AuthState, dispatch: Function) {
     API.setBaseUrl(authState.token.unencoded.iss);
@@ -59,17 +60,14 @@ export function login(username: string,
     return dispatch => {
         return requestToken(username, password, url).then(
             onLogin(dispatch),
-            (err) => dispatch(loginErr(err))
+            (err) => dispatch(loginErr())
         );
     };
 }
 
-function loginErr(err: any) {
+function loginErr() {
     error(t("Login failed."));
-    return {
-        type: "LOGIN_ERR",
-        payload: err
-    };
+    return { type: "LOGIN_ERR" };
 }
 
 /** Very important. Once called, all outbound HTTP requests will
@@ -77,7 +75,7 @@ function loginErr(err: any) {
  * thereby granting access to the API. */
 export function loginOk(auth: AuthState): ReduxAction<AuthState> {
     // TODO: Create a shareable axios instance and set the `baseURL`
-    // IDEA: 
+    // IDEA:
     // https://medium.com/@srph/axios-configure-the-base-path-daed6ff79eab#.145enq9g6
     // OR THIS: https://github.com/srph/axios-base-url
     // property so we can get rid of all that un-DRY URL concat junk.
@@ -120,7 +118,7 @@ export function register(name: string,
 
 /** Handle user registration errors. */
 export function onRegistrationErr(dispatch: Function) {
-    return (err: any) => {
+    return (err: UnsafeError) => {
         error(prettyPrintApiErrors(err));
         dispatch({
             type: "REGISTRATION_ERROR",
@@ -153,7 +151,7 @@ function requestToken(email: string,
     url: string) {
     let payload = { user: { email: email, password: password } };
     // Set the base URL once here.
-    // It will get set once more when we get the "iss" claim from the JWT. 
+    // It will get set once more when we get the "iss" claim from the JWT.
     API.setBaseUrl(url);
     return Axios.post<AuthState>(API.current.tokensPath, payload);
 }
@@ -165,7 +163,8 @@ export function logout() {
     // To circumvent this, we must check if the user had a token.
     // If there was infact a token, we can safely show the message.
     if (Session.get()) { success("You have been logged out."); }
-    Session.clear();
+    Session.clear(true);
+    // Technically this is unreachable code:
     return {
         type: "LOGOUT",
         payload: {}

@@ -113,4 +113,6 @@ export class API {
     get toolSlotsPath() { return `${this.baseUrl}/api/tool_slots/`; };
     /** /api/tools/ */
     get toolsPath() { return `${this.baseUrl}/api/tools/`; };
+    /** /api/images/ */
+    get imagesPath() { return `${this.baseUrl}/api/images/`; };
 }

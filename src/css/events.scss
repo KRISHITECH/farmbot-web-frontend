@@ -1,55 +1,31 @@
 // Styles for the EVENTS Widget
-.events-title {
-    margin-left: 1.5rem;
-}
-
-.event {
-    padding: 1rem;
-    @extend %extend_1;
-    &.past {
-        color: $light_gray;
-        &:hover {
-            color: $dark_gray;
+.events {
+    .fa-calendar {
+        font-size: 2rem;
+        padding-top: 0.6rem;
+        padding-left: 2.4rem;
+    }
+    .event-list {
+        margin-top: 1rem;
+    }
+    .event-block-list>*+* {
+        border-top: 1px solid $light_gray;
+    }
+    .event-block {
+        background: $white;
+        display: flex;
+        height: 3rem;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .event-date {
+        padding: 0;
+        .month-abbr {
+            font-weight: normal;
+            margin-bottom: 0;
+        }
+        .month-day {
+            font-size: 2rem;
         }
     }
-    &.next {
-        margin-top: -2px;
-        border-top: 4px solid $green;
-    }
-    &:hover {
-        @extend %extend_2;
-    }
-}
-
-.event-time {
-    float: left;
-    width: 3.5rem;
-}
-
-.event-title {
-    margin-left: 4rem;
-}
-
-.event-date {
-    text-transform: uppercase;
-    padding-left: 8px;
-    color: $dark_gray;
-    font-weight: bold;
-    font-size: 1.4rem;
-    line-height: 40px;
-}
-
-.sequence-regimen-selector,
-.add-event-start-date,
-.add-event-start-time,
-.add-event-end-date,
-.add-event-end-time,
-.add-evet-repeat-frequency,
-.add-event-repeat-period {
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.event-parameters {
-    margin-bottom: 20px!important;
 }

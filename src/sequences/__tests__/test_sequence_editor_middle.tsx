@@ -1,6 +1,6 @@
 import * as React from "react";
 import { performSeq } from "../sequence_editor_middle";
-import { Color } from "farmbot/dist/interfaces";
+import { Color } from "farmbot";
 import { devices } from "../../device";
 const blue: Color = "blue";
 const sequence: "sequence" = "sequence";

@@ -16,13 +16,13 @@ export class Tools extends React.Component<Everything, ToolsState> {
                     <ToolBayList
                         all={this.props.tools}
                         dispatch={this.props.dispatch}
-                        />
+                    />
                 )}
                 {editing && (
                     <ToolBayForm
                         all={this.props.tools}
                         dispatch={this.props.dispatch}
-                        />
+                    />
                 )}
             </Col>
             <Col md={4}>
@@ -30,13 +30,13 @@ export class Tools extends React.Component<Everything, ToolsState> {
                     <ToolList
                         all={this.props.tools}
                         dispatch={this.props.dispatch}
-                        />
+                    />
                 )}
                 {isEditingTools && (
                     <ToolForm
                         all={this.props.tools}
                         dispatch={this.props.dispatch}
-                        />
+                    />
                 )}
             </Col>
         </Page>;

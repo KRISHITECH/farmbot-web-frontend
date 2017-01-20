@@ -11,7 +11,8 @@ import "./npm_addons";
 let r = (process.env.REVISION as string) || "REVISION INFO NOT AVAILABLE";
 console.log(r);
 
-/** For external device debugging purposes */
+/** For external device debugging purposes
+ * See https://github.com/FarmBot/farmbot-web-frontend for details. */
 if (process.env.CONFIG
     && process.env.CONFIG.ip_address
     && process.env.NODE_ENV !== "production") {

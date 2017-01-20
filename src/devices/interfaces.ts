@@ -1,9 +1,9 @@
 import {
   BotStateTree,
   Configuration,
-  configKey
-} from "farmbot/dist/interfaces";
-import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES } from "../sequences/corpus";
+  McuParams
+} from "farmbot";
+import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES } from "farmbot";
 /** How the device is stored in the API side.
  * This is what comes back from the API as JSON.
  */
@@ -53,8 +53,6 @@ export interface DeviceAccountSettingsUpdate {
 export interface BotState {
   account: DeviceAccountSettings;
   /** Maximum number of messages to cache. Excess is truncated. */
-  logQueueSize: number;
-  logQueue: RpcBotLog[];
   status: string;
   /** How many steps to move when the user presses a manual movement arrow */
   stepSize: number;
@@ -101,7 +99,30 @@ export interface GithubRelease {
   tag_name: string;
 }
 
+type configKey = keyof McuParams;
 export interface ChangeSettingsBuffer {
   key: configKey;
   val: number;
+}
+
+export interface MoveRelProps {
+  x: number;
+  y: number;
+  z: number;
+  speed: number;
+}
+
+export interface DetectorState {
+  isEditing?: boolean;
+  HUELow?: number;
+  HUEHigh?: number;
+  saturationLow?: number;
+  saturationHigh?: number;
+  valueLow?: number;
+  valueHigh?: number;
+  blur?: number;
+  morph?: number;
+  iterations?: number;
+  time?: string;
+  location?: string;
 }
