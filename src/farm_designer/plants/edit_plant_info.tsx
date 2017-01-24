@@ -1,52 +1,66 @@
 import * as React from "react";
 import { BackArrow } from "../back_arrow";
-import { getParam } from "../../util";
-import { destroyPlant } from "../actions";
-import { Plant as NewPlant } from "../plant";
-import { Plant } from "../interfaces";
 import { Everything } from "../../interfaces";
+import { connect } from "react-redux";
+import * as moment from "moment";
+import { destroyPlant } from "../actions";
 
-export class EditPlantInfo extends React.Component<Everything, {}> {
-    // removePlant() {
-    //     if (this.props.auth) {
-    //         let url = this.props.auth.token.unencoded.iss;
-    //         this.props.dispatch(destroyPlant(this.plant, url));
-    //     } else {
-    //         throw new Error("Log in first.");
-    //     }
-    // }
+interface EditPlantInfoProps extends Everything {
+    router: {
+        push: Function;
+    };
+    params: {
+        plant_id: string;
+    };
+}
+
+@connect((state: Everything) => state)
+export class EditPlantInfo extends React.Component<EditPlantInfoProps, {}> {
+    destroy() {
+        let plant_id = parseInt(this.props.params.plant_id);
+        this.props.dispatch(destroyPlant(plant_id));
+        this.props.router.push("/app/designer/plants");
+    }
+
     render() {
+        let plant_id = parseInt(this.props.params.plant_id);
+        let plants = this.props.designer.plants;
+        let currentPlant = _.findWhere(plants, { id: plant_id });
+
+        let { name, x, y, planted_at } = currentPlant;
+
+        let dayPlanted = moment();
+        // Same day = 1 !0
+        let daysOld = dayPlanted.diff(moment(planted_at), "days") + 1;
+        let plantedAt = moment(planted_at).format("MMMM Do YYYY, h:mma");
+
         return <div className="panel-container green-panel">
             <div className="panel-header green-panel">
                 <p className="panel-title">
-                    <BackArrow /> Edit Plant
+                    <BackArrow />
+                    <span className="title">Edit {name}</span>
                 </p>
             </div>
             <div className="panel-content">
                 <label>Plant Info</label>
                 <ul>
-                    <li>Started: April 17, 2016</li>
-                    <li>Age: 62 days</li>
-                    <li>Location: 580, 3,000, -12,303</li>
-                    <li>Est. height: 28 inches</li>
-                    <li>Est. diameter: 44 inches</li>
+                    <li>Started: {plantedAt}</li>
+                    <li>Age: {daysOld}</li>
+                    <li>Location: ({x}, {y})</li>
                 </ul>
                 <label>Regimens</label>
-                <span className="edit-link"><a href="#">Edit</a></span>
                 <ul>
-                    <li>Blueberries by OpenFarm</li>
                     <li>Soil Acidifier</li>
                 </ul>
                 <label>Delete This Plant</label>
                 <div>
                     <button className="red button-like left"
-                    //onClick={this.removePlant.bind(this)}
-                    >
+                        onClick={this.destroy.bind(this)}>
                         Delete
                     </button>
                 </div>
             </div>
-        </div>;
+        </div >;
 
     }
 }

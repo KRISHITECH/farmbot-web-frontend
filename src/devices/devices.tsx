@@ -119,11 +119,14 @@ export class ConfigInputBox extends React.Component<any, {}> {
     }
 
     render() {
+
         return (
-            <input type="text"
-                style={this.style()}
-                onChange={this.change(this.props.setting, this.props.dispatch)}
-                value={this.primary() || this.secondary() || "---"} />);
+            <td>
+                <input type="text"
+                    style={this.style()}
+                    onChange={this.change(this.props.setting, this.props.dispatch)}
+                    value={this.primary() || this.secondary() || "---"} />
+            </td>);
     }
 }
 
@@ -371,10 +374,6 @@ Factory resetting your FarmBot will destroy all data on the device, revoking you
                                         </div>
                                         <div className="row">
                                             <div className="col-sm-12">
-                                                {/* Steps per mm needs to be three boxes. disable for now --connor
-                                                <label>{t("STEPS PER MM")}</label>
-                                                <ConfigInputBox setting="steps_per_mm" {...this.props} />
-                                                */}
                                                 <table className="plain">
                                                     <thead>
                                                         <tr>
@@ -391,6 +390,14 @@ Factory resetting your FarmBot will destroy all data on the device, revoking you
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <label>{t("Steps per MM")}</label>
+                                                            </td>
+                                                            <ConfigInputBox setting="steps_per_mm_x" {...this.props} />
+                                                            <ConfigInputBox setting="steps_per_mm_y" {...this.props} />
+                                                            <ConfigInputBox setting="steps_per_mm_z" {...this.props} />
+                                                        </tr>
                                                         <tr>
                                                             <td>
                                                                 <label>{t("MAX SPEED (mm/s)")}</label>

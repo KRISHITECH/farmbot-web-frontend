@@ -49,77 +49,75 @@ export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
         let { dispatch } = this.props;
         let { tools } = this.props.all;
         let stopEdit = () => { dispatch(stopEditingTools()); };
-        return <Col>
-            <Widget>
-                <WidgetHeader
-                    helpText={t(`This is a list of all your FarmBot Tools.
+        return <Widget>
+            <WidgetHeader
+                helpText={t(`This is a list of all your FarmBot Tools.
                       Click the Edit button to add, edit, or delete tools.`)}
-                    title="TOOLS">
-                    <button
-                        className="green button-like"
-                        onClick={() => { save(); } }>
-                        {t("SAVE")}
-                        {tools.dirty && ("*")}
-                    </button>
-                    <button
-                        className="gray button-like"
-                        onClick={stopEdit}>
-                        {t("BACK")}
-                    </button>
-                </WidgetHeader>
-                <WidgetBody>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>{t("TOOL NAME")}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {tools.all.map((tool, index) => {
-                                index++;
-                                let { name, id } = tool;
-                                return <tr key={index}>
-                                    <td>
-                                        <BlurableInput
-                                            value={name || "Error getting Name"}
-                                            onCommit={updateToolName}
-                                            id={id.toString()}
-                                            name={index.toString()}
-                                            />
-                                    </td>
-                                    <td>
-                                        <button
-                                            className={`button-like 
-                                                red`}
-                                            onClick={() => {
-                                                dispatch(destroyTool(id));
-                                            } }>
-                                            <i className="fa fa-times"></i>
-                                        </button>
-                                    </td>
-                                </tr>;
-                            })}
-                            <tr>
+                title="TOOLS">
+                <button
+                    className="green button-like"
+                    onClick={() => { save(); }}>
+                    {t("SAVE")}
+                    {tools.dirty && ("*")}
+                </button>
+                <button
+                    className="gray button-like"
+                    onClick={stopEdit}>
+                    {t("BACK")}
+                </button>
+            </WidgetHeader>
+            <WidgetBody>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{t("TOOL NAME")}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {tools.all.map((tool, index) => {
+                            index++;
+                            let { name, id } = tool;
+                            return <tr key={index}>
                                 <td>
-                                    <input
-                                        value={this.state.name}
-                                        onChange={set}
-                                        name="name"
-                                        />
+                                    <BlurableInput
+                                        value={name || "Error getting Name"}
+                                        onCommit={updateToolName}
+                                        id={id.toString()}
+                                        name={index.toString()}
+                                    />
                                 </td>
                                 <td>
                                     <button
                                         className={`button-like 
-                                                green`}
-                                        onClick={() => { dispatch(add); } }>
-                                        <i className="fa fa-plus"></i>
+                                                red`}
+                                        onClick={() => {
+                                            dispatch(destroyTool(id));
+                                        }}>
+                                        <i className="fa fa-times"></i>
                                     </button>
                                 </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </WidgetBody>
-            </Widget>
-        </Col>;
+                            </tr>;
+                        })}
+                        <tr>
+                            <td>
+                                <input
+                                    value={this.state.name}
+                                    onChange={set}
+                                    name="name"
+                                />
+                            </td>
+                            <td>
+                                <button
+                                    className={`button-like 
+                                                green`}
+                                    onClick={() => { dispatch(add); }}>
+                                    <i className="fa fa-plus"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </WidgetBody>
+        </Widget>;
     }
 };

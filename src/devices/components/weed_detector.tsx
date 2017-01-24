@@ -10,11 +10,11 @@ import { DetectorState } from "../interfaces";
 let Slider = require("rc-slider");
 require("rc-slider/assets/index.css");
 
-let DELETEMEOPTIONS = [
-    { label: 1, value: 1 },
-    { label: 2, value: 2 },
-    { label: 3, value: 3 },
-];
+// let DELETEMEOPTIONS = [
+//     { label: 1, value: 1 },
+//     { label: 2, value: 2 },
+//     { label: 3, value: 3 },
+// ];
 
 @connect((state: Everything) => state)
 export class WeedDetector extends React.Component<Everything, DetectorState> {
@@ -49,7 +49,7 @@ export class WeedDetector extends React.Component<Everything, DetectorState> {
 
     }
 
-    handleColorChange() {}
+    handleColorChange() { }
 
     toggleEdit() {
         this.setState({ isEditing: !this.state.isEditing });
@@ -147,23 +147,23 @@ export class WeedDetector extends React.Component<Everything, DetectorState> {
 
                                             <div className="col-md-4 col-sm-4">
                                                 <label>BLUR</label>
-                                                <Select
+                                                {/*<Select
                                                     options={DELETEMEOPTIONS}
-                                                    value={this.state.blur} />
+                                                    value={this.state.blur} />*/}
                                             </div>
 
                                             <div className="col-md-4 col-sm-4">
                                                 <label>MORPH</label>
-                                                <Select
+                                                {/*<Select
                                                     options={DELETEMEOPTIONS}
-                                                    value={this.state.morph} />
+                                                    value={this.state.blur} />*/}
                                             </div>
 
                                             <div className="col-md-4 col-sm-4">
                                                 <label>ITERATION</label>
-                                                <Select
+                                                {/*<Select
                                                     options={DELETEMEOPTIONS}
-                                                    value={this.state.iterations} />
+                                                    value={this.state.blur} />*/}
                                             </div>
                                         </div>
                                         <img className="temp-plant" src="/plant.jpg" />

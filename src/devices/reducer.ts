@@ -39,7 +39,7 @@ let status = {
 let initialState: BotState = {
     account: { id: 0, name: "" },
     status: status.NOT_READY(),
-    stepSize: 1000,
+    stepSize: 100,
     hardware: {
         mcu_params: {},
         location: [-1, -1, -1],

@@ -1,51 +1,33 @@
-// Styles for the Farm Designer
-.farm-designer-body {
-    display: flex;
+.farm-designer {
+    height: 86.8vh;
+    overflow-y: hidden;
     position: relative;
-}
-
-.farm-designer,
-.farm-designer-body {
-    height: 100vh;
-    overflow: hidden;
 }
 
 .farm-designer-map {
-    padding-top: 0rem;
+    background-color: #CA8;
+    min-width: 100%;
+    display: inline-block;
+    padding: 2rem 2rem 2rem 31.8rem;
+    height: 100%;
+    overflow: scroll;
+}
+
+.drop-area {
+    // Light grid lines every 10px, heavier grid every 100px
+    background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, 0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 2px, transparent 2px);
+    background-size: 10px 10px, 10px 10px, 100px 100px, 100px 100px;
     overflow-y: scroll;
-    width: 100%;
-}
-
-.farm-designer-left,
-.farm-designer-right {
-    width: 25rem;
-    min-width: 25rem;
-}
-
-.panel-container {
-    height: 100vh;
-    padding-bottom: 5rem;
-    overflow: hidden;
-    position: relative;
-}
-
-.object-list {
-    padding-bottom: 2rem;
-    a {
-        color: $dark_gray;
-        text-decoration: none;
-        &:hover {
-            text-decoration: underline;
-        }
-    }
-    li {
-        margin-bottom: 1rem;
+    height: 100%;
+    width: 100vw;
+    svg {
+        width: 100%;
+        height: 99%;
     }
 }
 
 .crop-drag-info-image {
     width: 100%;
-    padding: 0 auto 0 auto;
     background-color: $translucent;
 }
 
@@ -65,42 +47,171 @@
     width: 100%;
 }
 
-.current-plants {
-    li {
-        &:nth-child(even) {
-            margin-left: -15px;
+.outside-search-results {
+    // Come back to this problem
+    display: none;
+    position: relative;
+    .Select-menu-outer {
+        top: 120%;
+        background: transparent !important;
+        border: none;
+        border-bottom: none;
+        box-shadow: none;
+        overflow: visible;
+        max-height: none;
+        min-height: 300px;
+        &:before,
+        &:after {
+            background: none;
         }
-        a {
-            display: flex;
-            background-color: white;
-            position: relative;
-            label {
-                background-color: #434343;
-                color: #f4f4f4;
-                position: absolute;
-                left: 0;
-                right: 0;
-                padding: 0.2rem;
-                text-align: center;
+        .Select-menu {
+            max-height: none !important;
+            overflow-y: scroll;
+        }
+        .Select-option {
+            background: transparent;
+            color: #000 !important;
+            min-height: 1.6rem;
+            margin-bottom: 0.5rem;
+            .plant-age {
+                margin-top: 0.4rem;
+                display: block;
+                color: #555;
+                font-size: 1rem;
+            }
+            .plant-name {
+                margin-left: 1rem;
+                color: #000;
             }
             img {
-                display: block;
-                margin: 2rem auto 0;
+                width: 2rem;
+                height: 2rem;
+            }
+            &.is-focused {
+                background: rgba(0, 0, 0, 0.1);
+            }
+            &:last-child {
+                border-bottom-left-radius: 0px;
+                border-bottom-right-radius: 0px;
             }
         }
     }
 }
 
-// Keep
-.farm-designer-map {
-    background-color: $brown;
-}
-
-.drop-area {
-    // Light grid lines every 10px, heavier grid every 100px
-    background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, 0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 2px, transparent 2px);
-    background-size: 10px 10px, 10px 10px, 100px 100px, 100px 100px;
-    height: 100vh;
-    overflow-y: scroll;
-    min-width: 100vw;
+.thin-search-wrapper {
+    position: relative;
+    &.show-menu {
+        .Select-menu-outer {
+            display: block !important;
+        }
+    }
+    .fa-search {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+    }
+    .thin-search {
+         ::-webkit-input-placeholder {
+            color: #000;
+        }
+        border-bottom: 1px solid #000;
+        &:before,
+        &:after {
+            content: "";
+            position: absolute;
+            background: #000;
+            width: 1px;
+            height: 10px;
+            bottom: 0;
+        }
+    }
+    input.search {
+        background: transparent;
+        box-shadow: none;
+        padding-left: 3.5rem;
+        font-size: 1.4rem;
+        padding-bottom: 1rem;
+    }
+    .Select {
+        border-bottom: 1px solid #000;
+        &:before,
+        &:after {
+            content: "";
+            position: absolute;
+            background: #000;
+            height: 10px;
+            width: 1px;
+            bottom: 0;
+        }
+        &:before {
+            left: 0;
+        }
+        &:after {
+            right: 0;
+        }
+        .Select-multi-value-wrapper {
+            font-size: 1.4rem;
+            margin-left: 2.5rem;
+            margin-top: 0.2rem;
+            display: block;
+        }
+        .Select-arrow-zone {
+            display: none !important;
+        }
+        .Select-control {
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+        .Select-placeholder {
+            color: #000 !important;
+            font-size: 1.4rem !important;
+            left: 2.5rem !important;
+        }
+        .Select-menu-outer {
+            // display: none !important;
+            top: 120%;
+            background: transparent !important;
+            border: none;
+            border-bottom: none;
+            box-shadow: none;
+            overflow: visible;
+            max-height: none;
+            min-height: 300px;
+            &:before,
+            &:after {
+                background: none;
+            }
+            .Select-menu {
+                max-height: none !important;
+                overflow-y: scroll !important;
+            }
+            .Select-option {
+                background: transparent;
+                color: #000 !important;
+                min-height: 1.6rem;
+                margin-bottom: 0.5rem;
+                .plant-age {
+                    margin-top: 0.4rem;
+                    display: block;
+                    color: #555;
+                    font-size: 1rem;
+                }
+                .plant-name {
+                    margin-left: 1rem;
+                    color: #000;
+                }
+                img {
+                    width: 2rem;
+                    height: 2rem;
+                }
+                &.is-focused {
+                    background: rgba(0, 0, 0, 0.1);
+                }
+                &:last-child {
+                    border-bottom-left-radius: 0px;
+                    border-bottom-right-radius: 0px;
+                }
+            }
+        }
+    }
 }

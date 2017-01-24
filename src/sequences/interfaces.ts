@@ -9,7 +9,8 @@ import {
   Wait,
   SendMessage,
   If,
-  Execute
+  Execute,
+  SequenceBodyItem
 } from "farmbot";
 export type CHANNEL_NAME = "toast" | "ticker";
 
@@ -18,14 +19,7 @@ export const NUMERIC_FIELDS = ["x", "y", "z", "speed", "pin_number",
   "sequence_id", "rhs", "sequence_id"];
 
 /** CeleryScript nodes allowed within a Sequence node's `body` attr. */
-export type SequenceBodyMember = MoveAbsolute
-  | MoveRelative
-  | WritePin
-  | ReadPin
-  | Wait
-  | SendMessage
-  | If
-  | Execute;
+export type SequenceBodyMember = SequenceBodyItem;
 
 export interface Sequence extends CeleryScriptSequence {
   color: Color;

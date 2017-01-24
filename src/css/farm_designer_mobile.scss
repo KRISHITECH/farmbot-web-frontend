@@ -1,0 +1,33 @@
+.designer-mobile-nav {
+    display: none;
+}
+
+.mobile-only {
+    display: none !important;
+}
+
+@media (max-width: 568px) {
+    .designer-tab {
+        .farm-designer-panels {
+            pointer-events: none;
+        }
+    }
+    .farm-designer {
+        height: 85vh;
+    }
+    .mobile-only {
+        display: block !important;
+    }
+    .designer-mobile-nav {
+        display: block;
+        position: fixed;
+        left: 0;
+        right: 0;
+    }
+    .farm-designer-panels {
+        width: 100% !important;
+    }
+    .farm-designer-map {
+        padding: 7rem 2rem 2rem 2rem;
+    }
+}

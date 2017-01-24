@@ -92,6 +92,24 @@ export interface Sync {
     images: Image[];
 }
 
+/** React-select does not provide an interface for their CustomOption 
+ * component. Since they share similarities, we can go with this one as a base.
+ */
+export interface CustomOptionProps {
+    onSelect: Function;
+    onFocus: Function;
+    isFocused: Function;
+    option: {
+        // I will have to refactor this. On the TODO list. -CV
+        value?: string;
+        x?: number;
+        y?: number;
+        z?: number;
+    };
+    className: string;
+    children: JSX.Element;
+}
+
 /** There were a few cases where we handle errors that are legitimately unknown.
  *  In those cases, we can use the `UnsafeError` type instead of `any`, just to
  *  quiet down the linter and to let others know it is inherently unsafe.

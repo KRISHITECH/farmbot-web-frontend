@@ -279,7 +279,7 @@ export class Controls extends React.Component<Everything, ControlsState> {
                                                     webcamUrl={url}
                                                     apiUrl={API.current.baseUrl}
                                                     updateState={this.toggleCameraURLEdit.bind(this)}
-                                                    />
+                                                />
                                                 :
                                                 <button
                                                     className="button-like widget-control gray"

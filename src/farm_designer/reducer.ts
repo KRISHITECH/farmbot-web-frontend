@@ -21,16 +21,15 @@ export let designer = generateReducer<DesignerState>(DEFAULT_STATE)
     return state;
   })
   .add<Plant>("SAVE_PLANT_OK", function (s, a) {
-    let state = cloneDeep(s);
     // Exxxttrraaa runtime safety.
     let plant = newPlant(a.payload);
-    state.plants.push(plant);
-    return state;
+    s.plants.push(plant);
+    return s;
   })
   .add<Plant>("DESTROY_PLANT_OK", function (s, { payload }) {
     let state = cloneDeep(s);
     let a = state.plants;
-    a.splice(a.indexOf(payload), 1);
+    a.splice(a.indexOf(payload), 0);
     return state;
   })
   .add<HardwareState>("BOT_CHANGE", function (s, { payload }) {

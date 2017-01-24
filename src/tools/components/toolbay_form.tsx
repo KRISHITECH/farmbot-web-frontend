@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ListAndFormProps, ToolBayFormState } from "../interfaces";
-import { Widget, WidgetBody, WidgetHeader, Select } from "../../ui";
+import { Widget, WidgetBody, WidgetHeader, DeprecatedSelect } from "../../ui";
 import { Col, BlurableInput } from "../../ui";
 import {
     saveToolSlots,
@@ -83,12 +83,12 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                 id={(slot_id || "").toString()}
                 key={index}>{name}</option>;
         });
-        return <Select id={(slot_id || "").toString()}
+        return <DeprecatedSelect id={(slot_id || "").toString()}
             onChange={this.updateToolSlotTool}
             value={defaultValue.toString()}>
             {options}
             <option value="0">---</option>
-        </Select>;
+        </DeprecatedSelect>;
     }
 
     renderSlots(tool_bay_id: number | undefined) {
@@ -240,7 +240,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                                         />
                                     </td>
                                     <td>
-                                        <Select onChange={updateToolSelect}
+                                        <DeprecatedSelect onChange={updateToolSelect}
                                             value={(this.state.tool_id || "0")
                                                 .toString()}>
                                             {tools.all.map((tool, iTool) => {
@@ -254,7 +254,7 @@ export class ToolBayForm extends React.Component<ListAndFormProps,
                                             <option
                                                 key={tools.all.length + 1}
                                                 value="0">---</option>
-                                        </Select>
+                                        </DeprecatedSelect>
                                     </td>
                                     <td>
                                         <button

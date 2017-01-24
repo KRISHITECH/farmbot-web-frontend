@@ -1,4 +1,19 @@
-// Styles for the farm designer panels
+.farm-designer-panels {
+    width: 30rem;
+    position: fixed;
+    top: 8.4rem;
+    bottom: 0;
+    .panel-container {
+        width: 100%;
+        height: 88vh;
+        overflow-y: scroll;
+        font-size: 1.6rem;
+        label {
+            font-size: 1.8rem;
+        }
+    }
+}
+
 .panel-container {
     &.green-panel {
         background-color: $light_green;
@@ -34,19 +49,21 @@
 }
 
 .panel-tabs {
-    display: inline;
-    width: 100%;
-    list-style: none;
-    padding: 0rem;
-    text-transform: uppercase;
-    margin-bottom: 0px!important;
+    display: flex;
     a {
+        flex: 1;
+        text-align: center;
+        text-transform: uppercase;
         font-size: 1.4rem;
-        padding: 0 1.2rem;
         line-height: 5rem;
         height: 5rem;
         color: $light_gray;
         display: block;
+        &.active {
+            border-bottom: 2px solid $white;
+            font-weight: bold;
+            color: $white;
+        }
         &:hover {
             color: $off_white;
             text-decoration: none;
@@ -58,45 +75,43 @@
             font-weight: bold;
         }
     }
-    ul {
-        display: block;
-        overflow-x: scroll;
-        margin-bottom: 0;
-        padding: 0;
-        @media screen and (min-width: 768px) {
-            width: 100%;
-            display: table;
-            overflow: hidden;
+}
+
+.panel-title {
+    height: 50px;
+    padding-top: 1.4rem;
+    padding-left: 1.4rem;
+    padding-right: 2rem;
+    .back-arrow {
+        font-size: 1.8rem;
+        color: $off_white;
+        margin-right: 1rem;
+        &:hover {
+            color: $white;
         }
     }
-    li {
-        display: table-cell;
-        text-align: center;
-        .active {
-            font-weight: bold;
-            color: $off_white;
-            border-bottom: 2px solid $off_white;
+    .title {
+        color: white;
+        font-size: 1.8rem;
+        margin-top: 0.4rem;
+        display: inline-block;
+    }
+    .right-button {
+        float: right;
+        text-transform: uppercase;
+        font-size: 1.2rem;
+        border: 1px solid;
+        padding: 0.4rem 1rem;
+        font-weight: bold;
+        letter-spacing: 1px;
+        border-radius: 6px;
+        color: $off_white;
+        &:hover {
+            color: $white;
         }
     }
 }
 
 .panel-content {
     padding: 1rem;
-}
-
-.back-arrow {
-    width: 5rem;
-    float: left;
-    text-align: center;
-}
-
-.panel-title {
-    font-size: 1.6rem;
-    line-height: 5rem;
-    font-weight: bold;
-}
-
-.edit-link {
-    margin-left: 1rem;
-    font-size: 1.2rem;
 }

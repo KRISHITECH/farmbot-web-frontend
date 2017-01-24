@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CeleryNode as Step } from "farmbot";
+import { CeleryNode } from "farmbot";
 import { Sequence } from "./interfaces";
 import { execSequence } from "../devices/actions";
 import {
@@ -56,9 +56,17 @@ let StepList = ({sequence, sequences, dispatch, tools}:
         tools: ToolsState
     }) => {
     return <div>
-        {(sequence.body || []).map((step: Step, inx: number) => {
+        {(sequence.body || []).map((step: CeleryNode, inx: number) => {
             let Step = stepTiles[step.kind] || Oops;
-            return <div key={inx}>
+            /** HACK: If we wrote `key={inx}` for this iterator, React's diff
+             * algorithm would loose track of which step has changed (and
+             * sometimes even mix up the state of completely different steps).
+             * To get around this, we add a `uuid` property to Steps that
+             * is guranteed to be unique and allows React to diff the list
+             * correctly.
+             */
+            let wow = (step as any).uuid || inx;
+            return <div key={wow}>
                 <DropArea callback={onDrop(dispatch as dispatcher, inx)} />
                 <StepDragger dispatch={dispatch}
                     step={step}
@@ -171,7 +179,7 @@ export function SequenceEditorMiddle({sequences, dispatch, tools}: Everything) {
                                     dispatch(editCurrentSequence(
                                         { color }
                                     ));
-                                } } />
+                                }} />
                         </div>
                         {<StepList sequence={sequence}
                             dispatch={dispatch}

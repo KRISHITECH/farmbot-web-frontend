@@ -14,7 +14,7 @@ export interface CropLiveSearchResult {
 
 export interface Plant {
   id?: number;
-  planted_at: number;
+  planted_at: string;
   img_url: string;
   name: string;
   x: number;

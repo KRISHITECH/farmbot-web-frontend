@@ -3,7 +3,6 @@ import {
     StepParams,
     copy,
     remove,
-    CustomOptionProps,
     CustomValueProps
 } from "./index";
 import { StepTitleBar } from "./step_title_bar";
@@ -14,6 +13,51 @@ import { addChan, removeChan, updateMessageType } from "../actions";
 import { SendMessage } from "farmbot";
 import * as _ from "lodash";
 import { Option } from "react-select";
+import { CustomOptionProps } from "../../interfaces";
+
+class OptionComponent extends React.Component<CustomOptionProps, {}> {
+    handleMouseDown(e: React.SyntheticEvent<HTMLDivElement>) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.props.onSelect(this.props.option, e);
+    };
+
+    handleMouseEnter(e: React.SyntheticEvent<HTMLDivElement>) {
+        this.props.onFocus(this.props.option, e);
+    };
+
+    handleMouseMove(e: React.SyntheticEvent<HTMLDivElement>) {
+        if (this.props.isFocused) { return; };
+        this.props.onFocus(this.props.option, e);
+    };
+    render() {
+        return (
+            <div className={this.props.className}
+                onMouseDown={this.handleMouseDown.bind(this)}
+                onMouseEnter={this.handleMouseEnter.bind(this)}
+                onMouseMove={this.handleMouseMove.bind(this)}>
+                <Saucer color={this.props.option.value} />
+                {this.props.children}
+            </div>
+        );
+    }
+};
+
+// class ValueComponent needs this value from inside TileSendMessage.
+let type = "";
+
+class ValueComponent extends React.Component<CustomValueProps, {}> {
+    render() {
+        return (
+            <div className="Select-value">
+                <span className="Select-value-label">
+                    <Saucer color={type} />
+                    {this.props.children}
+                </span>
+            </div>
+        );
+    }
+};
 
 export function TileSendMessage({dispatch, step, index}: StepParams) {
     if (step.kind !== "send_message") {
@@ -24,7 +68,9 @@ export function TileSendMessage({dispatch, step, index}: StepParams) {
     step = step as SendMessage;
     let args = step.args;
     let message = args.message;
-    let type = args.message_type;
+
+    // class ValueComponent needs this value from inside TileSendMessage.
+    type = args.message_type;
 
     let channels = _.pairs<{}, string>({
         "toast": "Toast Notification",
@@ -41,44 +87,6 @@ export function TileSendMessage({dispatch, step, index}: StepParams) {
         { value: "info", label: "Info" },
         { value: "fun", label: "Fun" }
     ];
-
-    let optionComponent = (props: CustomOptionProps) => {
-        let handleMouseDown = (e: React.SyntheticEvent<HTMLDivElement>) => {
-            e.preventDefault();
-            e.stopPropagation();
-            props.onSelect(props.option, e);
-        };
-
-        let handleMouseEnter = (e: React.SyntheticEvent<HTMLDivElement>) => {
-            props.onFocus(props.option, e);
-        };
-
-        let handleMouseMove = (e: React.SyntheticEvent<HTMLDivElement>) => {
-            if (props.isFocused) { return; };
-            props.onFocus(props.option, e);
-        };
-
-        return (
-            <div className={props.className}
-                onMouseDown={handleMouseDown}
-                onMouseEnter={handleMouseEnter}
-                onMouseMove={handleMouseMove}>
-                <Saucer color={props.option.value} />
-                {props.children}
-            </div>
-        );
-    };
-
-    let valueComponent = (props: CustomValueProps) => {
-        return (
-            <div className="Select-value">
-                <span className="Select-value-label">
-                    <Saucer color={type} />
-                    {props.children}
-                </span>
-            </div>
-        );
-    };
 
     let handleOptionChange = (event: Option) => {
         let { value } = event;
@@ -158,8 +166,8 @@ export function TileSendMessage({dispatch, step, index}: StepParams) {
                                             onChange={handleOptionChange}
                                             value={type}
                                             options={options}
-                                            optionComponent={optionComponent}
-                                            valueComponent={valueComponent}
+                                            optionComponent={OptionComponent}
+                                            valueComponent={ValueComponent}
                                         />
                                     </div>
                                     <div className="channel-fields">

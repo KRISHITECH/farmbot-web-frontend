@@ -112,7 +112,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
                         },
                     },
                     {
-                        path: "plants/add",
+                        path: "plants/crop_search",
                         getComponent(location: any, cb: any) {
                             System.import("./farm_designer/plants/species_catalog.tsx").then(
                                 (module: any) => cb(null, module.SpeciesCatalog)
@@ -120,7 +120,15 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
                         },
                     },
                     {
-                        path: "plants/:plant",
+                        path: "plants/crop_search/:species",
+                        getComponent(location: any, cb: any) {
+                            System.import("./farm_designer/plants/species_info.tsx").then(
+                                (module: any) => cb(null, module.SpeciesInfo)
+                            ).catch(errorLoading);
+                        },
+                    },
+                    {
+                        path: "plants/:plant_id",
                         getComponent(location: any, cb: any) {
                             System.import("./farm_designer/plants/plant_info.tsx").then(
                                 (module: any) => cb(null, module.PlantInfo)
@@ -128,7 +136,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
                         },
                     },
                     {
-                        path: "plants/:plant/edit",
+                        path: "plants/:plant_id/edit",
                         getComponent(location: any, cb: any) {
                             System.import("./farm_designer/plants/edit_plant_info.tsx").then(
                                 (module: any) => cb(null, module.EditPlantInfo)

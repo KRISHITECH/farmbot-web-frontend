@@ -1,39 +1,21 @@
 import * as React from "react";
-import { savePlant } from "../actions";
 import { BackArrow } from "../back_arrow";
 import { Everything } from "../../interfaces";
-import { Plant, PlantOptions } from "../plant";
-import { API } from "../../api";
-import * as RR from "react-router";
+import { connect } from "react-redux";
 
-export class SpeciesInfo extends React.Component<Everything, any> {
-    drag(e: React.DragEvent<any>) {
+interface SpeciesInfoProps extends Everything {
+    params: {
+        species: string;
+    };
+}
+
+@connect((state: Everything) => state)
+export class SpeciesInfo extends React.Component<SpeciesInfoProps, {}> {
+    handleDragStart(e: DragEvent) {
         var img = document.createElement("img");
-        img.src = "/app-resources/img/icons/seed.png";
-        (e.dataTransfer as any)["setDragImage"](img, 12, 48);
-    }
-
-    drop(e: React.MouseEvent<any>) {
-
-        let el = document.querySelector("#drop-area > svg > rect");
-        if (!el) {
-            throw new Error("why");
-        } else {
-            let box = el.getBoundingClientRect();
-
-            let p: PlantOptions = fromScreenToGarden(e.pageX, e.pageY, box.left, box.bottom);
-            // TEMPORARY SOLUTION =======
-            let OFEntry = this.findCrop(this.props.location.query["id"]);
-            p.img_url = OFEntry.image;
-            p.openfarm_slug = OFEntry.crop.slug;
-            p.name = OFEntry.crop.name || "Mystery Crop";
-            // END TEMPORARY SOLUTION =======
-
-            let plant = Plant(p);
-            let baseUrl: string = API.current.baseUrl;
-
-            this.props.dispatch(savePlant(plant, baseUrl));
-        }
+        img.src = "";
+        (e as any).dataTransfer.setDragImage(img, 0, 0);
+        console.log("starting drag...currentTarget", e.currentTarget);
     }
 
     findCrop(slug?: string) {
@@ -57,7 +39,7 @@ export class SpeciesInfo extends React.Component<Everything, any> {
     }
 
     render() {
-        let result = this.findCrop(this.props.location.query["id"] || "PLANT_NOT_FOUND");
+        let result = this.findCrop(this.props.params.species || "PLANT_NOT_FOUND");
         return <div className="panel-container green-panel">
             <div className="panel-header green-panel">
                 <p className="panel-title">
@@ -65,20 +47,19 @@ export class SpeciesInfo extends React.Component<Everything, any> {
                 </p>
             </div>
             <div className="panel-content">
-                <div className="crop-drag-info-tile">
+                <div className="crop-drag-info-tile"
+                    onDragStart={this.handleDragStart.bind(this)}
+                    draggable={true} >
                     <img className="crop-drag-info-image"
-                        src={result.image}
-                        onDragStart={this.drag.bind(this)}
-                        onDragEnd={this.drop.bind(this)} />
+                        src={result.image} />
                     <div className="crop-info-overlay">
                         Drag and drop into map
-          </div>
+                    </div>
                 </div>
                 <div className="object-list">
                     <label>
                         Crop Info
-          </label>
-                    <span className="edit-link"><a href="#">Edit</a></span>
+                    </label>
                     <ul>
                         {
                             _(result.crop)
@@ -97,13 +78,6 @@ export class SpeciesInfo extends React.Component<Everything, any> {
                     </ul>
                 </div>
             </div>
-        </div>
+        </div>;
     }
 }
-
-function fromScreenToGarden(mouseX: number, mouseY: number, boxX: number, boxY: number) {
-    let rawX = mouseX - boxX;
-    let rawY = boxY - mouseY;
-
-    return { x: rawX, y: rawY };
-};

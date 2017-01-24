@@ -97,20 +97,6 @@ export interface StepParams {
     tools: ToolsState;
 }
 
-export interface CustomOptionProps {
-    onSelect: Function;
-    onFocus: Function;
-    isFocused: Function;
-    option: {
-        value: string;
-        x?: number;
-        y?: number;
-        z?: number;
-    };
-    className: string;
-    children: JSX.Element;
-}
-
 export interface CustomValueProps {
     children: JSX.Element;
 }

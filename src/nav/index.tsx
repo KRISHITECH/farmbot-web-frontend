@@ -125,7 +125,8 @@ export class NavBar extends React.Component<Everything, NavBarState> {
 
     render() {
         let mobileMenuClass = this.state.mobileNavExpanded ? "expanded" : "";
-        let pageName = this.props.location.pathname.split("/").pop() || "";
+        // The way our app is laid out, we'll pretty much always want this bit.
+        let pageName = this.props.location.pathname.split("/")[2] || "";
         let { toggleNav, logout, hoverToggleTicker, clickToggleTicker } = this;
         let isActive = this.state.tickerExpanded ? "active" : "";
 
@@ -191,7 +192,7 @@ export class NavBar extends React.Component<Everything, NavBarState> {
 
             <div className={`ticker-list ${isActive}`}
                 onClick={() => { clickToggleTicker(); }}
-                onMouseEnter={() => { setTimeout(function() {hoverToggleTicker();}, 500); }}
+                onMouseEnter={() => { setTimeout(function () { hoverToggleTicker(); }, 500); }}
                 onMouseLeave={() => { hoverToggleTicker(); }}>
                 {this.props.sync.logs.map((log, index) => {
                     let time = moment.utc(log.created_at).local().format("h:mm a");
