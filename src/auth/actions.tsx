@@ -74,13 +74,14 @@ function loginErr() {
  * have a JSON Web Token attached to their "Authorization" header,
  * thereby granting access to the API. */
 export function loginOk(auth: AuthState): ReduxAction<AuthState> {
-    // TODO: Create a shareable axios instance and set the `baseURL`
-    // IDEA:
-    // https://medium.com/@srph/axios-configure-the-base-path-daed6ff79eab#.145enq9g6
-    // OR THIS: https://github.com/srph/axios-base-url
-    // property so we can get rid of all that un-DRY URL concat junk.
-    // This is how we attach the auth token to every
-    // outbound HTTP request (after user logs in).
+    Axios.interceptors.response.use(x => x, function (x) {
+        if (x.response.status === 451) {
+            alert(t("The terms of service have recently changed. You must " +
+                "accept the new terms of service to continue using the site."));
+            window.location.href = "/tos_update.html";
+        }
+        return x;
+    });
     Axios.interceptors.request.use(function (config) {
         let req = config.url;
         let isAPIRequest = req.includes(API.current.baseUrl);

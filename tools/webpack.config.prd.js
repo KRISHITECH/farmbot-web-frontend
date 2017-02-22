@@ -18,6 +18,8 @@ c = function() {
         loader: ExtractTextPlugin.extract("css-loader!sass-loader")
     });
 
+    conf.output.filename = "dist/[name].[chunkhash].js";
+
     // PLUGINS:
     [
         new webpack.DefinePlugin({

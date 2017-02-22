@@ -4,6 +4,7 @@ import { detectLanguage } from "../i18n";
 import { PasswordReset } from "./password_reset";
 import * as i18next from "i18next";
 import "../css/_index.scss";
+import "../npm_addons";
 
 detectLanguage().then((config) => {
     i18next.init(config, (err, t) => {

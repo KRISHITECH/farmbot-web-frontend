@@ -2,7 +2,6 @@ import * as React from "react";
 import { IStepInput } from "../step_tiles/index";
 import { InputUnknown } from "./input_unknown";
 import { InputDefault } from "./input_default";
-
 type StatelessInput = (p: IStepInput) => JSX.Element;
 type InputChoiceDict = { [name: string]: (StatelessInput | undefined) };
 

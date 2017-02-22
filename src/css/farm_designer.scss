@@ -29,6 +29,39 @@
 .crop-drag-info-image {
     width: 100%;
     background-color: $translucent;
+    height: 12rem;
+}
+
+.plant-catalog-image {
+    width: 100%;
+    background-color: $translucent;
+    height: 12rem;
+}
+
+.crop-search-result-wrapper {
+    .plant-catalog-tile {
+        position: relative;
+        cursor: pointer;
+        &:nth-child(4n),
+        &:nth-child(4n-1) {
+            margin-bottom: 2rem;
+        }
+        &:nth-child(4n-2),
+        &:nth-child(4n-3) {
+            margin-bottom: 2rem;
+        }
+        label {
+            left: 15px;
+            right: 15px;
+            margin-top: 0 !important;
+            padding: 0.4rem 0.6rem 0.2rem;
+            bottom: -5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: $white;
+            position: absolute;
+            font-size: 1.2rem !important;
+        }
+    }
 }
 
 .crop-info-overlay {
@@ -45,6 +78,67 @@
     /* align vertical */
     height: 3rem;
     width: 100%;
+}
+
+.farm-events {
+    margin-top: 5rem;
+    .farm-event {
+        &.has-passed {
+            color: $gray;
+        }
+        &:hover {
+            .edit-icon {
+                display: block;
+            }
+        }
+        &:before {
+            content: "";
+            position: absolute;
+            left: 28%;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: $gray;
+        }
+        position: relative;
+        font-size: 1.2rem;
+        padding: 0.8rem;
+        background: white;
+        border-bottom: 1px solid $gray;
+    }
+    .edit-icon {
+        display: none;
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        color: $gray;
+        &:hover {
+            color: $dark_gray;
+        }
+    }
+}
+
+.farm-event-wrapper {
+    margin-bottom: 1rem;
+    .farm-event-date-month {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+    .farm-event-date-day {
+        font-size: 2rem;
+        font-weight: bold;
+        text-align: center;
+    }
+}
+
+.plant-link-wrapper {
+    position: relative;
+    image {
+        cursor: -webkit-grab !important;
+        &:active {
+            cursor: -webkit-grabbing !important;
+        }
+    }
 }
 
 .outside-search-results {
@@ -100,118 +194,80 @@
 
 .thin-search-wrapper {
     position: relative;
-    &.show-menu {
-        .Select-menu-outer {
-            display: block !important;
-        }
+    border-bottom: 1px solid #000;
+    &:before,
+    &:after {
+        content: "";
+        position: absolute;
+        background: #000;
+        width: 1px;
+        height: 10px;
+        bottom: 0;
+    }
+    &:before {
+        left: 0;
+    }
+    &:after {
+        right: 0;
     }
     .fa-search {
         position: absolute;
-        top: 1rem;
+        top: 0.8rem;
         left: 1rem;
     }
-    .thin-search {
-         ::-webkit-input-placeholder {
+    input {
+        background: transparent;
+        box-shadow: none !important;
+        padding-left: 3rem !important;
+        font-size: 1.4rem !important;
+        &:active,
+        &:focus {
+            background: transparent !important;
+        }
+        &::-webkit-input-placeholder {
             color: #000;
         }
-        border-bottom: 1px solid #000;
-        &:before,
-        &:after {
-            content: "";
-            position: absolute;
-            background: #000;
-            width: 1px;
-            height: 10px;
-            bottom: 0;
-        }
     }
-    input.search {
+    .select-results-container {
+        top: 4rem;
+        margin-bottom: 12rem;
+    }
+    .select-result {
+        padding: 0;
+        margin-bottom: 1rem;
         background: transparent;
-        box-shadow: none;
-        padding-left: 3.5rem;
-        font-size: 1.4rem;
-        padding-bottom: 1rem;
+        border-bottom: none;
+        transition: all 0.4s ease;
+        &:last-child {
+            margin-bottom: 14rem;
+        }
+        &:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
     }
-    .Select {
-        border-bottom: 1px solid #000;
-        &:before,
-        &:after {
-            content: "";
-            position: absolute;
-            background: #000;
-            height: 10px;
-            width: 1px;
-            bottom: 0;
+    .plant-search-item {
+        height: 4rem;
+        margin-bottom: 1rem;
+        img {
+            height: 4rem;
+            width: 4rem;
         }
-        &:before {
-            left: 0;
-        }
-        &:after {
-            right: 0;
-        }
-        .Select-multi-value-wrapper {
-            font-size: 1.4rem;
-            margin-left: 2.5rem;
-            margin-top: 0.2rem;
-            display: block;
-        }
-        .Select-arrow-zone {
-            display: none !important;
-        }
-        .Select-control {
-            background: transparent !important;
-            box-shadow: none !important;
-        }
-        .Select-placeholder {
-            color: #000 !important;
-            font-size: 1.4rem !important;
-            left: 2.5rem !important;
-        }
-        .Select-menu-outer {
-            // display: none !important;
-            top: 120%;
-            background: transparent !important;
-            border: none;
-            border-bottom: none;
-            box-shadow: none;
-            overflow: visible;
-            max-height: none;
-            min-height: 300px;
-            &:before,
-            &:after {
-                background: none;
-            }
-            .Select-menu {
-                max-height: none !important;
-                overflow-y: scroll !important;
-            }
-            .Select-option {
-                background: transparent;
-                color: #000 !important;
-                min-height: 1.6rem;
-                margin-bottom: 0.5rem;
-                .plant-age {
-                    margin-top: 0.4rem;
-                    display: block;
-                    color: #555;
-                    font-size: 1rem;
-                }
-                .plant-name {
-                    margin-left: 1rem;
-                    color: #000;
-                }
-                img {
-                    width: 2rem;
-                    height: 2rem;
-                }
-                &.is-focused {
-                    background: rgba(0, 0, 0, 0.1);
-                }
-                &:last-child {
-                    border-bottom-left-radius: 0px;
-                    border-bottom-right-radius: 0px;
-                }
-            }
-        }
+    }
+    .plant-search-item-age {
+        text-align: right;
+        font-size: 1rem;
+        padding-top: 1.4rem;
+        padding-right: 1rem;
+        float: right;
+    }
+    .plant-search-item-name {
+        margin-left: 1rem;
+    }
+}
+
+@media(min-width: 568px) {
+    .event-time {
+        padding-left: 0;
     }
 }

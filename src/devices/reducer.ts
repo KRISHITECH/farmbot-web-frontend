@@ -46,11 +46,13 @@ let initialState: BotState = {
         pins: {},
         configuration: {},
         informational_settings: {},
-        farm_scheduler: {
-            process_info: [],
+        user_env: {},
+        process_info: {
+            farmwares: [],
+            regimens: [],
+            farm_events: []
         }
     },
-    axisBuffer: {},
     settingsBuffer: {},
     configBuffer: {},
     dirty: false,
@@ -103,13 +105,6 @@ export let botReducer = generateReducer<BotState>(initialState)
         return Object.assign({}, state, {
             axisBuffer: {},
             hardware
-        });
-    })
-    .add<{ key: "x" | "y" | "z", val: string }>("CHANGE_AXIS_BUFFER",
-    function (s, a) {
-        s.axisBuffer[a.payload.key] = a.payload.val;
-        return Object.assign({}, s, {
-            axisBuffer: s.axisBuffer
         });
     })
     .add<Configuration>("CHANGE_CONFIG_BUFFER", function (s, a) {

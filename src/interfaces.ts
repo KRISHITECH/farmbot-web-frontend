@@ -8,7 +8,12 @@ import {
     RegimenItem
 } from "./regimens/interfaces";
 import { SequenceReducerState, Sequence } from "./sequences/interfaces";
-import { DesignerState, Plant } from "./farm_designer/interfaces";
+import {
+    DesignerState,
+    Plant,
+    Point,
+    FarmEvent
+} from "./farm_designer/interfaces";
 import { Color as FarmBotJsColor } from "farmbot";
 import { DragableState } from "./draggable/interfaces";
 import { PeripheralState, Peripheral } from "./controls/peripherals/interfaces";
@@ -21,6 +26,7 @@ export type Color = FarmBotJsColor;
 export interface SelectOptionsParams {
     label: string;
     value: string | number | undefined;
+    disabled?: boolean;
     field?: string;
     type?: string;
     x?: number;
@@ -69,6 +75,9 @@ export interface Everything {
     tools: ToolsState;
     sync: Sync;
     images: ImageState;
+    router: {
+        push: Function;
+    };
 };
 
 /** A sync object, as returned by a GET request to `/api/sync` */
@@ -79,6 +88,7 @@ export interface Sync {
      * its software is out of date */
     compat_num: number;
     device: DeviceAccountSettings;
+    farm_events: FarmEvent[];
     users: User[];
     sequences: Sequence[];
     regimens: RegimenApiResponse[];
@@ -90,6 +100,7 @@ export interface Sync {
     tools: Tool[];
     logs: Log[];
     images: Image[];
+    points: Point[];
 }
 
 /** React-select does not provide an interface for their CustomOption 

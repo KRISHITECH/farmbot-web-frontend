@@ -10,6 +10,7 @@ export interface FrontPageState {
     serverPort?: string;
     forgotPassword?: boolean;
     forgotPasswordEmail?: string;
+    agreeToTerms: boolean;
 }
 
 export interface FrontPageProps { };

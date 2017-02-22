@@ -4,6 +4,7 @@ import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
 import * as moment from "moment";
 import { destroyPlant } from "../actions";
+import { t } from "i18next";
 
 interface EditPlantInfoProps extends Everything {
     router: {
@@ -24,7 +25,7 @@ export class EditPlantInfo extends React.Component<EditPlantInfoProps, {}> {
 
     render() {
         let plant_id = parseInt(this.props.params.plant_id);
-        let plants = this.props.designer.plants;
+        let plants = this.props.designer.deprecatedPlants;
         let currentPlant = _.findWhere(plants, { id: plant_id });
 
         let { name, x, y, planted_at } = currentPlant;
@@ -38,25 +39,25 @@ export class EditPlantInfo extends React.Component<EditPlantInfoProps, {}> {
             <div className="panel-header green-panel">
                 <p className="panel-title">
                     <BackArrow />
-                    <span className="title">Edit {name}</span>
+                    <span className="title">{t("Edit")} {name}</span>
                 </p>
             </div>
             <div className="panel-content">
-                <label>Plant Info</label>
+                <label>{t("Plant Info")}</label>
                 <ul>
-                    <li>Started: {plantedAt}</li>
-                    <li>Age: {daysOld}</li>
-                    <li>Location: ({x}, {y})</li>
+                    <li>{t("Started")}: {plantedAt}</li>
+                    <li>{t("Age")}: {daysOld}</li>
+                    <li>{t("Location")}: ({x}, {y})</li>
                 </ul>
-                <label>Regimens</label>
+                <label>{t("Regimens")}</label>
                 <ul>
                     <li>Soil Acidifier</li>
                 </ul>
-                <label>Delete This Plant</label>
+                <label>{t("Delete this plant")}</label>
                 <div>
                     <button className="red button-like left"
                         onClick={this.destroy.bind(this)}>
-                        Delete
+                        {t("Delete")}
                     </button>
                 </div>
             </div>

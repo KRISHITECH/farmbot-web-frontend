@@ -4,10 +4,12 @@ import { connect } from "react-redux";
 import { Everything } from "../interfaces";
 import { success } from "../ui";
 import { Link } from "react-router";
+import { t } from "i18next";
 
 interface IndexProps extends Everything {
   params: {
     species: string;
+    plant_id: string;
   };
 }
 
@@ -33,13 +35,13 @@ export class FarmDesigner extends React.Component<IndexProps, {}> {
         <div className="panel-header gray-panel designer-mobile-nav">
           <div className="panel-tabs">
             <Link to="/app/designer" className="mobile-only active">
-              Designer
+              {t("Designer")}
             </Link>
             <Link to="/app/designer/plants">
-              Plants
+              {t("Plants")}
             </Link>
             <Link to="/app/designer/farm_events" >
-              Farm Events
+              {t("Farm Events")}
             </Link>
           </div>
         </div>

@@ -13,20 +13,40 @@ export function warning(message: string, title = "Warning", color = "yellow") {
 
 // Errors can fire multiple times for situations such as password guessing
 export function error(message: string, title = "Error", color = "red") {
-    createToast(message, title, color);
+    if (lastMsg === message) {
+        return;
+    } else {
+        createToast(message, title, color);
+    }
+    lastMsg = message;
 }
 
 export function success(message: string, title = "Success", color = "green") {
-    createToast(message, title, color);
+    if (lastMsg === message) {
+        return;
+    } else {
+        createToast(message, title, color);
+    }
+    lastMsg = message;
 }
 
 export function info(message: string, title = "FYI", color = "blue") {
-    createToast(message, title, color);
+    if (lastMsg === message) {
+        return;
+    } else {
+        createToast(message, title, color);
+    }
+    lastMsg = message;
 }
 
 export function fun(message: string, title = "Did you know?",
     color = "dark-blue") {
-    createToast(message, title, color);
+    if (lastMsg === message) {
+        return;
+    } else {
+        createToast(message, title, color);
+    }
+    lastMsg = message;
 }
 
 let createToast = (message: string, title: string, color: string) => {
@@ -125,6 +145,7 @@ let createToast = (message: string, title: string, color: string) => {
 
 };
 
+/** Adds a secret container div for holding toast messages. */
 export function init() {
     /** Create container and append it */
     let toastContainer = document.createElement("div");

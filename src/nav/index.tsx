@@ -81,15 +81,13 @@ export class NavBar extends React.Component<Everything, NavBarState> {
             mobileNavExpanded: false,
             tickerExpanded: false
         };
-        this.hoverToggleTicker = this.hoverToggleTicker.bind(this);
-        this.clickToggleTicker = this.clickToggleTicker.bind(this);
         this.toggleNav = this.toggleNav.bind(this);
         this.logout = this.logout.bind(this);
     }
 
     toggleNav() {
         /** Don't let user scroll when nav is open */
-        document.body.classList.toggle("freeze");
+        // document.body.classList.toggle("freeze");
         this.setState({
             mobileNavExpanded: !this.state.mobileNavExpanded
         });
@@ -99,36 +97,11 @@ export class NavBar extends React.Component<Everything, NavBarState> {
         Session.clear(true);
     }
 
-    hoverToggleTicker() {
-        /** Hack to prevent ui bugs */
-        var width = Math.max(document.documentElement.clientWidth,
-            window.innerWidth || 0);
-        if (width <= 830) { return; }
-        /** Don't let user scroll when nav is open */
-        document.body.classList.toggle("freeze");
-        this.setState({
-            tickerExpanded: !this.state.tickerExpanded
-        });
-    }
-
-    clickToggleTicker() {
-        /** Hack to prevent ui bugs */
-        var width = Math.max(document.documentElement.clientWidth,
-            window.innerWidth || 0);
-        if (width >= 830) { return; }
-        /** Don't let user scroll when nav is open */
-        document.body.classList.toggle("freeze");
-        this.setState({
-            tickerExpanded: !this.state.tickerExpanded
-        });
-    }
-
     render() {
         let mobileMenuClass = this.state.mobileNavExpanded ? "expanded" : "";
         // The way our app is laid out, we'll pretty much always want this bit.
         let pageName = this.props.location.pathname.split("/")[2] || "";
-        let { toggleNav, logout, hoverToggleTicker, clickToggleTicker } = this;
-        let isActive = this.state.tickerExpanded ? "active" : "";
+        let { toggleNav, logout } = this;
 
         return <nav role="navigation">
             <button
@@ -142,14 +115,6 @@ export class NavBar extends React.Component<Everything, NavBarState> {
                         return (
                             <li key={link.url}>
                                 <Link to={link.url}
-                                    /** TODO: Royal pain. This onClick fires
-                                     * every time a link is clicked in the
-                                     * desktop nav. Which in turn "freezes"
-                                     * the user scroll when not desired.
-                                     * Tried all sorts of plugins and
-                                     * alternatives. No dice.
-                                     */
-                                    // onClick={() => { toggleNav(); } }
                                     activeClassName="active">
                                     <i className={`fa fa-${link.icon}`} />
                                     {link.name}
@@ -163,8 +128,7 @@ export class NavBar extends React.Component<Everything, NavBarState> {
                     incompatible) CSS. I'll look into this one. -CV */}
                 <ul className="mobile-menu-extras">
                     <li>
-                        <Link to="/app/account"
-                            onClick={() => { toggleNav(); }}>
+                        <Link to="/app/account">
                             <i className="fa fa-cog"></i>{t("Account Settings")}
                         </Link>
                     </li>
@@ -190,10 +154,7 @@ export class NavBar extends React.Component<Everything, NavBarState> {
             <SyncButton { ...this.props } />
             <EStopButton { ...this.props } />
 
-            <div className={`ticker-list ${isActive}`}
-                onClick={() => { clickToggleTicker(); }}
-                onMouseEnter={() => { setTimeout(function () { hoverToggleTicker(); }, 500); }}
-                onMouseLeave={() => { hoverToggleTicker(); }}>
+            <div className="ticker-list">
                 {this.props.sync.logs.map((log, index) => {
                     let time = moment.utc(log.created_at).local().format("h:mm a");
                     return <div key={index} className="status-ticker-wrapper">

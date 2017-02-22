@@ -7,6 +7,7 @@ build
 coverage
 dist
 jest
+.nvmrc
 node_modules
 npm-debug.log
 bundle.*.js*
@@ -21,4 +22,6 @@ public/app/*
 public/front_page.js
 public/index.html
 public/password_reset.html
+public/tos_update.html
 public/verify.html
+public/*.eot

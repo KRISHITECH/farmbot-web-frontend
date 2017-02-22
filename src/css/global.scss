@@ -6,6 +6,8 @@
 
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button,
+input[type=date]::-webkit-inner-spin-button,
+input[type=date]::-webkit-outer-spin-button,
 input[type=time]::-webkit-inner-spin-button,
 input[type=time]::-webkit-outer-spin-button,
 input[type=time] {
@@ -47,26 +49,6 @@ input[type=time] {
     padding: 0.8rem 0;
 }
 
-.Select-menu-outer {
-    position: relative;
-    &:after,
-    &:before {
-        content: "";
-        pointer-events: none;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        top: 0;
-    }
-    &:before {
-        background: linear-gradient(to bottom, #fff 0%, transparent 10%)
-    }
-    &:after {
-        background: linear-gradient(to top, #fff 0%, transparent 10%)
-    }
-}
-
 .Select-option,
 .Select-value {
     .saucer {
@@ -83,6 +65,20 @@ input[type=time] {
 
 .Select-value-params {
     float: right;
+}
+
+.Select.group-by {
+    .Select-menu-outer {
+        .Select-option:not(.is-disabled) {
+            padding: 0.4rem 1rem 0.4rem 2.2rem !important;
+        }
+        .Select-option.is-disabled {
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: black;
+        }
+    }
 }
 
 body {
@@ -126,7 +122,19 @@ a {
     outline: none !important;
 }
 
+
+/* Rick wuz here. */
+
 .input-group {
+    a {
+        color: #434343;
+        &:visited {
+            color: #434343;
+        }
+    }
+    input[type=checkbox] {
+        box-shadow: none;
+    }
     width: 100% !important;
 }
 
@@ -254,7 +262,7 @@ fieldset {
 }
 
 .webcam-url-input {
-    padding-left: 3.4rem;
+    padding-left: 4rem !important;
 }
 
 ul {
@@ -305,5 +313,50 @@ ul {
     p,
     button {
         margin-bottom: 1rem !important;
+    }
+}
+
+.select {
+    position: relative;
+    .select-results-container {
+        position: absolute;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        &.is-open-false {
+            display: none;
+        }
+        &.is-open-true {
+            display: block;
+        }
+    }
+    .select-result {
+        background: $off_white;
+        padding: 0.2rem 0 0.2rem 1.4rem;
+        border-bottom: 1px solid $gray;
+        cursor: pointer;
+        &:hover {
+            background: $light_gray;
+        }
+        &.is-hidden {
+            display: none;
+        }
+        &.is-header {
+            text-transform: uppercase;
+            padding-left: 1rem;
+            border-bottom: none;
+            pointer-events: none;
+            label {
+                text-transform: uppercase;
+                font-weight: bold;
+                padding-left: 0px;
+            }
+        }
+        label {
+            margin-top: 0 !important;
+            text-transform: none;
+            font-weight: normal;
+            cursor: pointer;
+        }
     }
 }

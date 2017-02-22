@@ -1,5 +1,5 @@
 // Styles for INPUTS
-input {
+input:not([role="combobox"]) {
     font-size: 1.2rem;
     color: $dark_gray;
     height: auto;

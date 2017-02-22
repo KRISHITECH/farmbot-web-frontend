@@ -1,5 +1,6 @@
 import { Color } from "../interfaces";
 import { SelectOptionsParams } from "../interfaces";
+import { AuthState } from "../auth/interfaces";
 import {
   Sequence as CeleryScriptSequence,
   MoveAbsolute,
@@ -34,6 +35,12 @@ export interface SequenceReducerState {
   all: Array<Sequence>;
   current: number;
 };
+
+export interface SequencesListProps {
+  sequences: SequenceReducerState;
+  dispatch: Function;
+  auth: AuthState;
+}
 
 export interface UpdateAbsoluteStepPayl {
   data: {
