@@ -1,20 +1,11 @@
-import { BotState } from "../devices/interfaces";
-import { Everything } from "../interfaces";
 
 export interface ControlsState {
-    isEditingCameraURL: boolean;
+  isEditingCameraURL: boolean;
 }
 
-export interface AxisInputBoxProps {
-    bot: BotState;
-    axis: string;
-    label: string;
-    dispatch: Function;
-}
-
-export interface DirectionButtonProps extends Everything {
-  axis: "x"|"y"|"z";
-  direction: "up"|"down"|"left"|"right";
+export interface DirectionButtonProps {
+  axis: "x" | "y" | "z";
+  direction: "up" | "down" | "left" | "right";
   steps: number;
 }
 

@@ -5,6 +5,7 @@ import { BotState } from "./devices/interfaces";
 import { PeripheralState } from "./controls/peripherals/interfaces";
 import { ToolsState } from "./tools/interfaces";
 import { Log } from "./interfaces";
+import { FarmEvent } from "./farm_designer/interfaces";
 
 export class Wrapper extends React.Component<any, any> {
     render() {
@@ -33,9 +34,11 @@ export function fakeState(dispatcher?: Function): Everything {
     let designer = {
         x_size: 200,
         y_size: 200,
-        plants: [],
+        deprecatedPlants: [],
         cropSearchQuery: "?foo=bar",
-        cropSearchResults: []
+        cropSearchResults: [],
+        currentSequenceOrRegimen: {},
+        farmEventToBeAdded: {}
     };
     let bot: BotState = {
         account: {
@@ -46,12 +49,6 @@ export function fakeState(dispatcher?: Function): Everything {
         dirty: false,
         /** How many steps to move when the user presses a manual movement arrow */
         stepSize: 100,
-        /** Holds coordinates that the user is currently editing, but hasn't sent */
-        axisBuffer: {
-            x: "",
-            y: "",
-            z: "",
-        },
         /** Holds settings that the user is currently editing, but has not sent */
         settingsBuffer: {
             movement_max_spd_x: "0",
@@ -74,8 +71,11 @@ export function fakeState(dispatcher?: Function): Everything {
             configuration: {},
             location: [-1, -1, -1],
             pins: {},
-            farm_scheduler: {
-                process_info: []
+            user_env: {},
+            process_info: {
+                farmwares: [],
+                regimens: [],
+                farm_events: []
             }
         },
     };
@@ -122,7 +122,9 @@ export function fakeState(dispatcher?: Function): Everything {
         tools: [],
         plants: [],
         logs: [],
-        images: []
+        images: [],
+        points: [],
+        farm_events: []
     };
 
     let draggable = { dataTransfer: {} };
@@ -157,6 +159,8 @@ export function fakeState(dispatcher?: Function): Everything {
 
     let images = { all: [] };
 
+    let router = { push: function () { } };
+
     return {
         location
         , auth
@@ -172,5 +176,6 @@ export function fakeState(dispatcher?: Function): Everything {
         , sync
         , tools
         , images
+        , router
     };
 }

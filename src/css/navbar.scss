@@ -1,18 +1,30 @@
 /* Desktop */
 
+.nav-wrapper {
+    box-shadow: 0 4px 10px $translucent;
+    background: $dark_gray;
+}
+
+.mobile-and-tablet-only {
+    display: none;
+}
+
 nav {
     background-color: $dark_gray;
     color: $light_gray;
     font-size: 1.2rem;
     letter-spacing: .15rem;
     text-transform: uppercase;
-    box-shadow: 0 4px 10px $translucent;
     display: flex;
     height: 100%;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 2rem 0;
-    margin: 3rem 0 0 0;
+    padding: 1rem 2rem 0.6rem;
+    max-width: 140rem;
+    margin: 3rem auto 0;
+    .nav-sync {
+        margin-right: 2rem !important;
+    }
     .mobile-menu-extras {
         display: none;
     }
@@ -22,8 +34,11 @@ nav {
     .page-name {
         display: none;
     }
-    button:first-of-type {
-        display: none;
+    .right-nav-content {
+        align-items: center;
+        display: flex;
+        flex: 1;
+        justify-content: flex-end;
     }
     .links {
         .fa {
@@ -60,13 +75,13 @@ nav {
         &:active {
             .nav-dropdown-content {
                 opacity: 1;
-                transition: all 0.4s ease-in-out;
+                transition: all 0.2s ease-in-out;
                 pointer-events: all;
             }
         }
         .nav-dropdown-content {
             top: 4rem;
-            transition: all 0.4s ease-in-out;
+            transition: all 0.2s ease-in-out;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             position: absolute;
             display: block;
@@ -78,7 +93,7 @@ nav {
             pointer-events: none;
             &:hover {
                 opacity: 1;
-                transition: all 0.4s ease-in-out;
+                transition: all 0.2s ease-in-out;
                 pointer-events: all;
             }
             i {
@@ -123,6 +138,9 @@ nav {
 /* Mobile and Tablet */
 
 @media (max-width: 830px) {
+    .mobile-and-tablet-only {
+        display: block !important;
+    }
     nav {
         button:first-of-type {
             display: block;
@@ -148,7 +166,7 @@ nav {
             bottom: 0;
             left: 0;
             transform: translateX(-40vw);
-            transition: all 0.4s ease-in-out;
+            transition: all 0.2s ease-in-out;
             ul {
                 display: block;
                 li {
@@ -166,7 +184,7 @@ nav {
             &.expanded {
                 box-shadow: 4px 0 2px -2px rgba(0, 0, 0, 0.4);
                 transform: translateX(0);
-                transition: all 0.4s ease-in-out;
+                transition: all 0.2s ease-in-out;
                 z-index: 4;
             }
         }
@@ -184,7 +202,7 @@ nav {
             &.expanded {
                 z-index: 1;
                 pointer-events: all;
-                transition: opacity 0.4s ease-in-out;
+                transition: opacity 0.2s ease-in-out;
                 opacity: 0.8;
             }
         }

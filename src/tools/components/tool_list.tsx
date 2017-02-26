@@ -23,8 +23,8 @@ export class ToolList extends React.Component<ListAndFormProps, {}> {
                     <table>
                         <thead>
                             <tr>
-                                <th>TOOL NAME</th>
-                                <th>STATUS</th>
+                                <th>{t("TOOL NAME")}</th>
+                                <th>{t("STATUS")}</th>
                             </tr>
                         </thead>
                         <tbody>

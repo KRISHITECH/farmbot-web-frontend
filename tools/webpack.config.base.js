@@ -22,11 +22,11 @@ module.exports = function() {
             "bundle": path.resolve(__dirname, "../src/entry.tsx"),
             "front_page": "./src/front_page/index.tsx",
             "verification": "./src/verification.ts",
-            "password_reset": "./src/password_reset/index.tsx"
+            "password_reset": "./src/password_reset/index.tsx",
+            "tos_update": "./src/tos_update/index.tsx"
         },
         output: {
             path: path.resolve(__dirname, "../public"),
-            filename: "dist/[name].[chunkhash].js",
             libraryTarget: "umd",
             publicPath: "/",
             devtoolLineToLine: true
@@ -48,12 +48,6 @@ module.exports = function() {
                 {
                     test: [/\.eot$/, /\.svg(\?v=\d+\.\d+\.\d+)?$/],
                     use: "file-loader"
-                },
-                {
-                    // Workaround to use Snap as a cjs module with webpack
-                    // Snap is currently working on this
-                    test: require.resolve("snapsvg"),
-                    loader: "imports-loader?this=>window,fix=>module.exports=0"
                 }
             ]
         },
@@ -72,6 +66,16 @@ module.exports = function() {
             new webpack.DefinePlugin({
                 "process.env.NPM_ADDON": JSON.stringify(
                     process.env.NPM_ADDON || false).toString()
+            }),
+            // Conditionally add "terms of service"
+            // Eg: Servers run by FarmBot, Inc.
+            new webpack.DefinePlugin({
+                "process.env.TOS_URL": JSON.stringify(process.env.TOS_URL || false).toString()
+            }),
+            // Conditionally add privacy policy.
+            // Eg: Servers run by FarmBot, Inc.
+            new webpack.DefinePlugin({
+                "process.env.PRIV_URL": JSON.stringify(process.env.PRIV_URL || false).toString()
             }),
             new FarmBotRenderer({
                 isProd: isProd,
@@ -99,6 +103,13 @@ module.exports = function() {
                 filename: "password_reset.html",
                 outputPath: path.resolve(__dirname, "../public/"),
                 include: "password_reset"
+            }),
+            new FarmBotRenderer({
+                isProd: isProd,
+                path: path.resolve(__dirname, "../src/static/tos_update.hbs"),
+                filename: "tos_update.html",
+                outputPath: path.resolve(__dirname, "../public/"),
+                include: "tos_update"
             })
         ],
 

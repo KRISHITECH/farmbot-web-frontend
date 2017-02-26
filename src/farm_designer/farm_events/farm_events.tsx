@@ -1,82 +1,86 @@
 import * as React from "react";
 import { Link } from "react-router";
-import { Everything } from "../../interfaces";
-import { ScheduledEvent } from "../interfaces";
-import { Select } from "../../ui";
+import { FBSelect } from "../../ui";
+import { connect } from "react-redux";
+import { t } from "i18next";
+import * as moment from "moment";
+import { mapStateToProps, FarmEventProps } from "./map_state_to_props";
 
-interface ScheduledEventProps {
-  scheduledEvent: ScheduledEvent;
-}
+@connect(mapStateToProps)
+export class FarmEvents extends React.Component<FarmEventProps, {}> {
+  /** Attempts to use passed string, if string is undefined defaults to UTC */
+  timeOrFallback(start_time: string | undefined) {
+    return start_time || moment().utc().toISOString();
+  }
 
-export class ScheduleEvent extends React.Component<ScheduledEventProps, {}> {
+  renderCalendarRows() {
+    return this.props.calendarRows.map(function (item) {
+      return <div className="farm-event-wrapper col-xs-12" key={item.timestamp}>
 
-  hasPassed(date: Date) { return date < new Date(); }
+        <div className="farm-event-date col-xs-2">
+          <div className="farm-event-date-month">
+            {item.month}
+          </div>
+          <div className="farm-event-date-day">
+            {item.day}
+          </div>
+        </div>
 
-  formatTime(date: Date) {
-    let hours = date.getHours();
-    return `${hours} ${(hours > 12) ? "a" : "p"}`;
+        <div className="col-xs-10 events">
+          {item.list.map(function (farmEvent) {
+            let start = moment(farmEvent.start_time).format("hh:mma");
+            return <div className={`farm-event col-xs-12`}
+              key={farmEvent.id}>
+              <div className="event-time col-xs-3">
+                {start}
+              </div>
+              <div className="event-title col-xs-9">
+                {item.executableName}
+              </div>
+              <Link to={`/app/designer/farm_events/` +
+                (farmEvent.id || "UNSAVED EVENT").toString()}>
+                <i className="fa fa-pencil-square-o edit-icon"></i>
+              </Link>
+            </div>;
+          })}
+        </div>
+      </div>;
+    });
   }
 
   render() {
-    let evnt = this.props.scheduledEvent;
-    let isPassed = this.hasPassed(evnt.time) ? "past" : "";
 
-    return <div className={`event ${isPassed}`}>
-      <div className="event-time">
-        {this.formatTime(evnt.time)}
-      </div>
-      <div className="event-title">{evnt.desc}</div>
-    </div>;
-  }
-}
-
-export class FarmEvents extends React.Component<Everything, {}> {
-  render() {
     return <div className="panel-container magenta-panel">
       <div className="panel-header magenta-panel">
         <div className="panel-tabs">
           <Link to="/app/designer" className="mobile-only">
-            Designer
+            {t("Designer")}
           </Link>
           <Link to="/app/designer/plants">
-            Plants
+            {t("Plants")}
           </Link>
           <Link to="/app/designer/farm_events" className="active">
-            Farm Events
-           </Link>
+            {t("Farm Events")}
+          </Link>
         </div>
       </div>
 
       <div className="panel-content events">
 
         <div className="row">
-          <i className="col-sm-2 col-md-2 fa fa-calendar"></i>
-          <Select className="col-sm-10 col-md-10"
-            options={[{ label: "January 1", value: 1 }]} />
-        </div>
+          <i className="col-xs-2 fa fa-calendar"></i>
 
-        <div className="event-list">
-
-          {/* Foreach these guys.. */}
-          <div className="event-date col-sm-2">
-            <label className="month-abbr">AUG</label>
-            <label className="month-day">21</label>
+          <div className="col-xs-10">
+            <FBSelect dropDownItems={[]}
+              onChange={(selectedOption) => {
+                this.props.push("/app/designer/farm_events/" + selectedOption.value);
+              }}
+            />
           </div>
 
-          <div className="event-block-list">
-            {/* aaand these ones */}
-            <div className="event-block col-sm-10">
-              <span className="time">4am</span>
-              <i className="fa fa-tint"></i>
-              <span className="desc">Water</span>
-            </div>
-            <div className="event-block col-sm-10">
-              <span className="time">3pm</span>
-              <i className="fa fa-leaf"></i>
-              <span className="desc">Seed</span>
-            </div>
+          <div className="farm-events row">
+            {this.renderCalendarRows()}
           </div>
-
         </div>
 
         <Link to="/app/designer/farm_events/add">

@@ -2,7 +2,6 @@ import * as React from "react";
 import { RegimensState } from "../interfaces";
 import { SaveButton } from "./save_button";
 import { DeleteButton } from "./delete_button";
-import { StartButton, StopButton } from "./regimen_tasks";
 import { CopyButton } from "./copy_button";
 import { EmptyEditor } from "./empty_editor";
 import { ActiveEditor } from "./active_editor";
@@ -26,7 +25,7 @@ export function RegimenEditorWidget({regimens, dispatch, auth, bot}:
       regimen,
       token: auth.token,
       baseUrl: (auth.token && auth.token.unencoded.iss) ||
-        "CANT_FETCH_TOKEN_ISS"
+      "CANT_FETCH_TOKEN_ISS"
     };
     let taskProps = {
       dispatch,
@@ -42,8 +41,6 @@ export function RegimenEditorWidget({regimens, dispatch, auth, bot}:
               url={auth.token.unencoded.iss} />
             <CopyButton regimen={regimen} dispatch={dispatch} />
             <DeleteButton {...saveButtenProps} />
-            <StartButton  {...taskProps} />
-            <StopButton  {...taskProps} />
             <div className="widget-header">
               <h5> Regimen Editor </h5>
               <i className="fa fa-question-circle widget-help-icon">

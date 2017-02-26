@@ -4,12 +4,16 @@ import { t } from "i18next";
 
 interface AddRegimenProps {
   dispatch: Function;
+  className?: string;
+  children?: JSX.Element;
 }
 
-export function AddRegimen({dispatch}: AddRegimenProps) {
-  return <button className="green button-like widget-control"
-                 onClick={ add(dispatch) }>
-    {t("Add")}
+export function AddRegimen(props: AddRegimenProps) {
+  props.className ? props.className : "";
+  let classes = "green button-like widget-control " + props.className;
+  return <button className={classes}
+    onClick={add(props.dispatch)}>
+    {props.children || t("Add")}
   </button>;
 }
 

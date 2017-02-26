@@ -10,41 +10,41 @@ import { prettyPrintApiErrors, AxiosErrorResponse } from "../util";
 import { Session } from "../session";
 
 function updateUserSuccess(payload: User): ReduxAction<User> {
-    return { type: "UPDATE_USER_SUCCESS", payload };
+  return { type: "UPDATE_USER_SUCCESS", payload };
 }
 
 export function updateUser(user: UserAccountUpdate): Thunk {
-    return (dispatch, getState) => {
-        axios.patch<User>(API.current.usersPath, user)
-            .then((resp) => {
-                success(t("User successfully updated."));
-                dispatch(updateUserSuccess(resp.data));
-            }, (e: Error) => {
-                error(t(`User could not be updated: ${e.message}`));
-            });
-    };
+  return (dispatch, getState) => {
+    axios.patch<User>(API.current.usersPath, user)
+      .then((resp) => {
+        success(t("User successfully updated."));
+        dispatch(updateUserSuccess(resp.data));
+      }, (e: Error) => {
+        error(t(`User could not be updated: ${e.message}`));
+      });
+  };
 }
 
 export function deleteUser(payload: DeletionRequest): Thunk {
-    return (dispatch, getState) => {
-        let state = getState().auth;
-        if (state) {
-            // https://github.com/mzabriskie/axios/issues/312
-            axios<{}>({
-                method: "delete",
-                url: API.current.usersPath,
-                data: payload,
-                params: { force: true }
-            })
-                .then(resp => {
-                    alert("We're sorry to see you go. :(");
-                    Session.clear(true);
-                })
-                .catch((e: AxiosErrorResponse) => {
-                    error(prettyPrintApiErrors(e));
-                });
-        } else {
-            throw new Error("Impossible");
-        }
-    };
+  return (dispatch, getState) => {
+    let state = getState().auth;
+    if (state) {
+      // https://github.com/mzabriskie/axios/issues/312
+      axios<{}>({
+        method: "delete",
+        url: API.current.usersPath,
+        data: payload,
+        params: { force: true }
+      })
+        .then(resp => {
+          alert("We're sorry to see you go. :(");
+          Session.clear(true);
+        })
+        .catch((e: AxiosErrorResponse) => {
+          error(prettyPrintApiErrors(e));
+        });
+    } else {
+      throw new Error("Impossible");
+    }
+  };
 }

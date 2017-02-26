@@ -16,10 +16,10 @@ FarmBotRenderer.prototype = {
 
     constructor: FarmBotRenderer,
 
-    apply: function(compiler) {
+    apply: function (compiler) {
         var self = this;
 
-        compiler.plugin("after-emit", function(compilation, callback) {
+        compiler.plugin("after-emit", function (compilation, callback) {
             var options = compiler.options;
             var stats = compilation.getStats().toJson({
                 hash: false,
@@ -35,19 +35,20 @@ FarmBotRenderer.prototype = {
             var wantedAssets = [];
 
             stats
-              .assets
-              .map(function(asset) {
-                var name = asset.name;
-                var isIncluded = asset.name.includes(self.options.include);
-                var notMapFile = !asset.name.endsWith(".map");
-                if (isIncluded && notMapFile) {
-                    asset.name = "/" + asset.name.replace("../", ""); // Unacceptable. :(
-                    wantedAssets.push(asset);
-                }
-            });
+                .assets
+                .map(function (asset) {
+                    var name = asset.name;
+                    var isIncluded = asset.name.includes(self.options.include);
+                    var notMapFile = !asset.name.endsWith(".map");
+                    if (isIncluded && notMapFile) {
+                        asset.name = "/" + asset.name.replace("../", ""); // Unacceptable. :(
+                        wantedAssets.push(asset);
+                    }
+                });
 
             var finalPath = self.options.path;
-            fs.readFile(finalPath, "utf-8", function(err, source) {
+            console.dir(self.options);
+            fs.readFile(finalPath, "utf-8", function (err, source) {
 
                 var data = self.options;
                 data.wantedAssets = wantedAssets;
@@ -56,7 +57,7 @@ FarmBotRenderer.prototype = {
                 var html = template(data);
                 var outputDest = self.options.outputPath + "/" + self.options.filename;
 
-                fs.writeFile(outputDest, html, function(err, data) {
+                fs.writeFile(outputDest, html, function (err, data) {
                     if (err) { console.error("error in writing file", err); }
                 });
             });

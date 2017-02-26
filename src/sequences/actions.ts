@@ -1,6 +1,6 @@
 import * as axios from "axios";
 import { Everything } from "../interfaces";
-import { CeleryNode as Step, LATEST_VERSION } from "farmbot";
+import { SequenceBodyItem as Step, LATEST_VERSION } from "farmbot";
 import {
     SequenceOptions,
     Sequence,

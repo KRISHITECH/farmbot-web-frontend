@@ -127,6 +127,10 @@
         background: $light_gray;
         padding-bottom: 1rem;
     }
+    &.execute-script-step {
+        background: $light_red;
+        padding-bottom: 1rem;
+    }
     &.if-step {
         background: $light_purple;
         h4 {
@@ -143,5 +147,12 @@
     input,
     select {
         width: 100%;
+    }
+    &.take-photo-step {
+        background: $light_brown;
+        color: $black
+    }
+    &.take-photo-step a {
+        color: $red;
     }
 }

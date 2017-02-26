@@ -1,26 +1,47 @@
 import * as React from "react";
 import { Everything } from "../../interfaces";
-import * as Snap from "snapsvg";
 import { Plant, PlantOptions } from "../plant";
-import { savePlant } from "../actions";
+import { deprecatedSavePlant, savePlantById, movePlant } from "../actions";
 import { connect } from "react-redux";
 import * as moment from "moment";
+import { Plant as IPlant } from "../interfaces";
+import { GardenPlant } from "./garden_plant";
+import { GardenPoint } from "./garden_point";
+import { Link } from "react-router";
 
 interface GardenMapProps extends Everything {
   params: {
     species: string;
+    plant_id: string;
   };
 }
 
 function fromScreenToGarden(mouseX: number, mouseY: number, boxX: number, boxY: number) {
-  let rawX = mouseX - boxX;
-  let rawY = mouseY - boxY;
+  /** The offset of 50px is made for the setDragImage to make it in the
+   * center of the mouse for accuracy which is why this is being done.
+   * Once we get more dynamic with the values (different size plants),
+   * we can tweak this accordingly. 
+   */
+  let newMouseX = mouseX - 25;
+  let newMouseY = mouseY - 25;
+  /* */
+
+  let rawX = newMouseX - boxX;
+  let rawY = newMouseY - boxY;
 
   return { x: rawX, y: rawY };
 }
 
+interface GardenMapState {
+  activePlant: IPlant | undefined;
+  tempX: number | undefined;
+  tempY: number | undefined;
+
+}
 @connect((state: Everything) => state)
-export class GardenMap extends React.Component<GardenMapProps, {}> {
+export class GardenMap extends React.Component<GardenMapProps, GardenMapState> {
+  state = { activePlant: undefined, tempX: undefined, tempY: undefined };
+
   handleDragOver(e: React.DragEvent<HTMLElement>) {
     // Perform drop availability here probably
     e.preventDefault();
@@ -55,9 +76,7 @@ export class GardenMap extends React.Component<GardenMapProps, {}> {
     e.preventDefault();
 
     let el = document.querySelector("#drop-area > svg");
-    if (!el) {
-      throw new Error("why");
-    } else {
+    if (el) {
       let box = el.getBoundingClientRect();
       let p: PlantOptions = fromScreenToGarden(e.pageX, e.pageY, box.left, box.top);
       // TEMPORARY SOLUTION =======
@@ -68,47 +87,51 @@ export class GardenMap extends React.Component<GardenMapProps, {}> {
       p.planted_at = moment().toISOString();
       // END TEMPORARY SOLUTION =======
       let plant = Plant(p);
-      this.props.dispatch(savePlant(plant));
-      this.renderPlants();
+      this.props.dispatch(deprecatedSavePlant(plant));
+    } else {
+      throw new Error("never");
     }
   }
 
-  renderPlants() {
-    var s = Snap("#svg");
-
-    let move = function (dx: number, dy: number) {
-      this.attr({
-        transform: this.data("origTransform") +
-        (this.data("origTransform") ? "T" : "t") + [dx, dy]
-      });
-    };
-
-    let start = function () {
-      this.data("origTransform", this.transform().local);
-    };
-
-    let stop = function () {
-      // this.props.dispatch(movePlant())
-    };
-
-    this.props.designer.plants.map(plant => {
-      let plnt = s.image(plant.icon_url, plant.x, plant.y, 60, 60);
-      plnt.attr({ "data-id": plant.id });
-      plnt.drag(move, start, stop);
-    });
-  }
-
-  componentDidMount() {
-    this.renderPlants();
-  }
-
   render() {
+    let { dispatch } = this.props;
+    let updater = (deltaX: number, deltaY: number, plantId: number) => {
+      dispatch(movePlant({ deltaX, deltaY, plantId }));
+    };
+
+    let dropper = (id: number) => {
+      dispatch(savePlantById(id));
+    };
+
     return <div className="drop-area"
       id="drop-area"
       onDrop={this.handleDrop.bind(this)}
-      onDragEnter={this.handleDragEnter}
-      onDragOver={this.handleDragOver}>
-      <svg id="svg"></svg>
+      onDragEnter={this.handleDragEnter.bind(this)}
+      onDragOver={this.handleDragOver.bind(this)}>
+      <svg id="svg">
+        {this.props.sync.points.map(function (p) {
+          return <GardenPoint point={p} key={p.id} />;
+        })}
+        {
+          this.props.sync.plants.map((p, inx) => {
+            if (p.id) {
+              let isActive = parseInt(this.props.params.plant_id) === p.id ?
+                "active" : "";
+
+              return <Link to={`/app/designer/plants/` + p.id.toString()}
+                className={`plant-link-wrapper ` + isActive.toString()}
+                key={p.id}>
+                <GardenPlant
+                  plant={p}
+                  onUpdate={updater}
+                  onDrop={dropper} />
+              </Link>;
+            } else {
+              throw new Error("Never.");
+            }
+          })
+        }
+      </svg>
     </div>;
   }
 }

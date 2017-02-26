@@ -45,6 +45,12 @@
             color: $dark_gray;
         }
     }
+    &.green,
+    &.red {
+        .toast-title {
+            color: $off_white;
+        }
+    }
 }
 
 .toast-title {

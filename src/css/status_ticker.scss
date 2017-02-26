@@ -9,7 +9,7 @@
     overflow: scroll;
     height: 3.2rem;
     background: #000;
-    transition: all 0.4s ease-in-out;
+    transition: all 0.2s ease-in-out;
     touch-action: manipulation;
     .status-ticker-wrapper:first-child {
         background: #000;
@@ -48,7 +48,7 @@
         text-decoration: underline !important;
     }
     &:after {
-        transition: all 0.4s ease-in-out;
+        transition: all 0.2s ease-in-out;
         content: "";
         position: fixed;
         transform: translateY(-22rem);
@@ -65,9 +65,9 @@
         position: relative;
         padding: 0.2rem 3.4rem;
         margin-bottom: 0.6rem;
-        transition: all 0.4s ease-in-out;
+        transition: all 0.2s ease-in-out;
         .status-ticker-message * {
-            transition: all 0.4s ease-in-out;
+            transition: all 0.2s ease-in-out;
             font-size: 1.3rem;
             opacity: 0;
             text-transform: none;
@@ -76,14 +76,14 @@
             -webkit-font-smoothing: antialiased;
         }
         .saucer {
-            transition: all 0.4s ease-in-out;
+            transition: all 0.2s ease-in-out;
             width: 1.4rem;
             height: 1.4rem;
             vertical-align: top;
             opacity: 0;
         }
         .status-ticker-created-at {
-            transition: all 0.4s ease-in-out;
+            transition: all 0.2s ease-in-out;
             float: right;
             color: $white;
             text-transform: none;
@@ -91,27 +91,28 @@
             opacity: 0;
         }
     }
-    &.active {
-        transition: all 0.4s ease-in-out;
+    &:active {
+        transition: all 0.2s ease-in-out 0.2s;
         height: 22rem;
         box-shadow: 0px 0px 16px #000;
         background: rgba(0, 0, 0, 0.8);
         padding-bottom: 5rem;
+        -webkit-user-select: none;
         .status-ticker-message * {
-            transition: all 0.4s ease-in-out;
+            transition: all 0.2s ease-in-out;
             opacity: 1 !important;
         }
         .saucer {
-            transition: all 0.4s ease-in-out;
+            transition: all 0.2s ease-in-out;
             opacity: 1 !important;
         }
         .status-ticker-created-at {
-            transition: all 0.4s ease-in-out;
+            transition: all 0.2s ease-in-out;
             opacity: 1 !important;
         }
         &:before,
         &:after {
-            transition: all 0.4s ease-in-out;
+            transition: all 0.2s ease-in-out 0.2s;
             transform: translateY(0);
         }
     }

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { copy, remove, StepParams } from "./step_tiles/index";
-import { CeleryNode as Step, Execute } from "farmbot";
+import { SequenceBodyItem as Step, Execute } from "farmbot";
 import { Sequence } from "./interfaces";
 import { changeStep } from "./actions";
 import { t } from "i18next";
@@ -48,7 +48,6 @@ function SequenceSelectBox({dispatch,
         }
     });
 
-    // TODO: Take care of this any
     function change(e: Option) {
         let val = e.value;
         if (val) {

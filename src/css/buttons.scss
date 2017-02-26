@@ -63,6 +63,15 @@ button {
             background-color: darken($yellow, 10%);
         }
     }
+    &.orange {
+        background-color: $orange;
+        float: right;
+        color: $dark_gray;
+        border-bottom: solid $dark_orange;
+        &:hover {
+            background-color: darken($orange, 10%);
+        }
+    }
     &.cyan {
         background-color: $cyan;
         float: right;
@@ -132,7 +141,7 @@ button {
                 width: 1.6rem;
                 background: white;
                 border-radius: 50%;
-                top: 0.2rem;
+                top: 0.1rem;
                 margin: 0 auto;
                 left: 0;
                 right: 0;
@@ -144,7 +153,7 @@ button {
                 height: 1.6rem;
                 width: 1.6rem;
                 border-radius: 50%;
-                top: 0.2rem;
+                top: 0.1rem;
                 margin: 0 auto;
                 left: 0;
                 right: 0;
@@ -191,12 +200,13 @@ button {
 }
 
 .plus-button {
+    z-index: 3;
     border-radius: 50%;
     bottom: 5rem;
     width: 5rem;
     height: 5rem;
     color: $off_white;
-    margin-left: 9rem;
+    margin-left: 12rem;
     text-align: center;
     cursor: pointer;
     border-bottom-width: 3px!important;
@@ -228,7 +238,7 @@ button {
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 568px) {
     .plus-button {
         margin: 0 auto;
     }

@@ -18,11 +18,21 @@ export class API {
     /** Guesses the most appropriate API port based on a number of environment
      *  factors such as hostname and protocol (HTTP vs. HTTPS). */
     static inferPort(): string {
-        // Most devs running a server on localhost run the API on port 3000.
-        if (location.hostname === "localhost") { return "3000"; }
+
+        // ATTEMPT 1: Most devs running a webpack server on localhost
+        //            run the API on port 3000.
+        if (location.port === "8080") { return "3000"; }
+
+        // ATTEMPT 2: If they provide an explicit port (as in ://localhost:3000)
+        //            use that port.
+        if (location.port) { return location.port; }
+
+        // ATTEMPT 3:  If that doesn't work, check for HTTPS:// and use the 
+        //             default of 443.
         if (API.parseURL(location.origin).protocol === "https:") {
             return "443";
         }
+
         // All others just use port 80.
         return "80";
     }
@@ -100,6 +110,8 @@ export class API {
     /** /api/peripherals/ */
     get peripheralsPath() { return `${this.baseUrl}/api/peripherals/`; };
     /** /api/plants/ */
+    get farmEventsPath() { return `${this.baseUrl}/api/farm_events/`; };
+    /** /api/plants/ */
     get plantsPath() { return `${this.baseUrl}/api/plants/`; };
     /** /api/regimens/ */
     get regimensPath() { return `${this.baseUrl}/api/regimens/`; };
@@ -115,4 +127,8 @@ export class API {
     get toolsPath() { return `${this.baseUrl}/api/tools/`; };
     /** /api/images/ */
     get imagesPath() { return `${this.baseUrl}/api/images/`; };
+    /** /api/points/ */
+    get pointsPath() { return `${this.baseUrl}/api/points/`; };
+    /** /api/points/search */
+    get pointSearchPath() { return `${this.pointsPath}/search/`; };
 }

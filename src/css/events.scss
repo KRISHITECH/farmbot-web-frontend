@@ -1,4 +1,7 @@
-// Styles for the EVENTS Widget
+.add-event-repeat-frequency {
+    min-height: 34px;
+}
+
 .events {
     .fa-calendar {
         font-size: 2rem;
@@ -28,4 +31,8 @@
             font-size: 2rem;
         }
     }
+}
+
+.event-select-date {
+    margin-right: 2rem;
 }

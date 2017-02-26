@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CeleryNode as Step, Dictionary } from "farmbot";
+import { SequenceBodyItem as Step, Dictionary } from "farmbot";
 import { addComment } from "../actions";
 import { t } from "i18next";
 
@@ -16,7 +16,9 @@ function translate(input: Step): string {
     "wait": t("Wait"),
     "send_message": t("Send Message"),
     "_if": t("If Statement"),
-    "execute": t("Execute Sequence")
+    "execute": t("Execute Sequence"),
+    "execute_script": t("Execute Script"),
+    "take_photo": t("Take a Photo")
   };
 
   return TRANSLATIONS[input.kind] || input.kind;

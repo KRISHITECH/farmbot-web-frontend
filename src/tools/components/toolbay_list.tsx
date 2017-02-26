@@ -59,11 +59,11 @@ export class ToolBayList extends React.Component<ListAndFormProps, {}> {
                         <table>
                             <thead>
                                 <tr>
-                                    <th>SLOT</th>
-                                    <th>X</th>
-                                    <th>Y</th>
-                                    <th>Z</th>
-                                    <th>TOOL</th>
+                                    <th>{t("SLOT")}</th>
+                                    <th>{t("X")}</th>
+                                    <th>{t("Y")}</th>
+                                    <th>{t("Z")}</th>
+                                    <th>{t("TOOL")}</th>
                                 </tr>
                             </thead>
                             <tbody>

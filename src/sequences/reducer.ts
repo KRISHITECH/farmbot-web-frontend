@@ -1,4 +1,4 @@
-import { CeleryNode as Step, LATEST_VERSION, MoveAbsolute } from "farmbot";
+import { SequenceBodyItem as Step, LATEST_VERSION, MoveAbsolute } from "farmbot";
 import {
     Sequence,
     SequenceReducerState,
