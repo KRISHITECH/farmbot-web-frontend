@@ -5,7 +5,7 @@ type OptionComponent = React.ComponentClass<DropDownItem>
 
 export interface DropDownItem {
   /** Value passed to the onClick cb and also determines the "chosen" option. */
-  value?: number;
+  value?: number | string;
   /** Name of the item shown in the list. */
   label: string;
   /** Component internal use only unless there's an edge case for it. */
@@ -34,7 +34,7 @@ export interface SelectProps {
 export interface SelectState {
   label: string;
   isOpen: boolean;
-  value: number | null;
+  value: string | number | undefined;
 }
 
 export class FBSelect extends React.Component<SelectProps, Partial<SelectState>> {
@@ -42,8 +42,7 @@ export class FBSelect extends React.Component<SelectProps, Partial<SelectState>>
     super();
     this.state = {
       label: "",
-      isOpen: false,
-      value: null
+      isOpen: false
     };
   }
 
@@ -119,7 +118,7 @@ export class FBSelect extends React.Component<SelectProps, Partial<SelectState>>
   }
 
   render() {
-    let { className, optionComponent, placeholder} = this.props;
+    let { className, optionComponent, placeholder } = this.props;
     let { isOpen } = this.state;
     // Dynamically chose custom vs. standard list item JSX based on options:
     let renderList = (optionComponent ? this.custItemList : this.normlItemList);

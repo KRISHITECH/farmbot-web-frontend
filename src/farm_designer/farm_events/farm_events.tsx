@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router";
-import { FBSelect } from "../../ui";
+import { FBSelect, Row, Col } from "../../ui";
 import { connect } from "react-redux";
 import { t } from "i18next";
 import * as moment from "moment";
@@ -67,21 +67,21 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
 
       <div className="panel-content events">
 
-        <div className="row">
+        <Row>
           <i className="col-xs-2 fa fa-calendar"></i>
 
-          <div className="col-xs-10">
+          <Col xs={10}>
             <FBSelect dropDownItems={[]}
               onChange={(selectedOption) => {
                 this.props.push("/app/designer/farm_events/" + selectedOption.value);
               }}
             />
-          </div>
+          </Col>
 
           <div className="farm-events row">
             {this.renderCalendarRows()}
           </div>
-        </div>
+        </Row>
 
         <Link to="/app/designer/farm_events/add">
           <div className="plus-button add-event button-like"

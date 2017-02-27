@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Everything } from "../interfaces";
 import { ToolsState } from "./interfaces";
+import { Col } from "../ui";
 import { ToolBayList, ToolBayForm, ToolList, ToolForm } from "./components";
 import { connect } from "react-redux";
 
@@ -10,7 +11,7 @@ export class Tools extends React.Component<Everything, ToolsState> {
     let editing = this.props.tools.editorMode;
     let isEditingTools = this.props.tools.tools.isEditing;
     return <div className="all-content-wrapper tools">
-      <div className="col-md-8">
+      <Col md={8}>
         {!editing && (
           <ToolBayList
             all={this.props.tools}
@@ -23,8 +24,8 @@ export class Tools extends React.Component<Everything, ToolsState> {
             dispatch={this.props.dispatch}
           />
         )}
-      </div>
-      <div className="col-md-4">
+      </Col>
+      <Col md={4}>
         {!isEditingTools && (
           <ToolList
             all={this.props.tools}
@@ -37,7 +38,7 @@ export class Tools extends React.Component<Everything, ToolsState> {
             dispatch={this.props.dispatch}
           />
         )}
-      </div>
+      </Col>
     </div>;
   }
 }

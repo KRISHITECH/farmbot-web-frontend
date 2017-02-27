@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BackArrow } from "../back_arrow";
+import { BackArrow } from "../../ui";
 import { Link } from "react-router";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
