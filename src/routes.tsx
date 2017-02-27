@@ -184,6 +184,20 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
       {
         path: "app/regimens",
         getComponent(location: any, cb: any) {
+          if (!isMobile()) {
+            System.import("./regimens/index.tsx").then(
+              (module: any) => cb(null, module.Regimens)
+            ).catch(errorLoading);
+          } else {
+            System.import("./regimens/list/index.tsx").then(
+              (module: any) => cb(null, module.RegimensList)
+            ).catch(errorLoading);
+          }
+        },
+      },
+      {
+        path: "app/regimens/:regimen",
+        getComponent(location: any, cb: any) {
           System.import("./regimens/index.tsx").then(
             (module: any) => cb(null, module.Regimens)
           ).catch(errorLoading);

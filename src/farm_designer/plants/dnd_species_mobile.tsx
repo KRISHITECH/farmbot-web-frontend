@@ -32,7 +32,8 @@ DNDSpeciesMobileState> {
   }
 
   handleDragStart(e: DraggableEvent) {
-    console.log(e.currentTarget);
+    // TODO: Take suggestions from the community about user preference
+    // console.log(e.currentTarget);
     let img = document.createElement("img");
     // Stub until we figure out dynamic drag images
     img.src = "/app-resources/img/icons/Sprout-96.png";

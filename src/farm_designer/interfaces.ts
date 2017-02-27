@@ -8,12 +8,6 @@ export interface SelectSequenceOrRegimenProps extends Option {
   kind?: string;
 }
 
-/** Used to associate dates with events in that are the same day */
-export interface FinalEventData {
-  date: string;
-  finalEvents: FarmEventExecutableData[];
-}
-
 export interface UpdateSequenceOrRegimenProps {
   label: string;
   value: number;
@@ -40,13 +34,6 @@ export interface FarmEvent {
   executable_type: string;
   calendar?: string[] | undefined;
 };
-
-export interface FarmEventExecutableData {
-  farm_event_data: FarmEvent;
-  executable_data: {
-    name: string;
-  };
-}
 
 export interface MovePlantProps {
   deltaX: number;
