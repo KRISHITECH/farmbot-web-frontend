@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BackArrow } from "../back_arrow";
+import { BackArrow } from "../../ui";
 import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
 import * as moment from "moment";

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router";
-import { BackArrow } from "../back_arrow";
+import { BackArrow } from "../../ui";
 import { CropLiveSearchResult } from "../interfaces";
 import { Everything } from "../../interfaces";
 import { openFarmSearchQuery } from "../actions";
@@ -17,7 +17,7 @@ interface SearchBoxParams {
   dispatch: Function;
 }
 
-function SearchBox({query, dispatch}: SearchBoxParams) {
+function SearchBox({ query, dispatch }: SearchBoxParams) {
   return <input value={query}
     onChange={(e) => doSearch(e, dispatch)}
     className="search"

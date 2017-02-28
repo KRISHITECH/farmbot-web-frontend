@@ -51,7 +51,7 @@ export class Account extends React.Component<Everything, UserAccountUpdate> {
   render() {
     return (
       <Page className="account">
-        <Col sm={[8, 2]}>
+        <Col sm={8} smOffset={2}>
           <Row>
             <Settings name={this.state.name || ""}
               email={this.state.email || ""}

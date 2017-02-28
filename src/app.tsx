@@ -11,12 +11,12 @@ fastClick.attach(document.body);
 init();
 
 export default class App extends React.Component<Everything, {}> {
-    render() {
-        return (
-            <div className="app">
-                <NavBar { ...this.props } />
-                {this.props.children}
-            </div>
-        );
-    }
+  render() {
+    return (
+      <div className="app">
+        <NavBar { ...this.props } />
+        {this.props.children}
+      </div>
+    );
+  }
 }
