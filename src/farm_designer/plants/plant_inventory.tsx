@@ -39,14 +39,11 @@ export class Plants extends React.Component<Everything, {}> {
     let { plants } = this.props.sync;
 
     let plantOptions = plants.map(plant => {
-      return {
-        // openfarm_slug: plant.openfarm_slug,
-        // plant_id: plant.id,
-        // img_url: plant.img_url,
-        // planted_at: plant.planted_at,
-        label: plant.name,
-        value: plant.id
-      };
+      if (plant.id) {
+        return { label: plant.name, value: plant.id };
+      } else {
+        throw new Error("Thought plants would have an ID here.");
+      }
     });
 
     return <div className="panel-container green-panel plant-inventory-panel">
@@ -68,7 +65,7 @@ export class Plants extends React.Component<Everything, {}> {
 
         <div className="thin-search-wrapper">
           <i className="fa fa-search"></i>
-          <FBSelect dropDownItems={plantOptions}
+          <FBSelect list={plantOptions}
             optionComponent={OptionComponent(this.props.sync.plants)}
             onChange={this.handleRedirect.bind(this)}
             isOpen={true}
