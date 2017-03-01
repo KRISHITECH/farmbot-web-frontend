@@ -7,7 +7,7 @@ interface WidgetProps {
 }
 
 export function Widget(props: WidgetProps) {
-  let finalClass = `widget-wrapper`;
+  let finalClass = `widget-wrapper `;
   if (props.className) { finalClass += props.className; }
   return <div className={finalClass}>
     {props.children}

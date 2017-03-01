@@ -71,7 +71,7 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
           <i className="col-xs-2 fa fa-calendar"></i>
 
           <Col xs={10}>
-            <FBSelect dropDownItems={[]}
+            <FBSelect list={[]}
               onChange={(selectedOption) => {
                 this.props.push("/app/designer/farm_events/" + selectedOption.value);
               }}

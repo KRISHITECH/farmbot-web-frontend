@@ -1,12 +1,10 @@
-@media screen and (min-device-width: 1200px) and (max-device-width: 1600px) {
-    .tool-bay-form {
-        .select-wrapper {
-            width: 12rem;
-        }
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+.toolbay-form-widget {
+    .row {
+        margin-bottom: 1rem;
+    }
+    .heading-row {
+        &:not(:first-child) {
+            text-align: center;
         }
     }
 }

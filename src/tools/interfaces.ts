@@ -27,15 +27,18 @@ export interface ToolBay {
 }
 
 export interface ToolBayFormState {
-  x?: number;
-  y?: number;
-  z?: number;
-  tool_id?: null | number;
+  tools?: Tool[];
+  tool_slots?: ToolSlot[];
+  tool_bays?: ToolBay[];
+  new_slot_x?: number;
+  new_slot_y?: number;
+  new_slot_z?: number;
+  new_slot_tool_id?: null | number;
 }
 
 export interface ToolFormState {
-  name: string;
-  id?: number;
+  tools: Tool[];
+  newToolName: string;
 }
 
 export interface ToolSlot {
@@ -56,9 +59,11 @@ export interface UpdateToolSlotPayl {
 }
 
 export interface Tool {
-  id: number | undefined;
+  id?: number | undefined;
   name: string;
   dirty?: boolean;
+  isNew?: boolean;
+  isDeleted?: boolean;
   status?: undefined | "unknown" | "active" | "inactive";
 }
 

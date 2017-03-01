@@ -1,53 +1,49 @@
 import * as React from "react";
 import { ListAndFormProps, ToolFormState } from "../interfaces";
+import { t } from "i18next";
+import { Widget, WidgetBody, WidgetHeader, BlurableInput } from "../../ui";
 import {
-  destroyTool,
+  toggleEditingTools,
   addTool,
-  stopEditingTools,
+  destroyTool,
   updateTool,
   saveTools
 } from "../actions";
-import { t } from "i18next";
-import {
-  Widget,
-  WidgetBody,
-  WidgetHeader,
-  BlurableInput
-} from "../../ui";
 
-export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
+export class ToolForm extends React.Component<ListAndFormProps,
+  Partial<ToolFormState>> {
   constructor() {
     super();
-    this.add = this.add.bind(this);
-    this.set = this.set.bind(this);
-    this.save = this.save.bind(this);
-    this.updateToolName = this.updateToolName.bind(this);
-    this.state = { name: "" };
+    this.state = {};
   }
 
-  add() {
-    this.props.dispatch(addTool(this.state.name));
-    this.setState({ name: "" });
+  setNewToolName = (e: React.FormEvent<HTMLInputElement>) => {
+    this.setState({ newToolName: e.currentTarget.value });
   }
 
-  updateToolName(e: React.FormEvent<HTMLInputElement>) {
+  update = (e: React.FormEvent<HTMLInputElement>) => {
     let { id, value } = e.currentTarget;
     this.props.dispatch(updateTool(parseInt(id), value));
   }
 
-  save() {
-    this.props.dispatch(saveTools(this.props.all.tools.all));
+  destroy = (tool_id: number | undefined) => {
+    if (tool_id) {
+      this.props.dispatch(destroyTool(tool_id));
+    } else {
+      throw new Error("Tool ID could not be found.");
+    }
   }
 
-  set(e: React.FormEvent<HTMLInputElement>) {
-    this.setState({ name: e.currentTarget.value });
+  add = (e: React.FormEvent<HTMLButtonElement>) => {
+    this.props.dispatch(addTool(this.state.newToolName || ""));
+    this.setState({ newToolName: "" });
+  }
+
+  toggleEdit = () => {
+    this.props.dispatch(toggleEditingTools());
   }
 
   render() {
-    let { set, add, updateToolName, save } = this;
-    let { dispatch } = this.props;
-    let { tools } = this.props.all;
-    let stopEdit = () => { dispatch(stopEditingTools()); };
     return <Widget>
       <WidgetHeader
         helpText={t(`This is a list of all your FarmBot Tools.
@@ -55,13 +51,15 @@ export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
         title="TOOLS">
         <button
           className="green button-like"
-          onClick={() => { save(); }}>
+          onClick={() =>
+            this.props.dispatch(saveTools(this.props.all.tools.all))
+          }>
           {t("SAVE")}
-          {tools.dirty && ("*")}
+          {this.props.all.tools.dirty && ("*")}
         </button>
         <button
           className="gray button-like"
-          onClick={stopEdit}>
+          onClick={this.toggleEdit}>
           {t("BACK")}
         </button>
       </WidgetHeader>
@@ -73,26 +71,20 @@ export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
             </tr>
           </thead>
           <tbody>
-            {tools.all.map((tool, index) => {
-              index++;
-              let { name, id } = tool;
-              return <tr key={index}>
+            {(this.props.all.tools.all || []).map((tool, index) => {
+              let isDeleted = tool.isDeleted || false;
+              return <tr key={index} className={"is-deleted-" + isDeleted}>
                 <td>
                   <BlurableInput
-                    value={name || "Error getting Name"}
-                    onCommit={updateToolName}
-                    id={(id || (index - 1000)).toString()}
-                    name={index.toString()}
+                    id={(tool.id || "Error getting ID").toString()}
+                    value={tool.name || "Error getting Name"}
+                    onCommit={this.update}
                   />
                 </td>
                 <td>
                   <button
-                    className={`button-like red`}
-                    onClick={() => {
-                      if (id) {
-                        dispatch(destroyTool(id));
-                      }
-                    }}>
+                    className="button-like red"
+                    onClick={() => this.destroy(tool.id)}>
                     <i className="fa fa-times"></i>
                   </button>
                 </td>
@@ -100,16 +92,16 @@ export class ToolForm extends React.Component<ListAndFormProps, ToolFormState> {
             })}
             <tr>
               <td>
-                <input
-                  value={this.state.name}
-                  onChange={set}
-                  name="name"
+                <BlurableInput
+                  value={this.state.newToolName || ""}
+                  onCommit={this.setNewToolName}
+                  type="text"
                 />
               </td>
               <td>
                 <button
-                  className={`button-like green`}
-                  onClick={() => { dispatch(add); }}>
+                  className="button-like green"
+                  onClick={this.add}>
                   <i className="fa fa-plus"></i>
                 </button>
               </td>

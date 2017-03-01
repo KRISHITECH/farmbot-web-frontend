@@ -1,6 +1,6 @@
 import * as Axios from "axios";
 import { error, success } from "../ui";
-import { Plant, MovePlantProps, FarmEvent } from "./interfaces";
+import { Plant, MovePlantProps, FarmEvent, FarmEventForm } from "./interfaces";
 import { Thunk } from "../redux/interfaces";
 import { CropSearchResult, OpenFarm } from "./openfarm";
 import { t } from "i18next";
@@ -8,20 +8,22 @@ import * as _ from "lodash";
 import { API } from "../api";
 import { Everything } from "../interfaces";
 import { findPlantById } from "../sync/reducer";
+import { prettyPrintApiErrors } from "../util";
 
-export function saveFarmEvent(farm_event: Partial<FarmEvent>,
+export function saveFarmEvent(farm_event: FarmEventForm,
   callback: () => void): Thunk {
   let url = API.current.farmEventsPath;
   return function (dispatch, getState) {
     return Axios.post<FarmEvent>(url, farm_event)
       .then(resp => {
+        if (resp instanceof Error) {
+          error(prettyPrintApiErrors(resp));
+          throw resp;
+        }
         let payload = { ...farm_event, ...resp.data };
         dispatch({ type: "SAVE_FARM_EVENT_OK", payload });
         success(t("Successfully saved event."));
         callback();
-      })
-      .catch(payload => {
-        error(t("Tried to save Farm Event, but couldn't."));
       });
   };
 };
