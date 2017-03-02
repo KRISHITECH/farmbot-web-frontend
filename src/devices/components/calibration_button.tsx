@@ -6,14 +6,13 @@ type Axis = "x" | "y" | "z" | "all";
 function calibrate(axis: Axis) {
   devices
     .current
-    .calibrate({ axis })
-    .then(() => console.log("WOO HOO!"), () => console.log("Doh!"));
+    .calibrate({ axis });
 }
 
 interface CalibrationButtonProps {
   axis: Axis;
 }
-export function CalibrationButton({axis}: CalibrationButtonProps) {
+export function CalibrationButton({ axis }: CalibrationButtonProps) {
   return <button type="button"
     className="button-like yellow"
     onClick={() => calibrate(axis)}>

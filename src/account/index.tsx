@@ -45,7 +45,6 @@ export class Account extends React.Component<Everything, UserAccountUpdate> {
   enactDeletion() {
     let password = this.state.deletion_confirmation || "NEVER SET";
     this.props.dispatch(deleteUser({ password }));
-    console.log("X");
   }
 
   render() {

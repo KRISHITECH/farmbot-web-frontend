@@ -165,6 +165,22 @@ export function pick<T, K extends keyof T>(target: T, key: K): T[K] {
   return target[key];
 }
 
+/** _Safely_ check a value at runtime to know if it can be used for square
+ * bracket access.
+ * ```
+ *   if (oneOf<User>(["email"], myVar1)) {
+ *     // Safe to use `myVar1` with square bracket access.
+ *   } else {
+ *     // Handle errors / failures.
+ *   }
+ * ```
+ */
+export function hasKey<T>(base: (keyof T)[]) {
+  return (target: T | any): target is keyof T => {
+    return base.includes(target);
+  };
+}
+
 /** Usefull for calculating uploads and progress bars for Promise.all */
 export class Progress {
   constructor(public total: number,
