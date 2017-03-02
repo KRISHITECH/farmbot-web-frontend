@@ -8,11 +8,6 @@ import { mapStateToProps, FarmEventProps } from "./map_state_to_props";
 
 @connect(mapStateToProps)
 export class FarmEvents extends React.Component<FarmEventProps, {}> {
-  /** Attempts to use passed string, if string is undefined defaults to UTC */
-  timeOrFallback(start_time: string | undefined) {
-    return start_time || moment().utc().toISOString();
-  }
-
   renderCalendarRows() {
     return this.props.calendarRows.map(function (item) {
       return <div className="farm-event-wrapper col-xs-12" key={item.timestamp}>
@@ -28,17 +23,17 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
 
         <div className="col-xs-10 events">
           {item.list.map(function (farmEvent) {
-            let start = moment(farmEvent.start_time).format("hh:mma");
+            let start = moment(item.timestamp).format("hh:mma");
             return <div className={`farm-event col-xs-12`}
               key={farmEvent.id}>
               <div className="event-time col-xs-3">
                 {start}
               </div>
               <div className="event-title col-xs-9">
-                {item.executableName}
+                ({farmEvent.id || 0}) {item.executableName}
               </div>
               <Link to={`/app/designer/farm_events/` +
-                (farmEvent.id || "UNSAVED EVENT").toString()}>
+                (farmEvent.id || "UNSAVED_EVENT").toString()}>
                 <i className="fa fa-pencil-square-o edit-icon"></i>
               </Link>
             </div>;

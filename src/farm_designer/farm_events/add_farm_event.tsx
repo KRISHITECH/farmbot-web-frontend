@@ -9,7 +9,6 @@ import {
   Row,
   BackArrow
 } from "../../ui";
-import { DropDownItem } from "../../ui";
 import * as moment from "moment";
 import { connect } from "react-redux";
 import {

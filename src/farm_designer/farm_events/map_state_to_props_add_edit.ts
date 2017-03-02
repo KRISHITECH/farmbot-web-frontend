@@ -36,7 +36,6 @@ export function mapStateToPropsAddEdit(state: Everything): AddEditFarmEventProps
 
         return newStartISO;
 
-      // break;
       case "end_time":
         let currentEndISO = new Date((currentISO || "").toString())
           .toISOString();
@@ -48,7 +47,6 @@ export function mapStateToPropsAddEdit(state: Everything): AddEditFarmEventProps
 
         return newEndISO;
 
-      // break;
       default:
         throw new Error("Expected a name attribute from time field.");
     }

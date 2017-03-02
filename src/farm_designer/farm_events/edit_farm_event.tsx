@@ -9,13 +9,13 @@ import {
   Row,
   BackArrow
 } from "../../ui";
-import { DropDownItem } from "../../ui";
 import * as moment from "moment";
 import { connect } from "react-redux";
 import {
   mapStateToPropsAddEdit,
   AddEditFarmEventProps
 } from "./map_state_to_props_add_edit";
+import { hasKey } from "../../util";
 
 type AddFarmEventState = Partial<Record<keyof FarmEvent, string | number>>;
 
@@ -38,18 +38,24 @@ AddFarmEventState> {
     this.setState({ executable_id, executable_type });
   }
 
+  /** Determine if its safe to use a string as a `keyof AddFarmEventState`.
+   * Good for sanitizing user input and such.
+   */
+  isKeyofState = hasKey<AddFarmEventState>([
+    "start_time",
+    "end_time",
+    "repeat",
+    "time_unit",
+    "next_time"
+  ]);
+
   updateForm = (e: React.SyntheticEvent<HTMLInputElement>) => {
-    switch (e.currentTarget.name) {
-      case "start_time":
-      case "end_time":
-      case "repeat":
-      case "time_unit":
-      case "next_time":
-        let { name, value } = e.currentTarget;
-        return this.setState({ [name]: value });
-      default:
-        throw new Error("Tried to match field name but couldn't.");
-    }
+    let { name, value } = e.currentTarget;
+    if (this.isKeyofState(name)) {
+      return this.setState({ [name]: value });
+    } else {
+      throw new Error("Got bad key: " + name);
+    };
   }
 
   // Waiting until we figure out the fb_select deal before borrowing interfaces
@@ -86,6 +92,10 @@ AddFarmEventState> {
     }
   }
 
+  destroy = () => {
+
+  }
+
   render() {
     let { formatDate, formatTime } = this.props;
 
@@ -93,7 +103,7 @@ AddFarmEventState> {
             add-farm-event-panel`}>
       <div className="panel-header magenta-panel">
         <p className="panel-title">
-          <BackArrow /> {t("Add Farm Event")}
+          <BackArrow /> {t("Edit Farm Event")}
         </p>
       </div>
       <div className="panel-content">
@@ -165,6 +175,10 @@ AddFarmEventState> {
         <button className="magenta button-like"
           onClick={() => this.props.save(this.state)}>
           {t("Save")}
+        </button>
+        <button className="red button-like"
+          onClick={this.destroy}>
+          {t("Delete")}
         </button>
       </div>
     </div>;
