@@ -17,6 +17,7 @@ import { API } from "../api";
 import { prettyPrintApiErrors } from "../util";
 import { Session } from "../session";
 import { UnsafeError } from "../interfaces";
+import { responseFulfilled, responseRejected, requestFulfilled } from "../interceptors";
 
 export function didLogin(authState: AuthState, dispatch: Function) {
   API.setBaseUrl(authState.token.unencoded.iss);
@@ -74,42 +75,8 @@ function loginErr() {
  * have a JSON Web Token attached to their "Authorization" header,
  * thereby granting access to the API. */
 export function loginOk(auth: AuthState): ReduxAction<AuthState> {
-  Axios.interceptors.response.use(x => x, function (x) {
-    console.log(x);
-    let a = ![451, 401, 422].includes(x.response.status);
-    let b = x.response.status > 399;
-    if (a && b) {
-      setTimeout(() => {
-        // Explicitly throw error so error reporting tool will save it.
-        let msg = "Bad response: " + x.response.status +
-          JSON.stringify(x.response).slice(0, 80);
-        throw new Error(msg);
-      }, 1);
-    }
-    switch (x.response.status) {
-      case 500:
-        error(t("Unexpected error occurred, we've been notified of the problem."));
-        break;
-      case 451:
-        // DONT REFACTOR: I want to use alert() because it's blocking.
-        alert(t("The terms of service have recently changed. You must " +
-          "accept the new terms of service to continue using the site."));
-        window.location.href = "/tos_update.html";
-        break;
-    }
-    return x;
-  });
-  Axios.interceptors.request.use(function (config) {
-    let req = config.url;
-    let isAPIRequest = req.includes(API.current.baseUrl);
-    if (isAPIRequest) {
-      config.headers = config.headers || {};
-      let headers = (config.headers as
-        { Authorization: string | undefined });
-      headers.Authorization = auth.token.encoded || "CANT_FIND_TOKEN";
-    }
-    return config;
-  });
+  Axios.interceptors.response.use(responseFulfilled, responseRejected);
+  Axios.interceptors.request.use(requestFulfilled(auth));
 
   return {
     type: "LOGIN_OK",

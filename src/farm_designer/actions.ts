@@ -151,7 +151,6 @@ export function openFarmSearchQuery(query: string) { // TODO make less smelly
           type: "OF_SEARCH_RESULTS_OK",
           payload
         });
-      })
-      .catch(error => { console.warn(error); });
+      });
   };
 };

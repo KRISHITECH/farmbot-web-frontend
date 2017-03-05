@@ -34,10 +34,9 @@ function routeIncomingDroppedItems(dispatch: dispatcher,
     case "step_splice":
       return dispatch(spliceStep(step, dropperId));
     case "step_move":
-      let {draggerId} = dataXferObj;
+      let { draggerId } = dataXferObj;
       return dispatch(moveStep(step, draggerId, dropperId));
     default:
-      console.dir(dataXferObj);
       throw new Error("Got unexpected data transfer object.");
   }
 }
@@ -46,7 +45,7 @@ let onDrop = (dispatch: dispatcher, dropperId: number) => (key: string) => {
   routeIncomingDroppedItems(dispatch, key, dropperId);
 };
 
-let StepList = ({sequence, sequences, dispatch, tools}:
+let StepList = ({ sequence, sequences, dispatch, tools }:
   {
     sequence: Sequence,
     sequences: Sequence[],
@@ -154,7 +153,7 @@ export class SequenceEditorMiddle extends React.Component<Everything, {}> {
             </button>
             <div className="widget-header">
               <h5>{t("Sequence Editor")}</h5>
-              <i className={`fa fa-question-circle 
+              <i className={`fa fa-question-circle
                                 widget-help-icon`}>
                 <div className="widget-help-text">
                   {t(`Drag and drop commands here to create

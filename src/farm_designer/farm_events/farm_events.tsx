@@ -10,7 +10,7 @@ import { mapStateToProps, FarmEventProps } from "./map_state_to_props";
 export class FarmEvents extends React.Component<FarmEventProps, {}> {
   renderCalendarRows() {
     return this.props.calendarRows.map(function (item) {
-      return <div className="farm-event-wrapper col-xs-12" key={item.timestamp}>
+      return <div className="farm-event-wrapper col-xs-12" key={item.sortKey}>
 
         <div className="farm-event-date col-xs-2">
           <div className="farm-event-date-month">
@@ -22,15 +22,14 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
         </div>
 
         <div className="col-xs-10 events">
-          {item.list.map(function (farmEvent) {
-            let start = moment(item.timestamp).format("hh:mma");
+          {item.items.map(function (farmEvent) {
             return <div className={`farm-event col-xs-12`}
-              key={farmEvent.id}>
+              key={farmEvent.sortKey}>
               <div className="event-time col-xs-3">
-                {start}
+                {farmEvent.timeStr}
               </div>
               <div className="event-title col-xs-9">
-                ({farmEvent.id || 0}) {item.executableName}
+                ({farmEvent.executableId}) {farmEvent.executableName}
               </div>
               <Link to={`/app/designer/farm_events/` +
                 (farmEvent.id || "UNSAVED_EVENT").toString()}>

@@ -58,8 +58,7 @@ function safelyFetchErrors(err: AxiosErrorResponse): { [key: string]: string } {
   } else {
     console.warn("DONT KNOW HOW TO HANDLE THIS ERROR MESSAGE.");
     console.dir(err);
-
-    return { possible: "connectivity issues." };
+    return { problem: "Farmbot Web App hit an unhandled exception." };
   };
 }
 

@@ -92,10 +92,12 @@ export function emergencyLock() {
 
 export function emergencyUnlock() {
   let noun = "Emergency unlock";
-  devices
-    .current
-    .emergencyUnlock()
-    .then(commandOK(noun), commandErr(noun));
+  if (confirm("Are you sure you want to unlock the device?")) {
+    devices
+      .current
+      .emergencyUnlock()
+      .then(commandOK(noun), commandErr(noun));
+  }
 }
 
 export function sync(): Thunk {

@@ -1,9 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router";
-import { sync } from "../devices/actions";
 import { Everything } from "../interfaces";
 import {
-  NavButtonProps,
   DropDownProps,
   NavBarState
 } from "./interfaces";
@@ -13,6 +11,7 @@ import { t } from "i18next";
 import { Session } from "../session";
 import { Markdown } from "../ui";
 import * as moment from "moment";
+import { SyncButton } from "./sync_button";
 
 let DropDown = ({ auth, onClick, sync }: DropDownProps) => {
   if (!auth) { return <span></span>; }
@@ -48,16 +47,6 @@ let DropDown = ({ auth, onClick, sync }: DropDownProps) => {
       </div>
     </div>
   </div>;
-};
-
-let SyncButton = ({auth, bot, dispatch}: NavButtonProps) => {
-  if (!auth) { return <span></span>; }
-  let dirty = bot.dirty;
-  let color = dirty ? "yellow" : "green";
-  return <button className={`nav-sync button-like ${color}`}
-    onClick={() => { dispatch(sync()); }}>
-    {dirty ? t("Sync Required") : t("Synced")}
-  </button>;
 };
 
 let links = [

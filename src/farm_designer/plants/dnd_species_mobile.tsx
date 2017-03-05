@@ -33,7 +33,6 @@ DNDSpeciesMobileState> {
 
   handleDragStart(e: DraggableEvent) {
     // TODO: Take suggestions from the community about user preference
-    // console.log(e.currentTarget);
     let img = document.createElement("img");
     // Stub until we figure out dynamic drag images
     img.src = "/app-resources/img/icons/Sprout-96.png";
@@ -73,7 +72,7 @@ DNDSpeciesMobileState> {
     let backgroundURL = isMobile() ? `linear-gradient(
       rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${result.image})` : "";
 
-    return <div className={`panel-container green-panel 
+    return <div className={`panel-container green-panel
     dnd-species-mobile-panel is-dragging-${this.state.isDragging}`}>
       <div className="panel-header green-panel"
         style={{ background: backgroundURL }}>
@@ -91,7 +90,7 @@ DNDSpeciesMobileState> {
             onTouchStart={this.toggleDesignerView.bind(this)}
             onTouchEnd={this.toggleDesignerView.bind(this)}
             onTouchMove={this.handleDragStart.bind(this)} />
-          <b>{t("Drag and drop")}</b> {t(`the icon onto the map. You can add 
+          <b>{t("Drag and drop")}</b> {t(`the icon onto the map. You can add
           multiple plants and make adjustments as many times as you need to
           before you save and finish.`)}
         </div>
