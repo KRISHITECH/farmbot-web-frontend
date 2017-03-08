@@ -2,10 +2,9 @@ import * as React from "react";
 import { Component } from "react";
 import { StepParams } from "./index";
 import { StepTitleBar } from "./step_title_bar";
-import { Help, Select, BlurableInput } from "../../ui";
+import { Help, FBSelect, BlurableInput, DropDownItem } from "../../ui";
 import { copy, remove } from "./index";
 import { MoveAbsState } from "../interfaces";
-import { CustomOptionProps } from "../../interfaces";
 import { t } from "i18next";
 import { updateMoveAbsStep } from "../actions";
 import { MoveAbsolute } from "farmbot";
@@ -16,46 +15,13 @@ interface MoveAbsProps extends StepParams {
   step: MoveAbsolute;
 }
 
-class OptionComponent extends React.Component<CustomOptionProps, {}> {
-  handleMouseDown(e: React.SyntheticEvent<HTMLDivElement>) {
-    e.preventDefault();
-    e.stopPropagation();
-    this.props.onSelect(this.props.option, e);
-  };
-
-  handleMouseEnter(e: React.SyntheticEvent<HTMLDivElement>) {
-    this.props.onFocus(this.props.option, e);
-  };
-
-  handleMouseMove(e: React.SyntheticEvent<HTMLDivElement>) {
-    if (this.props.isFocused) { return; };
-    this.props.onFocus(this.props.option, e);
-  };
-
-  render() {
-    let params = this.props.option.value === "---" ? "" :
-      `(${this.props.option.x}, ${this.props.option.y}, ${this.props.option.z})`;
-    return (
-      <div className={this.props.className}
-        onMouseDown={this.handleMouseDown.bind(this)}
-        onMouseEnter={this.handleMouseEnter.bind(this)}
-        onMouseMove={this.handleMouseMove.bind(this)}>
-        {this.props.children}
-        <span className="Select-value-params">
-          {params}
-        </span>
-      </div>
-    );
-  }
-}
-
 export class TileMoveAbsolute extends Component<MoveAbsProps, MoveAbsState> {
   constructor() {
     super();
     this.update = this.update.bind(this);
     this.updateSelect = this.updateSelect.bind(this);
     this.state = {
-      options: [{ label: "---", value: "---", x: 0, y: 0, z: 0 }],
+      options: [],
       value: "---", x: 0, y: 0, z: 0, speed: 0
     };
   }
@@ -129,12 +95,14 @@ export class TileMoveAbsolute extends Component<MoveAbsProps, MoveAbsState> {
   render() {
     let { update, updateSelect } = this;
     let { index, dispatch, step } = this.props;
-    let { options, value } = this.state;
     let isTool = this.state.value !== "---";
     let x = this.state.x || "0";
     let y = this.state.y || "0";
     let z = this.state.z || "0";
     let speed = this.state.speed || "0";
+    let selectValue: DropDownItem = { label: "", value: "" };
+    // TODO: Fix asap.
+    let options = this.state.options as DropDownItem[];
 
     return <div>
       <div className="step-wrapper">
@@ -175,11 +143,10 @@ export class TileMoveAbsolute extends Component<MoveAbsProps, MoveAbsState> {
                   <label>
                     {t("Import coordinates from")}
                   </label>
-                  <Select
-                    options={options}
-                    optionComponent={OptionComponent}
+                  <FBSelect
+                    list={options}
                     onChange={updateSelect}
-                    value={value}
+                    initialValue={selectValue}
                   />
                 </div>
                 <div className="col-xs-3 col-md-3">

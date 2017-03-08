@@ -16,7 +16,7 @@ const TEXT_MAPPING: Partial<Record<SyncStatus, string>> = {
   "sync_now": "SYNC NOW",
   "syncing": "SYNCING",
   "sync_error": "SYNC ERROR",
-  "unknown": "OFFLINE"
+  "unknown": "DISCONNECTED"
 };
 
 export function SyncButton({ auth, bot, dispatch }: NavButtonProps) {
@@ -26,7 +26,7 @@ export function SyncButton({ auth, bot, dispatch }: NavButtonProps) {
   let { sync_status } = bot.hardware.informational_settings;
   sync_status = sync_status || "unknown";
   let color = COLOR_MAPPING[sync_status] || "red";
-  let text = TEXT_MAPPING[sync_status] || "offline";
+  let text = TEXT_MAPPING[sync_status] || "DISCONNECTED";
   return <button className={`nav-sync button-like ${color}`}
     onClick={() => { dispatch(sync()); }}>
     {text}

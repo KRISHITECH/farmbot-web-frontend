@@ -1,6 +1,6 @@
 import * as React from "react";
 import { HSV, HiLo } from "./interfaces";
-import { RangeSlider } from "@blueprintjs/core";
+import { RangeSlider } from "@blueprintjs/core/dist/components/slider/rangeSlider";
 
 /** Max HSV allowed by farmbot weed detector. */
 const RANGE: HSV<HiLo> = {

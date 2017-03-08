@@ -33,7 +33,7 @@ export interface ToolBayFormState {
   new_slot_x?: number;
   new_slot_y?: number;
   new_slot_z?: number;
-  new_slot_tool_id?: null | number;
+  new_slot_tool_id?: number | undefined;
 }
 
 export interface ToolFormState {
@@ -44,7 +44,7 @@ export interface ToolFormState {
 export interface ToolSlot {
   id?: number;
   tool_bay_id?: number;
-  tool_id?: null | number;
+  tool_id?: number | undefined;
   created_at?: string;
   x?: number;
   y?: number;

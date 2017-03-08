@@ -24,8 +24,8 @@ export class SpeciesInfo extends React.Component<SpeciesInfoProps, {}> {
     let img = document.createElement("img");
     // Stub until we figure out dynamic drag images
     img.src = "/app-resources/img/icons/Sprout-96.png";
-    // TS doesn't know setDragImage
-    e.dataTransfer.setDragImage(img, 50, 50);
+    e.dataTransfer.setDragImage
+      && e.dataTransfer.setDragImage(img, 50, 50);
   }
 
   findCrop(slug?: string) {

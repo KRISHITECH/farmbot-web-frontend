@@ -234,7 +234,7 @@ export class RootComponent extends React.Component<RootComponentProps, {}> {
         }
       },
       {
-        path: "app/404",
+        path: "*",
         getComponent(location: any, cb: any) {
           System.import("./404").then(
             (module: any) => cb(null, module.FourOhFour)

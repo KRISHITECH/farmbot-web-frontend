@@ -201,3 +201,59 @@ export class Progress {
 /** If you're creating a module that publishes Progress state, you can use this
  * to prevent people from directly modifying the progress. */
 export type ProgressCallback = (p: Readonly<Progress>) => void;
+
+/** Used only for the sequence scrolling at the moment.
+ * Native DOM methods just aren't standardized enough yet,
+ * so this is an implementation without libs or polyfills. */
+export function smoothScrollToBottom() {
+  let body = document.body;
+  let html = document.documentElement;
+
+  // Not all browsers for mobile/desktop compute height the same, this fixes it.
+  let height = Math.max(body.scrollHeight, body.offsetHeight,
+    html.clientHeight, html.scrollHeight, html.offsetHeight);
+
+  let startY = window.pageYOffset;
+  let stopY = height;
+  let distance = stopY > startY ? stopY - startY : startY - stopY;
+  if (distance < 100) {
+    scrollTo(0, stopY);
+    return;
+  }
+
+  // Higher the distance divided, faster the scroll.
+  // Numbers too low will cause jarring ui bugs.
+  let speed = Math.round(distance / 14);
+  if (speed >= 6) { speed = 14; };
+  let step = Math.round(distance / 25);
+  let leapY = stopY > startY ? startY + step : startY - step;
+  let timer = 0;
+  if (stopY > startY) {
+    for (let i = startY; i < stopY; i += step) {
+      setTimeout("window.scrollTo(0, " + leapY + ")", timer * speed);
+      leapY += step;
+      if (leapY > stopY) { leapY = stopY; }
+      timer++;
+    } return;
+  }
+  for (let i = startY; i > stopY; i -= step) {
+    setTimeout("window.scrollTo(0, " + leapY + ")", timer * speed);
+    leapY -= step; if (leapY < stopY) { leapY = stopY; }
+    timer++;
+  }
+}
+
+/** Fancy debug */
+var last = "";
+export function fancyDebug(t: any) {
+  var next = Object
+    .entries(t)
+    .map((x: any) => `${_.padRight(x[0], 20, " ")} => ${JSON.stringify(x[1]).slice(0, 52)}`)
+    .join("\n");
+  if (last === next) {
+  } else {
+    last = next;
+    console.log(next);
+  }
+  console.log();
+}

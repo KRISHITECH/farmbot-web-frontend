@@ -16,7 +16,7 @@ export function GardenPoint(props: Props) {
   return <g>
     <circle cx={point.x}
       cy={point.y}
-      r={point.radius / 20}
+      r={point.radius}
       {...POINT_STYLES} />
     <circle cx={point.x}
       cy={point.y}

@@ -277,7 +277,7 @@ export function connectDevice(token: string): {} | ((dispatch: Function) => any)
       .then(() => {
         devices.current = bot;
         readStatus();
-        dispatch(sync());
+        // dispatch(sync());
         bot.on("logs", function (msg: RpcBotLog) {
           eval("msg.source = 'from_bot'");
           dispatch(incomingLog(msg));

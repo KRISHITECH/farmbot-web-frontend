@@ -1,6 +1,8 @@
 import { Image } from "./interfaces";
 import * as React from "react";
 import { safeStringFetch } from "../util";
+import { t } from "i18next";
+import * as moment from "moment";
 
 export interface ImageFlipperProps {
   images: Image[];
@@ -101,8 +103,16 @@ export class ImageFlipper extends React.Component<ImageFlipperProps, Partial<Ima
         </div>
       </div>
       <div className="weed-detector-meta">
-        <div>
-          {i ? <MetaInfo attr={"created_at"} obj={i} /> : ""}
+        {/** Separated from <MetaInfo /> for stylistic purposes. */}
+        {i ?
+          <div className="created-at">
+            <label>{t("Created At")}</label>
+            <span>
+              {moment(i.created_at).format("MMMM Do, YYYY h:mma")}
+            </span>
+          </div>
+          : ""}
+        <div className="meta-coordinates">
           {this.metaDatas()}
         </div>
       </div>
@@ -122,7 +132,7 @@ interface MetaInfoProps {
 function MetaInfo({ obj, attr, label }: MetaInfoProps) {
   let top = label || _.startCase(attr.split("_").join());
   let bottom = safeStringFetch(obj, attr);
-  return <div>
+  return <div className="coordinate">
     <label>{top}</label>
     <span>{bottom || "unknown"}</span>
   </div>;

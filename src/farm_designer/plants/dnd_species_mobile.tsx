@@ -14,7 +14,7 @@ interface SpeciesInfoProps extends Everything {
 interface DraggableEvent {
   currentTarget: HTMLImageElement;
   dataTransfer: {
-    setDragImage: Function;
+    setDragImage: Function | undefined;
   };
 }
 
@@ -36,8 +36,9 @@ DNDSpeciesMobileState> {
     let img = document.createElement("img");
     // Stub until we figure out dynamic drag images
     img.src = "/app-resources/img/icons/Sprout-96.png";
-    // TS doesn't know setDragImage
-    e.dataTransfer.setDragImage(img, 50, 50);
+    // Because of MS Edge.
+    e.dataTransfer.setDragImage
+      && e.dataTransfer.setDragImage(img, 50, 50);
   }
 
   toggleDesignerView() {

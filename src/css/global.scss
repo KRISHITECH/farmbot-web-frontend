@@ -35,56 +35,6 @@ input[type=time] {
     display: none;
 }
 
-.Select-control {
-    border-radius: 0 !important;
-    font-size: 1.2rem !important;
-    color: $dark_gray !important;
-    height: 30px !important;
-    width: 100% !important;
-    border: 0 !important;
-    box-shadow: 0px 0px 10px $light_gray !important;
-}
-
-.Select-option {
-    padding: 0.4rem 1rem !important;
-}
-
-.Select-menu {
-    padding: 0.8rem 0;
-}
-
-.Select-option,
-.Select-value {
-    .saucer {
-        vertical-align: middle;
-        margin-right: 1rem;
-        width: 1.6rem;
-        height: 1.6rem;
-    }
-}
-
-.Select-clear-zone {
-    display: none !important;
-}
-
-.Select-value-params {
-    float: right;
-}
-
-.Select.group-by {
-    .Select-menu-outer {
-        .Select-option:not(.is-disabled) {
-            padding: 0.4rem 1rem 0.4rem 2.2rem !important;
-        }
-        .Select-option.is-disabled {
-            text-transform: uppercase;
-            font-weight: bold;
-            font-size: 1.3rem;
-            color: black;
-        }
-    }
-}
-
 body {
     &.freeze {
         height: 100% !important;
@@ -322,6 +272,9 @@ ul {
 
 .select {
     position: relative;
+    input {
+        height: 30px !important;
+    }
     .select-results-container {
         position: absolute;
         left: 0;

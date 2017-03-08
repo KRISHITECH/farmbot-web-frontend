@@ -18,7 +18,7 @@ export interface SelectProps {
   /** The list of rendered options to select from. */
   list: DropDownItem[];
   /** Determines what label to show in the select box. */
-  value?: string | undefined;
+  initialValue?: DropDownItem | undefined;
   /** Determine whether the select list should always be open. */
   isOpen?: boolean;
   /** Custom JSX child rendered instead of a default item. */
@@ -44,7 +44,6 @@ export interface SelectState {
 /** Used as a placeholder for a selection of "none" when allowEmpty is true. */
 const NULL_CHOICE: Readonly<DropDownItem> = {
   label: "None",
-  // value: "🌠MAGIC🎩STRING🐇"
   value: ""
 };
 
@@ -56,6 +55,10 @@ export class FBSelect extends React.Component<Readonly<SelectProps>, Partial<Sel
 
   componentDidMount() {
     let defaults = { isOpen: !!this.props.isOpen };
+    let { initialValue } = this.props;
+    if (initialValue) {
+      defaults = { ...defaults, ...initialValue };
+    }
     let { allowEmpty } = this.props;
     this.setState(allowEmpty ? { ...NULL_CHOICE, ...defaults } : defaults);
   }

@@ -6,7 +6,7 @@ import * as _ from "lodash";
 import { t } from "i18next";
 
 export class ToolBayList extends React.Component<ListAndFormProps, {}> {
-  renderTool(tool_id: number | undefined | null) {
+  renderTool(tool_id: number | undefined) {
     let { tools } = this.props.all;
     return tools.all.map((tool, index) => {
       if (tool_id === tool.id) {

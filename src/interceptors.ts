@@ -20,7 +20,7 @@ export function responseFulfilled(input: Xhr): Xhr {
 }
 
 
-export function responseRejected(x: SafeError | null) {
+export function responseRejected(x: SafeError | undefined) {
 
   if (x && isSafeError(x)) {
     let a = ![451, 401, 422].includes(x.response.status);

@@ -50,3 +50,10 @@
         }
     }
 }
+
+@media (min-width: 998px) {
+    .step-button-cluster-widget {
+        position: fixed;
+        width: 22%;
+    }
+}

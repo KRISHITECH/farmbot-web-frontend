@@ -141,57 +141,6 @@
     }
 }
 
-.outside-search-results {
-    // Come back to this problem
-    display: none;
-    position: relative;
-    .Select-menu-outer {
-        top: 120%;
-        background: transparent !important;
-        border: none;
-        border-bottom: none;
-        box-shadow: none;
-        overflow: visible;
-        max-height: none;
-        min-height: 300px;
-        &:before,
-        &:after {
-            background: none;
-        }
-        .Select-menu {
-            max-height: none !important;
-            overflow-y: scroll;
-        }
-        .Select-option {
-            background: transparent;
-            color: #000 !important;
-            min-height: 1.6rem;
-            margin-bottom: 0.5rem;
-            .plant-age {
-                margin-top: 0.4rem;
-                display: block;
-                color: #555;
-                font-size: 1rem;
-            }
-            .plant-name {
-                margin-left: 1rem;
-                color: #000;
-            }
-            img {
-                width: 2rem;
-                height: 2rem;
-            }
-            &.is-focused {
-                background: rgba(0, 0, 0, 0.1);
-            }
-            &:last-child {
-                border-bottom-left-radius: 0px;
-                border-bottom-right-radius: 0px;
-            }
-        }
-    }
-}
-
 .thin-search-wrapper {
     position: relative;
     border-bottom: 1px solid #000;

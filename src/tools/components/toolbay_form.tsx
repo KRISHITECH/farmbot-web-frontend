@@ -1,7 +1,15 @@
 import * as React from "react";
 import { ListAndFormProps, ToolBayFormState } from "../interfaces";
-import { Widget, WidgetBody, WidgetHeader, FBSelect } from "../../ui";
-import { Col, Row, BlurableInput, DropDownItem } from "../../ui";
+import {
+  Widget,
+  WidgetBody,
+  WidgetHeader,
+  FBSelect,
+  DropDownItem,
+  Col,
+  Row,
+  BlurableInput
+} from "../../ui";
 import { Everything } from "../../interfaces";
 import {
   toggleEditingToolBays,
@@ -12,6 +20,9 @@ import {
 } from "../actions";
 import { t } from "i18next";
 import { connect } from "react-redux";
+import { indexBy } from "lodash";
+import { API } from "../../api/index";
+import * as Axios from "axios";
 
 @connect((state: Everything) => state)
 export class ToolBayForm extends React.Component<ListAndFormProps,
@@ -22,7 +33,7 @@ Partial<ToolBayFormState>> {
       new_slot_x: 0,
       new_slot_y: 0,
       new_slot_z: 0,
-      new_slot_tool_id: null
+      new_slot_tool_id: undefined
     };
   }
 
@@ -31,7 +42,7 @@ Partial<ToolBayFormState>> {
       new_slot_x: 0,
       new_slot_y: 0,
       new_slot_z: 0,
-      new_slot_tool_id: null
+      new_slot_tool_id: undefined
     });
   }
 
@@ -114,9 +125,17 @@ Partial<ToolBayFormState>> {
   }
 
   renderSlots = (tool_bay_id: number) => {
+    // Put an `indexBy(props.tools, "id")`.
+    let byId = _.indexBy(this.props.all.tools.all, "id");
     return _.sortBy((this.props.all.tool_slots || []), "id").map((slot, index) => {
       let { x, y, z, tool_id, id } = slot;
-
+      let dropDownItem: DropDownItem | undefined = undefined;
+      if (tool_id && byId[tool_id]) {
+        dropDownItem = {
+          value: byId[tool_id].id || index,
+          label: byId[tool_id].name || "Untitled Tool"
+        };
+      }
       let toolOptions = (this.props.all.tools.all || []).map(tool => {
         if (tool.id && id) {
           return { label: tool.name, value: tool.id, slot_id: id };
@@ -132,7 +151,7 @@ Partial<ToolBayFormState>> {
         if (tool.id) {
           return { label: tool.name, value: tool.id };
         } else {
-          // TODO: Filter out unsave tools in MapStateToProps.
+          // TODO: Filter out unsaved tools in MapStateToProps.
           throw new Error("Saved tools only.");
         }
       });
@@ -172,6 +191,7 @@ Partial<ToolBayFormState>> {
           <Col xs={4}>
             <FBSelect
               allowEmpty={true}
+              initialValue={dropDownItem}
               onChange={this.updateNewSlotTool}
               list={newSlotToolOptions} />
           </Col>
@@ -191,7 +211,6 @@ Partial<ToolBayFormState>> {
     let toggleEdit = () => { this.props.dispatch(toggleEditingToolBays()); };
     let { new_slot_x, new_slot_y, new_slot_z } = this.state;
     let { tool_bays, tool_slots } = this.props.all;
-
     let newSlotToolOptions = (this.props.all.tools.all || [])
       .map(tool => {
         if (tool.id) {
