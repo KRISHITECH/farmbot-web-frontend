@@ -1,20 +1,24 @@
-import { FarmEventForm } from "../interfaces";
+import { FarmEventForm, FarmEvent } from "../interfaces";
 import { Everything } from "../../interfaces";
 import * as moment from "moment";
 import { DropDownItem } from "../../ui";
 import { t } from "i18next";
-import { saveFarmEvent } from "../actions";
+import { saveFarmEvent, destroyFarmEvent } from "../actions";
 
 export interface AddEditFarmEventProps {
   selectOptions: DropDownItem[];
   repeatOptions: DropDownItem[];
+  farmEvents: FarmEvent[];
   formatDate(input: string): string;
   formatTime(input: string): string;
   handleTime(e: React.SyntheticEvent<HTMLInputElement>, currentISO: string): string;
   save(fe: FarmEventForm): void;
+  delete(farm_event_id: number): void;
 }
 
 export function mapStateToPropsAddEdit(state: Everything): AddEditFarmEventProps {
+
+  console.log(state);
 
   let handleTime = (e: React.SyntheticEvent<HTMLInputElement>, currentISO: string) => {
     // Am I really doing this right now? How else?
@@ -104,16 +108,23 @@ export function mapStateToPropsAddEdit(state: Everything): AddEditFarmEventProps
     }
   });
 
+  let farmEvents = state.sync.farm_events;
+
   return {
     selectOptions,
     repeatOptions,
     formatDate,
     formatTime,
     handleTime,
+    farmEvents,
     save(fe) {
       this.dispatch(saveFarmEvent(fe, () => {
         this.router.push("/app/designer/farm_events");
       }));
-    }
+    },
+    delete(farm_event_id) {
+      this.dispatch(destroyFarmEvent(farm_event_id));
+      this.router.push("/app/designer/farm_events");
+    },
   };
 }

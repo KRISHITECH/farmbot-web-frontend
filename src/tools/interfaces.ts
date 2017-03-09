@@ -46,9 +46,9 @@ export interface ToolSlot {
   tool_bay_id?: number;
   tool_id?: number | undefined;
   created_at?: string;
-  x?: number;
-  y?: number;
-  z?: number;
+  x: number;
+  y: number;
+  z: number;
   dirty?: boolean;
 }
 

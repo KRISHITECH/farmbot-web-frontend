@@ -17,7 +17,7 @@ import { ToolsState } from "../../tools/interfaces";
 import { TileExecuteScript } from "./tile_execute_script";
 import { TileTakePhoto } from "./tile_take_photo";
 import * as _ from "lodash";
-import { LegalArgString } from "farmbot";
+import { LegalArgString, CeleryNode } from "farmbot";
 
 interface CopyParams {
   dispatch: Function;
@@ -40,7 +40,7 @@ export function remove({ dispatch, index }: RemoveParams) {
 
 interface UpdateStepParams {
   dispatch: Function;
-  step: Step;
+  step: CeleryNode;
   index: number;
   field: string;
 }
@@ -51,7 +51,7 @@ export function updateStep({ dispatch,
   field
 }: UpdateStepParams) {
   return (e: React.FormEvent<HTMLInputElement>) => {
-    let copy = defensiveClone<Step>(step);
+    let copy = defensiveClone(step);
     let val = e.currentTarget.value;
 
     if (NUMERIC_FIELDS.indexOf(field) !== -1) {
@@ -68,7 +68,7 @@ export function updateStep({ dispatch,
 };
 
 export interface IStepInput {
-  step: Step;
+  step: CeleryNode;
   field: LegalArgString;
   dispatch: Function;
   index: number;
@@ -78,8 +78,8 @@ export interface StepParams {
   dispatch: Function;
   step: Step;
   index: number;
-  sequence: Sequence;
-  sequences: Sequence[];
+  current: Sequence;
+  all: Sequence[];
   tools: ToolsState;
 }
 

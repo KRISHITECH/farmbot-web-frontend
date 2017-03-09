@@ -5,12 +5,11 @@ import { API } from "../api";
 import {
   ToolBay,
   ToolSlot,
-  Tool,
-  ErrorPayl
+  Tool
 } from "./interfaces";
 import { success, error } from "../ui";
 import * as _ from "lodash";
-import { prettyPrintApiErrors, AxiosErrorResponse } from "../util";
+import { prettyPrintApiErrors } from "../util";
 
 /** Generic */
 export function toggleEditingToolBays(): ReduxAction<{}> {
@@ -39,13 +38,11 @@ export function saveToolBay(id: number, toolBays: ToolBay[]): Thunk {
     let url = API.current.toolSlotsPath;
     Axios.post<ToolSlot[]>(url, dirtSlots)
       .then(resp => {
-        if (resp instanceof Error) {
-          error(prettyPrintApiErrors(resp));
-          throw resp;
-        }
         success(t("ToolBay saved."));
         updateToolBayAfterSlots();
-        dispatch(saveToolSlotOk(resp.data));
+        resp.data.map(function (toolSlot) {
+          dispatch(saveToolSlotOk(toolSlot));
+        });
       }, (e: Error) => {
         error(prettyPrintApiErrors(e));
       });

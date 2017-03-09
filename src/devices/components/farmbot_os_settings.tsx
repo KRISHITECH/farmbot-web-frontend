@@ -12,6 +12,13 @@ import {
 } from "../actions";
 import { FwUpdateButton } from "./fw_update_button";
 import { OsUpdateButton } from "./os_update_button";
+import { devices } from "../../device";
+import { FBSelect, DropDownItem } from "../../ui/index";
+import { Dictionary } from "farmbot/dist";
+const CAMERA_CHOICES = [
+  { label: "USB Camera", value: "USB" },
+  { label: "Raspberry Pi Camera", value: "RPI" }
+];
 
 interface Props {
   bot: BotState;
@@ -19,7 +26,15 @@ interface Props {
   dispatch: Function;
 }
 
-export class FarmbotOsSettings extends React.Component<Props, {}> {
+interface State {
+  cameraStatus: "" | "sending" | "done" | "error";
+}
+
+export class FarmbotOsSettings extends React.Component<Props, State> {
+  constructor() {
+    super();
+    this.state = { cameraStatus: "" };
+  }
   changeBot(e: React.MouseEvent<HTMLInputElement>) {
     e.preventDefault();
     console.warn("If you are reading this method, refactor NOW! -RC");
@@ -39,6 +54,16 @@ export class FarmbotOsSettings extends React.Component<Props, {}> {
     this.props.dispatch(saveAccountChanges);
   }
 
+  sendOffConfig = (e: DropDownItem) => {
+    let message = { "camera": JSON.stringify(e.value) };
+    this.setState({ cameraStatus: "sending" });
+    setTimeout(this.setState({ cameraStatus: "" }), 10000);
+    devices
+      .current
+      .setUserEnv(message)
+      .then(() => { this.setState({ cameraStatus: "done" }); })
+      .catch(() => { this.setState({ cameraStatus: "error" }); });
+  }
 
   render() {
     return <div className="col-sm-12">
@@ -169,6 +194,22 @@ Factory resetting your FarmBot will destroy all data on the device, revoking you
                         onClick={factoryReset} >
                         {t("RESET")}
                       </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <label>{t("CAMERA")} </label>
+                    </td>
+                    <td>
+                      <p>
+                        <FBSelect allowEmpty={true}
+                          list={CAMERA_CHOICES}
+                          placeholder="Select a camera..."
+                          onChange={this.sendOffConfig} />
+                      </p>
+                    </td>
+                    <td>
+                      {this.state.cameraStatus}
                     </td>
                   </tr>
                 </tbody>

@@ -25,10 +25,10 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
           {item.items.map(function (farmEvent) {
             return <div className={`farm-event col-xs-12`}
               key={farmEvent.sortKey}>
-              <div className="event-time col-xs-3">
+              <div className="event-time col-xs-4">
                 {farmEvent.timeStr}
               </div>
-              <div className="event-title col-xs-9">
+              <div className="event-title col-xs-8">
                 ({farmEvent.executableId}) {farmEvent.executableName}
               </div>
               <Link to={`/app/designer/farm_events/` +

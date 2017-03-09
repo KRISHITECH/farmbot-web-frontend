@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ListAndFormProps, ToolBayFormState } from "../interfaces";
+import { ListAndFormProps, ToolBayFormState, ToolBay, ToolSlot } from "../interfaces";
 import {
   Widget,
   WidgetBody,
@@ -20,9 +20,6 @@ import {
 } from "../actions";
 import { t } from "i18next";
 import { connect } from "react-redux";
-import { indexBy } from "lodash";
-import { API } from "../../api/index";
-import * as Axios from "axios";
 
 @connect((state: Everything) => state)
 export class ToolBayForm extends React.Component<ListAndFormProps,
@@ -67,7 +64,12 @@ Partial<ToolBayFormState>> {
       tool_id: this.state.new_slot_tool_id,
       tool_bay_id
     };
-    this.props.dispatch(addToolSlot(slot));
+    let { x, y, z, tool_id } = slot;
+    if (_.isNumber(x) && _.isNumber(y) && _.isNumber(z)) {
+      this.props.dispatch(addToolSlot({ x, y, z, tool_bay_id, tool_id }));
+    } else {
+      alert("X Y and Z must be numbers.")
+    }
     this.resetState();
   }
 

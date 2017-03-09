@@ -103,7 +103,7 @@ export function StepButtonCluster({ dispatch }: { dispatch: Function }) {
         args: { label: "plant-detection" }
       }}
       color="pink" >
-      {t("EXECUTE SCRIPT")}
+      {t("Run Farmware")}
     </StepButton >,
     <StepButton dispatch={dispatch}
       step={{

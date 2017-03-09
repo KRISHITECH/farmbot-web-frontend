@@ -130,4 +130,6 @@ export class API {
   get pointsPath() { return `${this.baseUrl}/api/points/`; };
   /** /api/points/search */
   get pointSearchPath() { return `${this.pointsPath}/search/`; };
+  /** /api/logs */
+  get logsPath() { return `${this.baseUrl}/api/logs/`; };
 }

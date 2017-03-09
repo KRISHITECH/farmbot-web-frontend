@@ -3,16 +3,13 @@ import { SelectOptionsParams } from "../interfaces";
 import { AuthState } from "../auth/interfaces";
 import {
   Sequence as CeleryScriptSequence,
+  SequenceBodyItem,
   MoveAbsolute,
-  MoveRelative,
-  WritePin,
-  ReadPin,
-  Wait,
-  SendMessage,
-  If,
-  Execute,
-  SequenceBodyItem
+  Vector3
 } from "farmbot";
+import { Tool } from "../tools/interfaces";
+import { DropDownItem } from "../ui/index";
+
 export type CHANNEL_NAME = "toast" | "ticker";
 
 export const NUMERIC_FIELDS = ["x", "y", "z", "speed", "pin_number",
@@ -42,29 +39,8 @@ export interface SequencesListProps {
   auth: AuthState;
 }
 
-export interface UpdateAbsoluteStepPayl {
-  data: {
-    label?: string;
-    tool_id: number;
-    value: string | number;
-    options: [
-      {
-        label: string;
-        value: string | number;
-        x: number;
-        y: number;
-        z: number;
-      }
-    ],
-    offsetX?: number;
-    offsetY?: number;
-    offsetZ?: number;
-    x: number;
-    y: number;
-    z: number;
-    speed: number;
-  };
-  index: number;
+export interface NamedVector3 extends Vector3 {
+  name: string;
 }
 
 /** Used when dispatching ADD_CHANNEL / REMOVE_CHANNEL actions. */
@@ -89,10 +65,17 @@ export interface PickerState {
 }
 
 export interface MoveAbsState {
-  options?: SelectOptionsParams[];
-  value?: string | number;
-  x?: number;
-  y?: number;
-  z?: number;
-  speed?: number;
+  isToolSelected: boolean;
+}
+
+export interface ChangeMoveAbsSelect {
+  index: number;
+  tool: DropDownItem;
+  step: MoveAbsolute;
+}
+
+export interface ChangeMoveAbsInput {
+  kind: string;
+  index: number;
+  value: string;
 }

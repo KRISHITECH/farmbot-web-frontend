@@ -1,18 +1,19 @@
 import * as axios from "axios";
 import { Everything } from "../interfaces";
-import { SequenceBodyItem as Step, LATEST_VERSION } from "farmbot";
+import { CeleryNode as Step, LATEST_VERSION } from "farmbot";
 import {
   SequenceOptions,
   Sequence,
   ChanParams,
   MessageParams
 } from "./interfaces";
-import { success, error } from "../ui";
+import { success, error, DropDownItem } from "../ui";
 import { prettyPrintApiErrors, AxiosErrorResponse } from "../util";
 import { Color } from "../interfaces";
 import { ReduxAction, Thunk } from "../redux/interfaces";
 import * as i18next from "i18next";
 import { API } from "../api";
+import { Tool } from "../tools/interfaces";
 
 export function addChan({ channel_name, index }: ChanParams) {
   return {
@@ -157,6 +158,26 @@ export function changeStepSelect(
   };
 }
 
+export function changeMoveAbsStepSelect(
+  index: number,
+  tool: DropDownItem,
+  step: Step) {
+  return {
+    type: "CHANGE_MOVE_ABS_STEP_SELECT",
+    payload: { index, tool, step }
+  };
+}
+
+// Would be nice to factor this down to fit with CHANGE_STEP
+export function changeMoveAbsStepValue(value: string,
+  kind: string,
+  index: number) {
+  return {
+    type: "CHANGE_MOVE_ABS_STEP_VALUE",
+    payload: { value, kind, index }
+  };
+}
+
 export function updateSubSequence(
   value: string | number,
   index: number,
@@ -164,13 +185,6 @@ export function updateSubSequence(
   return {
     type: "UPDATE_SUB_SEQUENCE",
     payload: { value, index, field, type }
-  };
-}
-
-export function updateMoveAbsStep(data: {}, index: number): ReduxAction<{}> {
-  return {
-    type: "UPDATE_MOVE_ABSOLUTE_STEP",
-    payload: { data, index }
   };
 }
 

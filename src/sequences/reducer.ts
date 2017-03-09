@@ -1,10 +1,14 @@
-import { SequenceBodyItem as Step, LATEST_VERSION, MoveAbsolute } from "farmbot";
+import {
+  SequenceBodyItem as Step,
+  LATEST_VERSION
+} from "farmbot";
 import {
   Sequence,
   SequenceReducerState,
   ChanParams,
   MessageParams,
-  UpdateAbsoluteStepPayl
+  ChangeMoveAbsSelect,
+  ChangeMoveAbsInput
 } from "./interfaces";
 import {
   nullSequence,
@@ -43,29 +47,6 @@ const initialState: SequenceReducerState = {
 };
 
 export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
-  .add<UpdateAbsoluteStepPayl>("UPDATE_MOVE_ABSOLUTE_STEP", function (s, a) {
-    let { data, index } = a.payload;
-    let seq = s.all[s.current];
-    seq.dirty = true;
-    let step = (seq.body || [])[index] as MoveAbsolute;
-
-    /** By checking to see if the data is being passed this way,
-     * we're able to keep useful data in Redux alone */
-    if (data.offsetX) { step.args.offset.args.x = data.offsetX; };
-    if (data.offsetY) { step.args.offset.args.y = data.offsetY; };
-    if (data.offsetZ) { step.args.offset.args.z = data.offsetZ; };
-
-    delete step.args.location;
-    if (data.value === "---") {
-      let { x, y, z } = data;
-      step.args.location = { args: { x, y, z }, kind: "coordinate" };
-    } else {
-      let { value } = data;
-      value = parseInt(value.toString(), 10);
-      step.args.location = { args: { tool_id: value }, kind: "tool" };
-    }
-    return s;
-  })
   .add<ChanParams>("ADD_CHANNEL", function (s, a) {
     let { index, channel_name } = a.payload;
     let seq = s.all[s.current];
@@ -195,6 +176,57 @@ export let sequenceReducer = generateReducer<SequenceReducerState>(initialState)
     }
     maybeAddMarkers(s);
     return s;
+  })
+  .add<ChangeMoveAbsSelect>("CHANGE_MOVE_ABS_STEP_SELECT",
+  function (s, a) {
+    let currentSequence = s.all[s.current];
+    let currentStep = (currentSequence.body || [])[a.payload.index];
+    let choice = a.payload.tool;
+    if (currentStep && currentStep.kind === "move_absolute") {
+      if (_.isNumber(choice.value)) {
+        currentStep.args.location = {
+          kind: "tool",
+          args: { tool_id: choice.value }
+        };
+      } else {
+        currentStep.args.location = {
+          kind: "coordinate",
+          args: { x: 0, y: 0, z: 0 }
+        };
+      }
+    } else {
+      throw new Error("Something threw bad data to " +
+        "CHANGE_MOVE_ABS_STEP_SELECT");
+    }
+    markDirty(s);
+    maybeAddMarkers(s);
+    return s;
+  })
+  .add<ChangeMoveAbsInput>("CHANGE_MOVE_ABS_STEP_VALUE",
+  function (s, a) {
+    let currentSequence = s.all[s.current];
+    let currentStep = (currentSequence.body || [])[a.payload.index];
+    markDirty(s);
+    // TODO: still can't get this figured out
+    let raw = currentStep.args as any;
+
+    // Super lame, but modular? i.e. "offset-x", "location-z"
+    let kind = a.payload.kind.split("-")[0];
+    let arg = a.payload.kind.split("-")[1];
+
+    switch (kind) {
+      case "location":
+        raw.location.args[arg] = parseInt(a.payload.value);
+        maybeAddMarkers(s);
+        return s;
+      case "offset":
+        raw.offset.args[arg] = parseInt(a.payload.value);
+        maybeAddMarkers(s);
+        return s;
+      default:
+        throw new Error(`Something went wrong with the
+        move_abs input parameters.`);
+    }
   })
   .add<{ index: number }>("REMOVE_STEP", function (s, a) {
     let body = s.all[s.current].body || [];

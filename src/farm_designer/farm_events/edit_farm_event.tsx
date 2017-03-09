@@ -18,8 +18,13 @@ import { hasKey } from "../../util";
 
 type AddFarmEventState = Partial<Record<keyof FarmEvent, string | number>>;
 
+// Could not get this to work when putting it in mapStateToProps
+interface PropsWithRouter extends AddEditFarmEventProps {
+  router: { params: { farm_event_id: string } };
+}
+
 @connect(mapStateToPropsAddEdit)
-export class EditFarmEvent extends React.Component<AddEditFarmEventProps,
+export class EditFarmEvent extends React.Component<PropsWithRouter,
 AddFarmEventState> {
   constructor() {
     super();
@@ -91,11 +96,8 @@ AddFarmEventState> {
     }
   }
 
-  destroy = () => {
-
-  }
-
   render() {
+    console.log(this.props)
     let { formatDate, formatTime } = this.props;
 
     return <div className={`panel-container magenta-panel
@@ -173,7 +175,8 @@ AddFarmEventState> {
           {t("Save")}
         </button>
         <button className="red button-like"
-          onClick={this.destroy}>
+          onClick={() => this.props.delete(
+            parseInt(this.props.router.params.farm_event_id))}>
           {t("Delete")}
         </button>
       </div>

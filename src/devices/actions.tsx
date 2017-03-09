@@ -95,7 +95,7 @@ export function emergencyUnlock() {
   if (confirm("Are you sure you want to unlock the device?")) {
     devices
       .current
-      .emergencyUnlock()
+      .reboot()
       .then(commandOK(noun), commandErr(noun));
   }
 }
@@ -276,10 +276,9 @@ export function connectDevice(token: string): {} | ((dispatch: Function) => any)
       .connect()
       .then(() => {
         devices.current = bot;
+        bot.setUserEnv({ "LAST_CLIENT_CONNECTED": JSON.stringify(new Date()) });
         readStatus();
-        // dispatch(sync());
         bot.on("logs", function (msg: RpcBotLog) {
-          eval("msg.source = 'from_bot'");
           dispatch(incomingLog(msg));
         });
         bot.on("status", function (msg: BotStateTree) {
