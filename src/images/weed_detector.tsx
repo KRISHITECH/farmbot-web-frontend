@@ -9,7 +9,7 @@ import { devices } from "../device";
 import { HsvSlider } from "./hsv_slider";
 import { BlurableInput } from "../ui/blurable_input";
 import { Pair } from "farmbot";
-import { success, error } from "../ui";
+import { success, error, FBSelect, Col, Row, DropDownItem } from "../ui";
 import { resetWeedDetection } from "./actions";
 import { weedDetectorENV } from "./weed_detector_env";
 import { Progress } from "../util";
@@ -29,7 +29,8 @@ export class WeedDetector extends React.Component<Everything, Partial<DetectorSt
       blur: 15,
       morph: 6,
       iterations: 4,
-      deletionProgress: ""
+      deletionProgress: "",
+      settingsMenuOpen: false
     };
   }
 
@@ -37,7 +38,7 @@ export class WeedDetector extends React.Component<Everything, Partial<DetectorSt
     return this.props.bot.hardware.user_env[DETECTOR_ENV];
   }
 
-  componentDidMout() {
+  componentDidMount() {
     this.setState(weedDetectorENV(this.env));
   }
 
@@ -104,6 +105,79 @@ export class WeedDetector extends React.Component<Everything, Partial<DetectorSt
       .execScript("plant-detection", pairs);
   }
 
+  toggleSettingsMenu = () => {
+    this.setState({ settingsMenuOpen: !this.state.settingsMenuOpen });
+  }
+
+  additionalSettingsMenu = () => {
+    let calibrationAxes: DropDownItem[] = [
+      { label: "X", value: "x" }, { label: "Y", value: "y" }
+    ];
+    let originLocations: DropDownItem[] = [
+      { label: "Top Left", value: "top_left" },
+      { label: "Top Right", value: "top_right" },
+      { label: "Bottom Left", value: "bottom_left" },
+      { label: "Bottom Right", value: "bottom_right" }
+    ];
+    return <div className="additional-settings-menu"
+      onClick={(e) => e.stopPropagation()}>
+      {/* This menu needs to be nested in the <i> for css purposes. However, 
+        * we do not want events in here to bubble up to the toggle method. */}
+      <label htmlFor="invert_hue_selection">
+        {t(`Invert Hue Range Selection`)}
+      </label>
+      <input type="checkbox" id="invert_hue_selection" />
+      <label htmlFor="calibration_object_separation">
+        {t(`Calibration Object Separation`)}
+      </label>
+      <input type="number" id="calibration_object_separation"
+        placeholder="(Number)" />
+      <label htmlFor="calibration_object_separation_axis">
+        {t(`Calibration Object Separation along axis`)}
+      </label>
+      <FBSelect
+        list={calibrationAxes}
+        placeholder="Select..."
+        id="calibration_object_separation_axis" />
+      <Row>
+        <Col xs={6}>
+          <label htmlFor="camera_offset_x">
+            {t(`Camera Offset X`)}
+          </label>
+          <input type="number" id="camera_offset_x" placeholder="(Number)" />
+        </Col>
+        <Col xs={6}>
+          <label htmlFor="camera_offset_y">
+            {t(`Camera Offset Y`)}
+          </label>
+          <input type="number" id="camera_offset_y" placeholder="(Number)" />
+        </Col>
+      </Row>
+      <label htmlFor="image_bot_origin_location">
+        {t(`Origin Location in Image`)}
+      </label>
+      <FBSelect
+        list={originLocations}
+        placeholder="Select..."
+        id="image_bot_origin_location" />
+      <Row>
+        <Col xs={6}>
+          <label htmlFor="coord_scale">
+            {t(`Pixel coordinate scale`)}
+          </label>
+          <input type="number" id="coord_scale"
+            placeholder="(Number)" step={0.10} />
+        </Col>
+        <Col xs={6}>
+          <label htmlFor="total_rotation_angle">
+            {t(`Camera rotation`)}
+          </label>
+          <input type="number" id="total_rotation_angle" placeholder="(Number)" />
+        </Col>
+      </Row>
+    </div>;
+  };
+
   render() {
     let H = (this.state.H || [0, 0]);
     let S = (this.state.S || [0, 0]);
@@ -131,6 +205,14 @@ export class WeedDetector extends React.Component<Everything, Partial<DetectorSt
                 className="red button-like">
                 {this.state.deletionProgress || t("CLEAR WEEDS")}
               </button>
+              {/* TODO: Hook up calibration */}
+              <button onClick={() => { }}
+                className="green button-like">
+                {t("Calibrate")}
+              </button>
+              <i className="fa fa-cog" onClick={this.toggleSettingsMenu}>
+                {this.state.settingsMenuOpen && this.additionalSettingsMenu()}
+              </i>
               <h5>{t("Weed Detector")}</h5>
               <i className={`fa fa-question-circle
                                             widget-help-icon`}>

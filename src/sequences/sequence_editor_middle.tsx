@@ -53,13 +53,13 @@ let StepList = ({ sequence, sequences, dispatch, tools }:
     tools: ToolsState
   }) => {
   return <div>
-    {(sequence.body || []).map((step: SequenceBodyItem, inx: number) => {
+    {(sequence.body || []).map((step: SequenceBodyItem, inx, arr) => {
       let Step = stepTiles[step.kind] || Oops;
       /** HACK: If we wrote `key={inx}` for this iterator, React's diff
        * algorithm would lose track of which step has changed (and
        * sometimes even mix up the state of completely different steps).
        * To get around this, we add a `uuid` property to Steps that
-       * is guranteed to be unique and allows React to diff the list
+       * is guaranteed to be unique and allows React to diff the list
        * correctly.
        */
       let wow = (step as any).uuid || inx;
@@ -74,7 +74,8 @@ let StepList = ({ sequence, sequences, dispatch, tools }:
             index={inx}
             dispatch={dispatch}
             sequence={sequence}
-            sequences={sequences}
+            all={sequences}
+            current={arr[inx]}
             tools={tools} />
         </StepDragger>
       </div>;

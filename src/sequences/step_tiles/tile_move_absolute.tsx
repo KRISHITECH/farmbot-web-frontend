@@ -39,13 +39,22 @@ export class TileMoveAbsolute extends Component<MoveAbsProps, MoveAbsState> {
         let slot = tool && this.props.slotByToolId[tool.id || 0];
         if (slot) {
           output = { ...output, ...slot }
-        } else {
-          debugger;
         };
         break;
       case "coordinate": output = { ...output, ...location.args }; break;
     }
     return output;
+  }
+
+  initialDropDownSequenceValue = () => {
+    let { location } = this.props.step.args;
+    if (location.kind === "tool") {
+      let tool = this.props.toolById[location.args.tool_id];
+      if (tool && tool.id) {
+        return { label: tool.name, value: tool.id }
+      }
+    }
+    return { label: "Nothing", value: 0 };
   }
 
   render() {
@@ -92,6 +101,7 @@ export class TileMoveAbsolute extends Component<MoveAbsProps, MoveAbsState> {
                 <FBSelect
                   allowEmpty={true}
                   list={this.props.options}
+                  initialValue={this.initialDropDownSequenceValue()}
                   onChange={this.updateToolSelect} />
               </Col>
               <Col xs={3}>

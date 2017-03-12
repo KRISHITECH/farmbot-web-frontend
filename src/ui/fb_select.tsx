@@ -33,9 +33,12 @@ export interface SelectProps {
   placeholder?: string;
   /** Allows user to have a non-selected value. */
   allowEmpty?: boolean;
+  /** Id for the input. Used for accessibility and expected ux with labels. */
+  id?: string | undefined;
 }
 
 export interface SelectState {
+  touched: boolean;
   label: string;
   isOpen: boolean;
   value: string | number | undefined;
@@ -50,7 +53,7 @@ const NULL_CHOICE: Readonly<DropDownItem> = {
 export class FBSelect extends React.Component<Readonly<SelectProps>, Partial<SelectState>> {
   constructor() {
     super();
-    this.state = {};
+    this.state = { touched: false };
   }
 
   componentDidMount() {
@@ -97,6 +100,7 @@ export class FBSelect extends React.Component<Readonly<SelectProps>, Partial<Sel
   handleSelectOption = (option: DropDownItem) => {
     (this.props.onChange || (() => { }))(option);
     this.setState({
+      touched: true,
       label: option.label,
       isOpen: false,
       value: option.value
@@ -149,12 +153,19 @@ export class FBSelect extends React.Component<Readonly<SelectProps>, Partial<Sel
     });
   }
 
+  value = () => {
+    if (!this.state.touched && this.props.initialValue) {
+      return this.props.initialValue;
+    } else {
+      return this.state;
+    }
+  }
+
   render() {
     let { className, optionComponent, placeholder } = this.props;
     let { isOpen } = this.state;
     // Dynamically choose custom vs. standard list item JSX based on options:
     let renderList = (optionComponent ? this.custItemList : this.normlItemList);
-
     return <div className={"select " + (className || "")}>
       <div className="select-search-container">
         <input type="text"
@@ -162,7 +173,8 @@ export class FBSelect extends React.Component<Readonly<SelectProps>, Partial<Sel
           onFocus={this.open}
           onBlur={this.maybeClose}
           placeholder={placeholder || "Search..."}
-          value={this.state.label || ""} />
+          value={this.value().label}
+          id={this.props.id || ""} />
       </div>
       <div className={"select-results-container is-open-" + !!isOpen}>
         {renderList(this.filterByInput())}

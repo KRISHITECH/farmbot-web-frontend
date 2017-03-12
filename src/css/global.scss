@@ -96,28 +96,20 @@ a {
     cursor: pointer !important;
 }
 
-.select-wrapper {
-    position: relative;
-    select {
-        font-size: 1.2rem;
-        color: #434343;
-        height: auto;
-        width: 100%;
-        border: 0;
-        padding: 6px 8px !important;
-        box-shadow: 0px 0px 10px #ddd;
-        border-radius: 0;
-        -webkit-appearance: none;
-    }
+.select-search-container {
     &:after {
-        content: "\2195";
+        content: "\25BE";
         position: absolute;
-        width: 1rem;
-        height: 1rem;
-        top: 0;
-        right: 0;
-        padding: 0.4rem 1.5rem 0 0px;
-        pointer-events: none
+        color: $dark_gray;
+        font-size: 2rem;
+        right: 1rem;
+        top: 0.2rem;
+    }
+}
+
+.thin-search-wrapper {
+    .select-search-container:after {
+        content: "";
     }
 }
 

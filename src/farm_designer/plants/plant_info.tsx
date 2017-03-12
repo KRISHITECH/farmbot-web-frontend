@@ -27,7 +27,9 @@ export class PlantInfo extends React.Component<PlantInfoProps, {}> {
     return <div className="panel-container green-panel">
       <div className="panel-header green-panel">
         <p className="panel-title">
-          <BackArrow />
+          <Link to={`/app/designer/plants`} className="back-arrow">
+            <i className="fa fa-arrow-left"></i>
+          </Link>
           <span className="title">{name}</span>
           <Link to={`/app/designer/plants/` + plant_id.toString() + `/edit`}
             className="right-button">

@@ -46,4 +46,5 @@ export interface WeedDetectorENV {
 export interface DetectorState extends WeedDetectorENV {
   isEditing: boolean;
   deletionProgress: string;
+  settingsMenuOpen: boolean;
 };

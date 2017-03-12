@@ -66,6 +66,13 @@ export class FarmbotOsSettings extends React.Component<Props, State> {
   }
 
   render() {
+    let fwvers = _.get(this
+      .props
+      .bot
+      .hardware
+      .informational_settings,
+      "firmware_version",
+      t("Not Connected to bot"));
     return <div className="col-sm-12">
       <form onSubmit={this.saveBot.bind(this)}>
         <div className="row">
@@ -133,10 +140,7 @@ export class FarmbotOsSettings extends React.Component<Props, State> {
                     </td>
                     <td className="devices-pad">
                       <p>
-                        {t("Version")} {
-                          String(this.props.bot.hardware.mcu_params.param_version)
-                          || t("Not Connected to bot")
-                        }
+                        {t("Version")} {fwvers}
                       </p>
                       <FwUpdateButton { ...this.props } />
                     </td>
@@ -192,7 +196,7 @@ Factory resetting your FarmBot will destroy all data on the device, revoking you
                       <button type="button"
                         className="button-like red"
                         onClick={factoryReset} >
-                        {t("RESET")}
+                        {t("FACTORY RESET")}
                       </button>
                     </td>
                   </tr>

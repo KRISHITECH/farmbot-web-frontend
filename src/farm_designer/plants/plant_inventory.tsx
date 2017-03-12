@@ -11,16 +11,21 @@ function OptionComponent(plants: Plant[]) {
   let indexedById = _.indexBy(plants, "id");
   return (props: DropDownItem) => {
     let {
-      img_url,
+      icon_url,
       planted_at,
     } = indexedById[props.value as number]; // TODO: Remove typecast after refactor.
 
     let dayPlanted = moment();
 
+    // !!! TODO: !!! Temporary fix. Currently old plants are referencing
+    // a broken icon containing the word "Natural". Discuss with Rick.
+    let url = icon_url.includes("Natural") ?
+      "/app-resources/img/icons/generic-plant.svg" : icon_url;
+
     // Same day = 1 !0
     let daysOld = dayPlanted.diff(moment(planted_at), "days") + 1;
     return <div className="plant-search-item">
-      <img className="plant-search-item-image" src={img_url} />
+      <img className="plant-search-item-image" src={url} />
       <span className="plant-search-item-name">{props.label}</span>
       <i className="plant-search-item-age">
         {daysOld} days old</i>

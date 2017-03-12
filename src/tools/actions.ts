@@ -32,11 +32,13 @@ export function saveToolBayOk(toolBay: ToolBay): ReduxAction<{}> {
 export function saveToolBay(id: number, toolBays: ToolBay[]): Thunk {
 
   return (dispatch, getState) => {
-    let dirtSlots = {
-      tool_slots: getState().tools.tool_slots.filter(allSlots => !!allSlots.dirty)
-    };
+    /** This was causing bugs, maybe bring back once tools is cleaned up */
+    // let dirtSlots = {
+    //   tool_slots: getState().tools.tool_slots.filter(allSlots => !!allSlots.dirty)
+    // };
+    let tool_slots = getState().tools.tool_slots;
     let url = API.current.toolSlotsPath;
-    Axios.post<ToolSlot[]>(url, dirtSlots)
+    Axios.post<ToolSlot[]>(url, { tool_slots })
       .then(resp => {
         success(t("ToolBay saved."));
         updateToolBayAfterSlots();

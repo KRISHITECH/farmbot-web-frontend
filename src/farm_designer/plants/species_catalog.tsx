@@ -37,10 +37,12 @@ export class SpeciesCatalog extends React.Component<Everything, {}> {
     let species = cropSearchResults.map(resp => {
       let { crop, image } = resp;
       return <Link key={resp.crop.slug}
+        draggable={false}
         to={`/app/designer/plants/crop_search/` + crop.slug.toString()}>
         <div className="plant-catalog-tile col-xs-6">
           <label>{crop.name}</label>
-          <img className="plant-catalog-image" src={image} />
+          <img className="plant-catalog-image" src={image}
+            draggable={false} />
         </div>
       </Link>;
     });

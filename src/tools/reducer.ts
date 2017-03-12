@@ -83,7 +83,8 @@ export let toolsReducer = generateReducer<ToolsState>(initialState)
     let slot = _.find(s.tool_slots, { id: a.payload.id });
     let bay = _.findWhere(s.tool_bays, { id: slot.tool_bay_id });
     bay.dirty = true;
-    _.assign(slot, { [name]: value, dirty: true });
+    slot.tool_id = value;
+    slot.dirty = true;
     return s;
   })
   /** Tools */

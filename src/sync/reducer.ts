@@ -9,6 +9,7 @@ import {
   TimeUnit
 } from "../farm_designer/interfaces";
 import * as moment from "moment";
+import { Plant as newPlant } from "../farm_designer/plant";
 
 const initialState: Sync = {
   api_version: "",
@@ -42,6 +43,12 @@ export let syncReducer = generateReducer<Sync>(initialState)
   })
   .add<Sync>("FETCH_SYNC_OK", function (s, a) {
     s = a.payload;
+    return s;
+  })
+  .add<Plant>("SAVE_PLANT_OK", function (s, a) {
+    // Exxxttrraaa runtime safety.
+    let plant = newPlant(a.payload);
+    s.plants.push(plant);
     return s;
   })
   .add<MovePlantProps>("MOVE_PLANT", function (s, a) {
@@ -95,7 +102,7 @@ export let syncReducer = generateReducer<Sync>(initialState)
 
       case "start_time":
         let merge = moment(currentEvent.start_time.toString());
-        /** It's a little ambiguous, but not sure how else to 
+        /** It's a little ambiguous, but not sure how else to
          * pull this one off.
          * payload.value.split => "13:40" => hours: 13, minutes: 40
          */
@@ -138,7 +145,7 @@ export let syncReducer = generateReducer<Sync>(initialState)
 
       case "end_time":
         let merge = moment(`${currentEvent.end_time}`);
-        /** It's a little ambiguous, but not sure how else to 
+        /** It's a little ambiguous, but not sure how else to
          * pull this one off.
          * payload.value.split => "13:40" => hours: 13, minutes: 40
          */

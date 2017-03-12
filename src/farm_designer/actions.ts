@@ -28,14 +28,16 @@ export function saveFarmEvent(farm_event: FarmEventForm,
   };
 };
 
-export function updateFarmEvent(farm_event: Partial<FarmEvent>): Thunk {
+export function updateFarmEvent(farm_event: FarmEventForm,
+  callback: () => void): Thunk {
   let url = API.current.farmEventsPath + farm_event.id;
   return function (dispatch, getState) {
-    return Axios.patch<Partial<FarmEvent>>(url, farm_event)
+    return Axios.patch<FarmEvent>(url, farm_event)
       .then(resp => {
         let payload = { ...farm_event, ...resp.data };
         dispatch({ type: "UPDATE_FARM_EVENT_OK", payload });
         success(t("Successfully saved event."));
+        callback();
       })
       .catch(payload => {
         error(t("Tried to update Farm Event, but couldn't."));
@@ -43,14 +45,16 @@ export function updateFarmEvent(farm_event: Partial<FarmEvent>): Thunk {
   };
 };
 
-export function destroyFarmEvent(farm_event_id: number): Thunk {
+export function destroyFarmEvent(farm_event_id: number,
+  callback: () => void): Thunk {
   let url = API.current.farmEventsPath + farm_event_id;
   return function (dispatch, getState) {
     return Axios.delete<Partial<FarmEvent>>(url, farm_event_id)
       .then(resp => {
         let payload = { id: farm_event_id, ...resp.data };
         dispatch({ type: "DELETE_FARM_EVENT_OK", payload });
-        error("Deleted farm event.", "Deleted");
+        success("Deleted farm event.", "Deleted");
+        callback();
       })
       .catch(payload => {
         error(t("Tried to delete Farm Event, but couldn't."));
@@ -112,7 +116,7 @@ export function destroyPlant(plant_id: number): Thunk {
   };
 };
 
-let STUB_IMAGE = "http://placehold.it/200x150";
+let STUB_IMAGE = "/app-resources/img/icons/generic-plant.svg";
 let url = (q: string) => `${OpenFarm.cropUrl}?include=pictures&filter=${q}`;
 // If we do a search on keypress, we will DDoS OpenFarm.
 // This function prevents that from happening by pausing X ms
