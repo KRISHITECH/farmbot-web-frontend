@@ -1,26 +1,24 @@
 import * as React from "react";
 import { t } from "i18next";
-import { FarmEvent } from "../interfaces";
+import { FarmEvent, AddEditFarmEventProps, TimeUnit } from "../interfaces";
 import {
-  FBSelect,
-  Select,
+  DeprecatedFBSelect,
   BlurableInput,
   Col,
   Row,
-  BackArrow
+  BackArrow,
+  success
 } from "../../ui";
 import * as moment from "moment";
 import { connect } from "react-redux";
-import {
-  mapStateToPropsAddEdit,
-  AddEditFarmEventProps
-} from "./map_state_to_props_add_edit";
-
-type AddFarmEventState = Partial<Record<keyof FarmEvent, string | number>>;
+import { mapStateToPropsAddEdit, } from "./map_state_to_props_add_edit";
+import { initSave } from "../../api/crud";
+import { TaggedFarmEvent } from "../../resources/tagged_resources";
+import { history } from "../../history";
 
 @connect(mapStateToPropsAddEdit)
 export class AddFarmEvent extends React.Component<AddEditFarmEventProps,
-AddFarmEventState> {
+Partial<FarmEvent>> {
   constructor() {
     super();
     this.state = {
@@ -51,11 +49,6 @@ AddFarmEventState> {
     }
   }
 
-  // Waiting until we figure out the fb_select deal before borrowing interfaces
-  updateRepeatSelect = (e: { label: string, value: string, name: string }) => {
-    this.setState({ time_unit: e.value });
-  }
-
   updateTime = (e: React.SyntheticEvent<HTMLInputElement>) => {
     let { handleTime } = this.props;
     switch (e.currentTarget.name) {
@@ -68,6 +61,10 @@ AddFarmEventState> {
         this.setState({ end_time: newEnd });
         break;
     }
+  }
+
+  updateRepeatSelect = (e: { label: string, value: TimeUnit, name: string }) => {
+    this.setState({ time_unit: e.value });
   }
 
   handleDate = (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -85,9 +82,26 @@ AddFarmEventState> {
     }
   }
 
-  render() {
-    let { formatDate, formatTime } = this.props;
+  handleSave = () => {
+    let body = this.state;
+    let tr = {
+      kind: "farm_events",
+      uuid: "WILL_GET_A_NEW_ONE",
+      body
+    } as TaggedFarmEvent;
+    this.props
+      .dispatch(initSave(tr))
+      .then(() => {
+        history.push("/app/designer/farm_events");
+        success("Saved farm event.", "Saved");
+        console.log("success branch");
+      }, () => {
+        console.log("Failure brnach");
+      });
+  }
 
+  render() {
+    let { formatDate, formatTime, selectOptions } = this.props;
     return <div className={`panel-container magenta-panel
             add-farm-event-panel`}>
       <div className="panel-header magenta-panel">
@@ -97,10 +111,9 @@ AddFarmEventState> {
       </div>
       <div className="panel-content">
         <label>{t("Sequence or Regimen")}</label>
-        <FBSelect
-          list={this.props.selectOptions}
-          onChange={this.updateSequenceOrRegimen}
-          value={"0"} />
+        <DeprecatedFBSelect
+          list={selectOptions}
+          onChange={this.updateSequenceOrRegimen} />
         <label>{t("Starts")}</label>
         <Row>
           <Col xs={6}>
@@ -133,10 +146,8 @@ AddFarmEventState> {
               onCommit={this.updateForm} />
           </Col>
           <Col xs={8}>
-            <Select
-              options={this.props.repeatOptions}
-              name="time_unit"
-              value={this.state.time_unit || "daily"}
+            <DeprecatedFBSelect
+              list={this.props.repeatOptions}
               onChange={this.updateRepeatSelect} />
           </Col>
         </Row>
@@ -162,7 +173,7 @@ AddFarmEventState> {
           </Col>
         </Row>
         <button className="magenta button-like"
-          onClick={() => this.props.save(this.state)}>
+          onClick={this.handleSave}>
           {t("Save")}
         </button>
       </div>

@@ -1,10 +1,10 @@
 import * as React from "react";
 import { Link } from "react-router";
-import { FBSelect, Row, Col } from "../../ui";
+import { DeprecatedFBSelect, Row, Col } from "../../ui";
 import { connect } from "react-redux";
 import { t } from "i18next";
-import * as moment from "moment";
-import { mapStateToProps, FarmEventProps } from "./map_state_to_props";
+import { mapStateToProps } from "./map_state_to_props";
+import { FarmEventProps } from "../interfaces";
 
 @connect(mapStateToProps)
 export class FarmEvents extends React.Component<FarmEventProps, {}> {
@@ -23,16 +23,17 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
 
         <div className="col-xs-10 events">
           {item.items.map(function (farmEvent) {
+            let url = `/app/designer/farm_events/` +
+              (farmEvent.id || "UNSAVED_EVENT").toString();
             return <div className={`farm-event col-xs-12`}
               key={farmEvent.sortKey}>
-              <div className="event-time col-xs-3">
+              <div className="event-time col-xs-4">
                 {farmEvent.timeStr}
               </div>
-              <div className="event-title col-xs-9">
-                ({farmEvent.executableId}) {farmEvent.executableName}
+              <div className="event-title col-xs-8">
+                {farmEvent.executableName}
               </div>
-              <Link to={`/app/designer/farm_events/` +
-                (farmEvent.id || "UNSAVED_EVENT").toString()}>
+              <Link to={url}>
                 <i className="fa fa-pencil-square-o edit-icon"></i>
               </Link>
             </div>;
@@ -43,7 +44,6 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
   }
 
   render() {
-
     return <div className="panel-container magenta-panel">
       <div className="panel-header magenta-panel">
         <div className="panel-tabs">
@@ -65,7 +65,7 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
           <i className="col-xs-2 fa fa-calendar"></i>
 
           <Col xs={10}>
-            <FBSelect list={[]}
+            <DeprecatedFBSelect list={[]}
               onChange={(selectedOption) => {
                 this.props.push("/app/designer/farm_events/" + selectedOption.value);
               }}

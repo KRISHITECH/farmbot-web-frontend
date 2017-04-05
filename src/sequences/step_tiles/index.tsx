@@ -1,11 +1,9 @@
 import * as React from "react";
-import { changeStep, removeStep, pushStep } from "../actions";
-import { assign } from "lodash";
 import { SequenceBodyItem as Step } from "farmbot";
 import { NUMERIC_FIELDS } from "../interfaces";
-import { ExecuteBlock } from "../execute_block";
-import { Sequence } from "../interfaces";
-import { defensiveClone } from "../../util";
+import { ExecuteBlock } from "./tile_execute";
+import { StepParams, StepInputProps } from "../interfaces";
+import { defensiveClone, move as arrayMover } from "../../util";
 import { TileIf } from "./tile_if";
 import { TileWait } from "./tile_wait";
 import { TileMoveAbsolute } from "./tile_move_absolute";
@@ -13,95 +11,120 @@ import { TileMoveRelative } from "./tile_move_relative";
 import { TileReadPin } from "./tile_read_pin";
 import { TileSendMessage } from "./tile_send_message";
 import { TileWritePin } from "./tile_write_pin";
-import { ToolsState } from "../../tools/interfaces";
 import { TileExecuteScript } from "./tile_execute_script";
 import { TileTakePhoto } from "./tile_take_photo";
 import * as _ from "lodash";
-import { LegalArgString } from "farmbot";
+import { CeleryNode, LegalSequenceKind, LegalArgString, If, Execute, Nothing } from "farmbot";
+import { TaggedSequence } from "../../resources/tagged_resources";
+import { overwrite } from "../../api/crud";
 
-interface CopyParams {
-    dispatch: Function;
-    step: Step;
+interface MoveParams {
+  step: Step;
+  to: number;
+  from: number;
+  sequence: TaggedSequence
 }
 
-export function copy({dispatch, step}: CopyParams) {
-    let copy = assign<{}, Step>({}, step);
-    dispatch(pushStep(copy));
+export function move({ step, sequence, to, from }: MoveParams) {
+  let copy = defensiveClone(step);
+  let next = defensiveClone(sequence);
+  let seq = next.body;
+  seq.body = seq.body || [];
+  let both = [from, to];
+  // WEIRD EDGE CASE: TODO:
+  // Works when from > to but not the other way around.
+  // Wish I could use one function for both cases, but don't have
+  // time to debug right now.
+  if (from > to) {
+    // wtf ?
+    seq.body = arrayMover(seq.body, from, to)
+  } else {
+    seq.body.splice(to, 0, defensiveClone(copy));
+    delete seq.body[from];
+    seq.body = _.compact(seq.body);
+  }
+  return overwrite(sequence, next.body);
+};
+
+interface CopyParams {
+  step: Step;
+  index: number;
+  sequence: TaggedSequence
+}
+
+export function splice({ step, sequence, index }: CopyParams) {
+  let copy = defensiveClone(step);
+  let next = defensiveClone(sequence);
+  let seq = next.body;
+  seq.body = seq.body || [];
+  seq.body.splice(index, 0, copy);
+  return overwrite(sequence, next.body);
 };
 
 interface RemoveParams {
-    index: number;
-    dispatch: Function;
+  index: number;
+  dispatch: Function;
+  sequence: TaggedSequence;
 }
 
-export function remove({dispatch, index}: RemoveParams) {
-    dispatch(removeStep(index));
+export function remove({ dispatch, index, sequence }: RemoveParams) {
+  let original = sequence;
+  let update = defensiveClone(original);
+  update.body.body = (update.body.body || []);
+  delete update.body.body[index];
+  update.body.body = _.compact(update.body.body);
+  dispatch(overwrite(original, update.body));
 }
 
-interface UpdateStepParams {
-    dispatch: Function;
-    step: Step;
-    index: number;
-    field: string;
-}
+export function updateStep(props: StepInputProps) {
+  return (e: React.FormEvent<HTMLInputElement>) => {
+    let { dispatch, step, index, sequence, field } = props;
+    let stepCopy = defensiveClone(step);
+    let seqCopy = defensiveClone(sequence).body;
+    let val = e.currentTarget.value;
+    let isNumeric = NUMERIC_FIELDS.includes(field);
+    seqCopy.body = seqCopy.body || [];
 
-export function updateStep({ dispatch,
-    step,
-    index,
-    field
-}: UpdateStepParams) {
-    return (e: React.FormEvent<HTMLInputElement>) => {
-        let copy = defensiveClone<Step>(step);
-        let val = e.currentTarget.value;
-
-        if (NUMERIC_FIELDS.indexOf(field) !== -1) {
-            if (val == "-") { // Fix negative number issues.
-                _.assign(copy.args, { [field]: "-" });
-            } else {
-                _.assign(copy.args, { [field]: parseInt(val, 10) });
-            }
-        } else {
-            _.assign(copy.args, { [field]: val });
-        };
-        dispatch(changeStep(index, copy));
+    if (isNumeric) {
+      numericNonsense(val, stepCopy, field);
+    } else {
+      _.assign(stepCopy.args, { [field]: val });
     };
+
+    seqCopy.body[index] = stepCopy;
+    dispatch(overwrite(sequence, seqCopy));
+  };
 };
 
-export interface IStepInput {
-    step: Step;
-    field: LegalArgString;
-    dispatch: Function;
-    index: number;
+function numericNonsense(val: string, copy: CeleryNode, field: LegalArgString) {
+  // Fix negative number issues.
+  let num = (val == "-") ? "-" : parseInt(val, 10);
+  return _.assign(copy.args, { [field]: num });
 }
 
-export interface StepParams {
-    dispatch: Function;
-    step: Step;
-    index: number;
-    sequence: Sequence;
-    sequences: Sequence[];
-    tools: ToolsState;
-}
-
-export interface CustomValueProps {
-    children: JSX.Element;
-}
-
-export type StepTile = (input: StepParams) => JSX.Element;
-
-interface StepDictionary {
-    [stepName: string]: StepTile;
+export function renderCeleryNode(kind: LegalSequenceKind, props: StepParams) {
+  switch (props.currentStep.kind) {
+    case "execute": return <ExecuteBlock {...props} />;
+    case "_if": return <TileIf {...props} />;
+    case "move_relative": return <TileMoveRelative {...props} />;
+    case "move_absolute": return <TileMoveAbsolute {...props} />;
+    case "write_pin": return <TileWritePin {...props} />;
+    case "wait": return <TileWait {...props} />;
+    case "send_message": return <TileSendMessage {...props} />;
+    case "read_pin": return <TileReadPin {...props} />;
+    case "execute_script": return <TileExecuteScript {...props} />;
+    case "take_photo": return <TileTakePhoto {...props} />;
+    default: return <div><hr /> ? Unknown step ? <hr /></div>;
+  }
 };
 
-export let stepTiles: { [name: string]: React.ReactType | undefined } = {
-    execute: ExecuteBlock,
-    _if: TileIf,
-    move_relative: TileMoveRelative,
-    move_absolute: TileMoveAbsolute,
-    write_pin: TileWritePin,
-    wait: TileWait,
-    send_message: TileSendMessage,
-    read_pin: TileReadPin,
-    execute_script: TileExecuteScript,
-    take_photo: TileTakePhoto
-};
+let checkBranch = (branch: Execute | Nothing,
+  step: If,
+  sequence: TaggedSequence) => {
+  return (branch.kind === "execute")
+    && (branch.args.sequence_id === sequence.body.id);
+}
+export function isRecursive(step: If, sequence: TaggedSequence) {
+  return checkBranch(step.args._else, step, sequence)
+    || checkBranch(step.args._then, step, sequence);
+}

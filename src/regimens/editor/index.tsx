@@ -1,70 +1,66 @@
 import * as React from "react";
-import { RegimensState } from "../interfaces";
 import { SaveButton } from "./save_button";
 import { DeleteButton } from "./delete_button";
 import { CopyButton } from "./copy_button";
 import { EmptyEditor } from "./empty_editor";
 import { ActiveEditor } from "./active_editor";
-import { AuthState } from "../../auth/interfaces";
-import { BotState } from "../../devices/interfaces";
-import { t } from "i18next";
+import { RegimenEditorWidgetProps } from "./interfaces";
+import { Widget, WidgetHeader, WidgetBody } from "../../ui/index";
+import { isTaggedRegimen, TaggedRegimen } from "../../resources/tagged_resources";
+import { CalendarRow } from "../interfaces";
 
-interface RegimenEditorWidgetProps {
-  regimens: RegimensState;
+interface MiddleSectionProps {
+  regimen: TaggedRegimen | undefined;
+  calendar: CalendarRow[];
   dispatch: Function;
-  auth: AuthState | undefined;
-  bot: BotState;
 }
-export function RegimenEditorWidget({regimens, dispatch, auth, bot}:
+
+function MiddleSection({
+  regimen,
+  dispatch,
+  calendar
+}: MiddleSectionProps) {
+
+  if (regimen && isTaggedRegimen(regimen) && calendar) {
+    return <ActiveEditor dispatch={dispatch}
+      regimen={regimen}
+      calendar={calendar} />;
+  } else {
+    return <EmptyEditor />;
+  }
+}
+export function RegimenEditorWidget({ current, dispatch, auth, calendar }:
   RegimenEditorWidgetProps) {
   if (auth) {
-    let regimen = regimens.all[regimens.current];
-    let DynamicComponent = regimen ? ActiveEditor : EmptyEditor;
-    let saveButtenProps = {
+    let regimen = current;
+    let saveButtonProps = {
       dispatch,
       regimen,
       token: auth.token,
       baseUrl: (auth.token && auth.token.unencoded.iss) ||
       "CANT_FETCH_TOKEN_ISS"
     };
-    let taskProps = {
-      dispatch,
-      regimen,
-      bot
-    };
-    return (<div>
-      <div className="widget-wrapper regimen-editor-widget">
-        <div className="row">
-          <div className="col-sm-12">
-            <SaveButton regimen={regimen}
-              dispatch={dispatch}
-              url={auth.token.unencoded.iss} />
-            <CopyButton regimen={regimen} dispatch={dispatch} />
-            <DeleteButton {...saveButtenProps} />
-            <div className="widget-header">
-              <h5> Regimen Editor </h5>
-              <i className="fa fa-question-circle widget-help-icon">
-                <div className="widget-help-text">{t(`Regimens allow FarmBot
+
+    return <Widget className="regimen-editor-widget">
+      <WidgetHeader title="Regimen Editor"
+        helpText={`Regimens allow FarmBot
                 to take care of a plant throughout its entire life. A
                 regimen consists of many sequences that are scheduled to run
                 based on the age of the plant. Regimens are applied to
                 plants from the farm designer (coming soon) and can be
                 re-used on many plants growing at the same or different
-                times. Multiple regimens can be applied to any one plant.`)}
-                </div>
-              </i>
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-sm-12">
-            <div className="widget-content">
-              <DynamicComponent regimen={regimen} dispatch={dispatch} />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>);
+                times. Multiple regimens can be applied to any one plant.`}>
+        <SaveButton regimen={regimen} dispatch={dispatch} />
+        <CopyButton regimen={regimen} dispatch={dispatch} />
+        <DeleteButton {...saveButtonProps} />
+      </WidgetHeader>
+      <WidgetBody>
+        <MiddleSection
+          regimen={regimen}
+          dispatch={dispatch}
+          calendar={calendar} />
+      </WidgetBody>
+    </Widget>;
   } else {
     throw new Error("Must log in first");
   }

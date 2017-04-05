@@ -1,5 +1,15 @@
+import { AuthState } from "../auth/interfaces";
+
+export interface Props {
+  auth: AuthState | undefined;
+  dispatch: Function;
+  saveUser: (data: State, dispatch: Function) => void;
+  enactDeletion: (deletion_confirmation: string | undefined,
+    dispatch: Function) => void;
+}
+
 /** JSON form that gets POSTed to the API when user updates their info. */
-export interface UserAccountUpdate {
+export interface State {
   name?: string;
   email?: string;
   password?: string;

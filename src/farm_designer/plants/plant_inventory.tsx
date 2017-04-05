@@ -1,46 +1,33 @@
 import * as React from "react";
 import { Link } from "react-router";
 import { Everything } from "../../interfaces";
-import { Plant } from "../interfaces";
-import { FBSelect, DropDownItem } from "../../ui";
+import { DeprecatedFBSelect, DropDownItem } from "../../ui";
 import { connect } from "react-redux";
 import * as moment from "moment";
 import { t } from "i18next";
+import { selectAllPlants } from "../../resources/selectors";
+import { TaggedPlant } from "../../resources/tagged_resources";
+import { PlantInventoryItem } from "./plant_inventory_item";
 
-function OptionComponent(plants: Plant[]) {
-  let indexedById = _.indexBy(plants, "id");
+function OptionComponent(plants: TaggedPlant[]) {
+  let indexedById = _(plants).map(x => x.body).indexBy("id").value();
   return (props: DropDownItem) => {
-    let {
-      img_url,
-      planted_at,
-    } = indexedById[props.value as number]; // TODO: Remove typecast after refactor.
-
-    let dayPlanted = moment();
-
-    // Same day = 1 !0
-    let daysOld = dayPlanted.diff(moment(planted_at), "days") + 1;
-    return <div className="plant-search-item">
-      <img className="plant-search-item-image" src={img_url} />
-      <span className="plant-search-item-name">{props.label}</span>
-      <i className="plant-search-item-age">
-        {daysOld} days old</i>
-    </div>;
+    return <PlantInventoryItem plant={indexedById[props.value || 0]} />;
   };
 }
 
 @connect((state: Everything) => state)
 export class Plants extends React.Component<Everything, {}> {
 
-  handleRedirect(e: DropDownItem) {
+  handleRedirect = (e: DropDownItem) => {
     this.props.router.push(`/app/designer/plants/` + e.value);
   }
 
   render() {
-    let { plants } = this.props.sync;
-
+    let plants = selectAllPlants(this.props.resources.index);
     let plantOptions = plants.map(plant => {
-      if (plant.id) {
-        return { label: plant.name, value: plant.id };
+      if (plant.body.id) {
+        return { label: plant.body.name, value: plant.body.id };
       } else {
         throw new Error("Thought plants would have an ID here.");
       }
@@ -65,12 +52,11 @@ export class Plants extends React.Component<Everything, {}> {
 
         <div className="thin-search-wrapper">
           <i className="fa fa-search"></i>
-          <FBSelect list={plantOptions}
-            optionComponent={OptionComponent(this.props.sync.plants)}
-            onChange={this.handleRedirect.bind(this)}
+          <DeprecatedFBSelect list={plantOptions}
+            optionComponent={OptionComponent(plants)}
+            onChange={this.handleRedirect}
             isOpen={true}
-            placeholder="Search Plants"
-          />
+            placeholder="Search Plants" />
         </div>
 
       </div>

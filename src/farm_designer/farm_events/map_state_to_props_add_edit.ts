@@ -1,23 +1,23 @@
-import { FarmEventForm } from "../interfaces";
+import { AddEditFarmEventProps } from "../interfaces";
 import { Everything } from "../../interfaces";
 import * as moment from "moment";
 import { DropDownItem } from "../../ui";
 import { t } from "i18next";
-import { saveFarmEvent } from "../actions";
+import {
+  selectAllFarmEvents,
+  indexRegimenById,
+  indexSequenceById,
+  indexFarmEventById,
+  findFarmEventById,
+  selectAllRegimens,
+  selectAllSequences,
+  hasId
+} from "../../resources/selectors";
+import { TaggedFarmEvent } from "../../resources/tagged_resources";
+import { history } from "../../history";
 
-export interface AddEditFarmEventProps {
-  selectOptions: DropDownItem[];
-  repeatOptions: DropDownItem[];
-  formatDate(input: string): string;
-  formatTime(input: string): string;
-  handleTime(e: React.SyntheticEvent<HTMLInputElement>, currentISO: string): string;
-  save(fe: FarmEventForm): void;
-}
-
-export function mapStateToPropsAddEdit(state: Everything): AddEditFarmEventProps {
-
+export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps {
   let handleTime = (e: React.SyntheticEvent<HTMLInputElement>, currentISO: string) => {
-    // Am I really doing this right now? How else?
     let incomingTime = e.currentTarget.value.split(":");
     let hours = parseInt(incomingTime[0]) || 0;
     let minutes = parseInt(incomingTime[1]) || 0;
@@ -63,7 +63,9 @@ export function mapStateToPropsAddEdit(state: Everything): AddEditFarmEventProps
   };
 
   let repeatOptions = [
-    { label: "Do not repeat", value: "never", name: "time_unit" },
+    // Removing this for now until prod. deploy is over.
+    //   - R.C. Mar 2017
+    // { label: "Do not repeat", value: "never", name: "time_unit" },
     { label: "minutes", value: "minutely", name: "time_unit" },
     { label: "hours", value: "hourly", name: "time_unit" },
     { label: "days", value: "daily", name: "time_unit" },
@@ -74,46 +76,63 @@ export function mapStateToPropsAddEdit(state: Everything): AddEditFarmEventProps
 
   let selectOptions: DropDownItem[] = [];
 
-  state.sync.regimens.map((regimen, index) => {
-    selectOptions.push({ label: t("REGIMENS"), heading: true, value: "Regimens" });
+  selectOptions.push({ label: t("REGIMENS"), heading: true, value: "Regimens" });
+  selectAllRegimens(props.resources.index).map(regimen => {
     // TODO: Remove executable_type from obj since it's
     // not declared in the interface.
-    if (regimen.id) {
+    if (regimen.kind === "regimens" && regimen.body.id) {
       let item = {
-        label: regimen.name,
+        label: regimen.body.name,
         executable_type: "Regimen",
-        executable_id: regimen.id,
-        value: regimen.id
+        executable_id: regimen.body.id,
+        value: regimen.body.id
       };
       selectOptions.push(item);
     }
   });
 
-  state.sync.sequences.map((sequence, index) => {
-    selectOptions.push({ label: t("SEQUENCES"), heading: true, value: "Sequences" });
+  selectOptions.push({ label: t("SEQUENCES"), heading: true, value: "Sequences" });
+  selectAllSequences(props.resources.index).map(sequence => {
     // TODO: Remove executable_type from obj since it's
     // not declared in the interface.
-    if (sequence.id) {
+    if (sequence.kind === "sequences" && sequence.body.id) {
       let item = {
-        label: sequence.name,
+        label: sequence.body.name,
         executable_type: "Sequence",
-        executable_id: sequence.id,
-        value: sequence.id
+        executable_id: sequence.body.id,
+        value: sequence.body.id
       };
       selectOptions.push(item);
     }
   });
+
+  let regimensById = indexRegimenById(props.resources.index);
+  let sequencesById = indexSequenceById(props.resources.index);
+  let farmEventsById = indexFarmEventById(props.resources.index);
+
+  let farmEvents = selectAllFarmEvents(props.resources.index);
+
+  let getFarmEvent = (): TaggedFarmEvent | undefined => {
+    let url = history.getCurrentLocation().pathname;
+    let id = parseInt(url.split("/")[4]);
+    if (id && hasId(props.resources.index, "farm_events", id)) {
+      return findFarmEventById(props.resources.index, id);
+    } else {
+      history.push("/app/designer/farm_events");
+    }
+  }
 
   return {
+    dispatch: props.dispatch,
+    regimensById,
+    sequencesById,
+    farmEventsById,
     selectOptions,
     repeatOptions,
     formatDate,
     formatTime,
     handleTime,
-    save(fe) {
-      this.dispatch(saveFarmEvent(fe, () => {
-        this.router.push("/app/designer/farm_events");
-      }));
-    }
+    farmEvents,
+    getFarmEvent
   };
 }

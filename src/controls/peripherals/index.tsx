@@ -1,56 +1,93 @@
 import * as React from "react";
-import { Pin, Pins } from "farmbot";
-import { Everything } from "../../interfaces";
-import { TitleBar } from "./title_bar";
-import { PeripheralItem } from "./peripheral_item";
-import { Peripheral } from "./interfaces";
+import { PeripheralList } from "./peripheral_list";
 import { PeripheralForm } from "./peripheral_form";
+import { Widget, WidgetBody, WidgetHeader, error } from "../../ui";
+import { PeripheralsProps } from "../../devices/interfaces";
+import { PeripheralState } from "./interfaces";
+import { t } from "i18next";
+import { TaggedPeripheral } from "../../resources/tagged_resources";
+import { saveAll, init } from "../../api/crud";
 
-export class Peripherals extends React.Component<Everything, {}> {
-    getPin(p: Peripheral, pins: Pins): Pin {
-        let pin = pins[p.pin];
-        if (pin) {
-            return pin;
-        } else {
-            return {
-                mode: 0,
-                value: -1
-            };
-        }
-    }
+const HELP_TEXT = `Use these toggle switches to control FarmBot's peripherals in 
+realtime. To edit and create new peripherals, press the EDIT button. Make 
+sure to turn things off when you're done!`
 
-    peripherals() {
-        let { peripherals } = this.props;
-        let pins = this.props.bot.hardware.pins;
-        let all = this
-            .props
-            .peripherals
-            .all;
-        if (!all.length && peripherals.editorMode === "controlling") {
-            return [
-                <p key="foo">Click "Edit" to add new peripherals.</p>
-            ];
-        };
-        return all
-            .map((p, i) => {
-                return <PeripheralItem key={i}
-                    dispatch={this.props.dispatch}
-                    index={i}
-                    pin={this.getPin(p, pins)}
-                    peripheral={p}
-                    editorMode={this.props.peripherals.editorMode} />;
-            });
+export class Peripherals extends React.Component<PeripheralsProps, PeripheralState> {
+  constructor() {
+    super();
+    this.state = { isEditing: false };
+  }
+
+  toggle = () => {
+    this.setState({ isEditing: !this.state.isEditing });
+  }
+
+  maybeSave = () => {
+    let { peripherals } = this.props;
+    let pinNums = peripherals.map(x => x.body.pin);
+    let positivePins = pinNums.filter(x => x && x > 0);
+    // I hate adding client side validation, but this is a wonky endpoint - RC.
+    let allAreUniq = _.uniq(pinNums).length === pinNums.length;
+    let allArePositive = positivePins.length === pinNums.length
+    if (allAreUniq && allArePositive) {
+      this.props.dispatch(saveAll(this.props.peripherals, this.toggle));
+    } else {
+      error("Pin numbers are required and must be unique.");
     }
-    render() {
-        return (<div>
-            <TitleBar {...this.props.peripherals}
-                dispatch={this.props.dispatch} />
-            <div className="col-sm-12">
-                <div className="widget-content">
-                    {this.peripherals.call(this)}
-                    <PeripheralForm dispatch={this.props.dispatch}
-                        editorMode={this.props.peripherals.editorMode} />
-                </div>
-            </div></div>);
-    };
+  }
+
+  showPins = () => {
+    let { peripherals, dispatch, bot } = this.props;
+    let pins = bot.hardware.pins;
+    if (this.state.isEditing) {
+      return <PeripheralForm peripherals={peripherals}
+        dispatch={dispatch} />
+    } else {
+      return <PeripheralList peripherals={peripherals}
+        dispatch={dispatch}
+        pins={pins} />
+    }
+  }
+
+  emptyPeripheral = (): TaggedPeripheral => {
+    return {
+      uuid: "WILL_BE_CHANGED_BY_REDUCER",
+      kind: "peripherals",
+      body: { pin: 0, label: "New Peripheral" }
+    }
+  }
+
+  render() {
+    let { dispatch } = this.props;
+    let { isEditing } = this.state;
+    return <Widget>
+      <WidgetHeader title={"Peripherals"}
+        helpText={HELP_TEXT}>
+        <button
+          hidden={isEditing}
+          className="gray button-like"
+          type="button"
+          onClick={this.toggle}>
+          {t("Edit")}
+        </button>
+        <button
+          hidden={!isEditing}
+          className="green button-like"
+          type="button"
+          onClick={this.maybeSave}>
+          {t("Save")}
+        </button>
+        <button
+          hidden={!isEditing}
+          className="green button-like"
+          type="button"
+          onClick={() => { dispatch(init(this.emptyPeripheral())) }}>
+          <i className="fa fa-plus" />
+        </button>
+      </WidgetHeader>
+      <WidgetBody>
+        {this.showPins()}
+      </WidgetBody>
+    </Widget>;
+  };
 }

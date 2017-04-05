@@ -7,7 +7,7 @@ import { t } from "i18next";
 
 export class DeleteAccount extends React.Component<DeleteAccountPropTypes, {}> {
   render() {
-    let { set, deletion_confirmation } = this.props;
+    let { set, deletion_confirmation, save } = this.props;
     return <Widget>
       <WidgetHeader
         title="Delete Account"
@@ -27,17 +27,17 @@ export class DeleteAccount extends React.Component<DeleteAccountPropTypes, {}> {
               blank slate.`)}
           <br /><br />
           {t(`If you are sure you want to delete your account, type in
-                        your password below to continue.`)}
+              your password below to continue.`)}
           <br /><br />
         </div>
         <form>
           <Row>
-            <Col md={12} sm={12} xs={12}>
+            <Col xs={12}>
               <label>
                 {t("Enter Password")}
               </label>
             </Col>
-            <Col md={8} sm={8} xs={8}>
+            <Col xs={8}>
               <BlurableInput
                 onCommit={set}
                 name="deletion_confirmation"
@@ -46,10 +46,10 @@ export class DeleteAccount extends React.Component<DeleteAccountPropTypes, {}> {
                 type="password" />
             </Col>
             <Col xs={4}>
-              <button onClick={this.props.save}
+              <button onClick={save}
                 className="red button-like"
                 type="button">
-                {t("DELETE ACCOUNT")}
+                {t("Delete Account")}
               </button>
             </Col>
           </Row>

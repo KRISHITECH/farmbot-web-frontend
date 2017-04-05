@@ -1,249 +1,270 @@
 import * as React from "react";
 import { Component } from "react";
-import { StepParams } from "./index";
-import { StepTitleBar } from "./step_title_bar";
-import { Help, Select, BlurableInput } from "../../ui";
-import { copy, remove } from "./index";
+import { StepParams } from "../interfaces";
+import { splice, remove } from "./index";
 import { MoveAbsState } from "../interfaces";
-import { CustomOptionProps } from "../../interfaces";
+import {
+  Vector3,
+  SequenceBodyItem,
+  Tool,
+  Coordinate,
+  LegalSequenceKind
+} from "farmbot";
+import {
+  Row,
+  Col,
+  BlurableInput,
+  DropDownItem,
+  NULL_CHOICE
+} from "../../ui";
+import { StepInputBox } from "../inputs/step_input_box";
 import { t } from "i18next";
-import { updateMoveAbsStep } from "../actions";
-import { MoveAbsolute } from "farmbot";
+import { StepTitleBar } from "./step_title_bar";
+import {
+  isTaggedSequence,
+  TaggedTool,
+  TaggedToolSlot
+} from "../../resources/tagged_resources";
+import {
+  toolsInUse,
+  findToolById,
+  findSlotByToolId
+} from "../../resources/selectors";
+import { defensiveClone } from "../../util";
+import { overwrite } from "../../api/crud";
+import { Xyz } from "../../devices/interfaces";
+import { NewFBSelect } from "../../ui/new_fb_select";
 
-/** Adds more specificity to the `StepParams` interface, since we only deal with
- *  MoveAbsolute nodes. */
-interface MoveAbsProps extends StepParams {
-    step: MoveAbsolute;
+interface Args {
+  location: Tool | Coordinate;
+  speed: number;
+  offset: Coordinate;
 }
+type LocationArg = "location" | "offset";
 
-class OptionComponent extends React.Component<CustomOptionProps, {}> {
-    handleMouseDown(e: React.SyntheticEvent<HTMLDivElement>) {
-        e.preventDefault();
-        e.stopPropagation();
-        this.props.onSelect(this.props.option, e);
-    };
+export class TileMoveAbsolute extends Component<StepParams, MoveAbsState> {
+  get resources() { return this.props.resources; }
+  get step() { return this.props.currentStep; }
+  get tool(): TaggedTool | undefined {
+    return (this.args.location.kind === "tool") ?
+      findToolById(this.resources, this.args.location.args.tool_id) : undefined;
+  }
+  get tool_id() { return this.tool && this.tool.body.id; }
+  get slot(): TaggedToolSlot | undefined {
+    return (this.tool_id) ?
+      findSlotByToolId(this.resources, this.tool_id) : undefined;
+  }
+  get args() {
+    // Incase we rename it later:
+    const MOVE_ABSOLUTE: LegalSequenceKind = "move_absolute";
+    if (this.step.kind === MOVE_ABSOLUTE) {
+      return this.step.args;
+    } else {
+      throw new Error("Impossible celery node detected.");
+    }
+  }
+  get location(): Tool | Coordinate { return this.args.location; }
+  getOffsetValue = (val: Xyz) => {
+    return (this.args.offset.args[val] || 0).toString();
+  }
 
-    handleMouseEnter(e: React.SyntheticEvent<HTMLDivElement>) {
-        this.props.onFocus(this.props.option, e);
-    };
+  updateArgs = (update: Partial<Args>) => {
+    let copy = defensiveClone(this.props.currentSequence).body;
+    let step = (copy.body || [])[this.props.index];
+    if (step && step.kind === "move_absolute") {
+      step.args = { ...step.args, ...update };
+      this.props.dispatch(overwrite(this.props.currentSequence, copy));
+    } else {
+      throw new Error("Impossible condition.");
+    }
+  }
 
-    handleMouseMove(e: React.SyntheticEvent<HTMLDivElement>) {
-        if (this.props.isFocused) { return; };
-        this.props.onFocus(this.props.option, e);
-    };
+  getAxisValue = (axis: Xyz): string => {
+    let number: number | undefined;
+    switch (this.args.location.kind) {
+      case "coordinate": number = this.args.location.args[axis];
+        break;
+      case "tool": number = (this.slot) ? this.slot.body[axis] : undefined;
+        break;
+    }
+    return (number || 0).toString();
+  }
 
-    render() {
-        let params = this.props.option.value === "---" ? "" :
-            `(${this.props.option.x}, ${this.props.option.y}, ${this.props.option.z})`;
-        return (
-            <div className={this.props.className}
-                onMouseDown={this.handleMouseDown.bind(this)}
-                onMouseEnter={this.handleMouseEnter.bind(this)}
-                onMouseMove={this.handleMouseMove.bind(this)}>
-                {this.props.children}
-                <span className="Select-value-params">
-                    {params}
-                </span>
+  clearTool = () => {
+    this.updateArgs({
+      location: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } }
+    });
+  }
+
+  selectTool = (tool: DropDownItem) => {
+    let tool_id = tool.value;
+    if (_.isNumber(tool_id)) {
+      this.updateArgs({ location: { kind: "tool", args: { tool_id } } });
+    } else {
+      this.clearTool();
+    }
+  }
+
+  updateToolSelect = (tool: DropDownItem) => {
+    (Object.is(NULL_CHOICE, tool)) ? this.clearTool() : this.selectTool(tool);
+  }
+
+  updateInputValue = (axis: Xyz, place: LocationArg) =>
+    (e: React.SyntheticEvent<HTMLInputElement>) => {
+      let num = parseInt(e.currentTarget.value, 10);
+      let update = { [place]: { args: { [axis]: num } } };
+      this.updateArgs(_.merge({}, this.args, update));
+    }
+
+  initialDropDownSequenceValue = () => {
+    if (this.tool && this.tool_id) {
+      return { label: this.tool.body.name, value: this.tool_id }
+    }
+    return { label: "---", value: 0 };
+  }
+
+  get options(): DropDownItem[] {
+    let choices: DropDownItem[] = [];
+    toolsInUse(this.props.resources).map(x => {
+      if (_.isNumber(x.body.id)) {
+        choices.push({ value: x.body.id, label: x.body.name })
+      }
+    })
+    return choices;
+  };
+
+  render() {
+    let { currentStep, dispatch, index, currentSequence } = this.props;
+    if (currentSequence && !isTaggedSequence(currentSequence)) {
+      throw new Error("WHOOPS!");
+    }
+    return <div className="step-wrapper">
+      <Row>
+        <Col sm={12}>
+          <div className="step-header move-absolute-step">
+            <StepTitleBar index={index} dispatch={dispatch} step={currentStep} />
+            <i className="fa fa-arrows-v step-control" />
+            <i className="fa fa-clone step-control"
+              onClick={() => dispatch(splice({
+                step: currentStep,
+                index,
+                sequence: currentSequence
+              }))} />
+            <i className="fa fa-trash step-control"
+              onClick={() => remove({ dispatch, index, sequence: currentSequence })} />
+            <div className="help">
+              <i className="fa fa-question-circle help-icon" />
+              <div className="help-text">
+                {t(`The Move Absolute step instructs
+                FarmBot to move to the specified coordinate
+                regardless of the current position. For example,
+                if FarmBot is currently at X=1000, Y=1000 and it
+                receives a Move Absolute where X=0 and Y=3000,
+                then FarmBot will move to X=0, Y=3000. If
+                FarmBot must move in multiple directions, it
+                will move diagonally. If you require straight
+                movements along one axis at a time, use multiple
+                Move Absolute steps. Coming soon: Offsets allow
+                you to more easily instruct FarmBot to move to a
+                location, but offset from it by the specified
+                amount. For example moving to just above where a
+                peripheral is located. Using offsets lets
+                FarmBot do the math for you.`)}
+              </div>
             </div>
-        );
-    }
-}
-
-export class TileMoveAbsolute extends Component<MoveAbsProps, MoveAbsState> {
-    constructor() {
-        super();
-        this.update = this.update.bind(this);
-        this.updateSelect = this.updateSelect.bind(this);
-        this.state = {
-            options: [{ label: "---", value: "---", x: 0, y: 0, z: 0 }],
-            value: "---", x: 0, y: 0, z: 0, speed: 0
-        };
-    }
-
-    componentDidMount() {
-        let step = this.props.step;
-
-        let location = step.args.location;
-        let currSlot: { x?: number, y?: number, z?: number } = {};
-        this.props.tools.tools.all.map(tool => {
-            this.props.tools.tool_slots.map(slot => {
-                if (tool.id === slot.tool_id && this.state.options) {
-                    if (location.kind === "tool" &&
-                        location.args.tool_id === slot.tool_id) {
-                        currSlot = slot;
-                    }
-                    this.state.options.push({
-                        label: tool.name,
-                        value: tool.id,
-                        x: slot.x,
-                        y: slot.y,
-                        z: slot.z
-                    });
-                }
-            });
-        });
-
-        let { speed } = step.args;
-        switch (location.kind) {
-            case "tool":
-                this.setState({
-                    value: location.args.tool_id, speed,
-                    x: currSlot.x, y: currSlot.y, z: currSlot.z
-                });
-                break;
-            case "coordinate":
-                // CHRIS: This is a quick stub while I fix if_statement.
-                //          - Rick, 12/29/16
-                let wow = { ...location.args };
-                let ok = { ...this.state };
-                this.setState({
-                    x: wow.x || ok.x,
-                    y: wow.x || ok.y,
-                    z: wow.z || ok.z,
-                    speed
-                });
-                break;
-            default:
-                throw new Error("Error getting node kind.");
-        }
-    }
-
-    updateSelect(event: Partial<MoveAbsState>) {
-        let { x, y, z, value } = event;
-        this.setState({ x, y, z, value, options: this.state.options }, () => {
-            this.props.dispatch(updateMoveAbsStep(this.state, this.props.index));
-        });
-    }
-
-    update(event: React.SyntheticEvent<HTMLInputElement>) {
-        let { name, value } = event.currentTarget;
-        let state: { [name: string]: string | number } = {};
-        state[name] = parseInt(value);
-        this.setState(state, () => {
-            this.props.dispatch(updateMoveAbsStep(this.state, this.props.index));
-        });
-    }
-
-    render() {
-        let { update, updateSelect } = this;
-        let { index, dispatch, step } = this.props;
-        let { options, value } = this.state;
-        let isTool = this.state.value !== "---";
-        let x = this.state.x || "0";
-        let y = this.state.y || "0";
-        let z = this.state.z || "0";
-        let speed = this.state.speed || "0";
-
-        return <div>
-            <div className="step-wrapper">
-                <div className="row">
-                    <div className="col-sm-12">
-                        <div className="step-header move-absolute-step">
-                            <StepTitleBar index={index}
-                                dispatch={dispatch}
-                                step={step} />
-                            <i className="fa fa-arrows-v step-control" />
-                            <i className="fa fa-clone step-control"
-                                onClick={() => copy({ dispatch, step })} />
-                            <i className="fa fa-trash step-control"
-                                onClick={() => remove({ dispatch, index })} />
-                            <Help text={(`The Move Absolute step instructs
-                                FarmBot to move to the specified coordinate
-                                regardless of the current position. For example,
-                                if FarmBot is currently at X=1000, Y=1000 and it
-                                receives a Move Absolute where X=0 and Y=3000,
-                                then FarmBot will move to X=0, Y=3000. If
-                                FarmBot must move in multiple directions, it
-                                will move diagonally. If you require straight
-                                movements along one axis at a time, use multiple
-                                Move Absolute steps. Coming soon: Offsets allow
-                                you to more easily instruct FarmBot to move to a
-                                location, but offset from it by the specified
-                                amount. For example moving to just above where a
-                                peripheral is located. Using offsets lets
-                                FarmBot do the math for you.`)} />
-                        </div>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-12">
-                        <div className="step-content move-absolute-step">
-                            <div className="row">
-                                <div className="col-md-12">
-                                    <label>
-                                        {t("Import coordinates from")}
-                                    </label>
-                                    <Select
-                                        options={options}
-                                        optionComponent={OptionComponent}
-                                        onChange={updateSelect}
-                                        value={value}
-                                    />
-                                </div>
-                                <div className="col-xs-3 col-md-3">
-                                    <label>{t("X (mm)")}</label>
-                                    <BlurableInput
-                                        value={x.toString()}
-                                        onCommit={update}
-                                        type="number"
-                                        name="x"
-                                        disabled={isTool} />
-                                </div>
-                                <div className="col-xs-3 col-md-3">
-                                    <label>{t("Y (mm)")}</label>
-                                    <BlurableInput
-                                        value={y.toString()}
-                                        onCommit={update}
-                                        type="number"
-                                        name="y"
-                                        disabled={isTool} />
-                                </div>
-                                <div className="col-xs-3 col-md-3">
-                                    <label>{t("Z (mm)")}</label>
-                                    <BlurableInput
-                                        value={z.toString()}
-                                        onCommit={update}
-                                        type="number"
-                                        name="z"
-                                        disabled={isTool} />
-                                </div>
-                                <div className="col-xs-3 col-md-3">
-                                    <label>{t("Speed")}</label>
-                                    <BlurableInput
-                                        onCommit={update}
-                                        value={speed.toString()}
-                                        type="number"
-                                        name="speed" />
-                                </div>
-                                <div className="col-xs-3 col-md-3">
-                                    <label>{t("X-Offset")}</label>
-                                    <BlurableInput
-                                        onCommit={update}
-                                        value={step.args.offset.args.x.toString()}
-                                        type="number"
-                                        name="offsetX" />
-                                </div>
-                                <div className="col-xs-3 col-md-3">
-                                    <label>{t("Y-Offset")}</label>
-                                    <BlurableInput
-                                        onCommit={update}
-                                        value={step.args.offset.args.y.toString()}
-                                        type="number"
-                                        name="offsetY" />
-                                </div>
-                                <div className="col-xs-3 col-md-3">
-                                    <label>{t("Z-Offset")}</label>
-                                    <BlurableInput
-                                        onCommit={update}
-                                        value={step.args.offset.args.z.toString()}
-                                        type="number"
-                                        name="offsetZ" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>;
-    }
+          </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={12}>
+          <div className="step-content move-absolute-step">
+            <Row>
+              <Col md={12}>
+                <label>Import coordinates from</label>
+                <NewFBSelect
+                  allowEmpty={true}
+                  list={this.options}
+                  selectedItem={this.initialDropDownSequenceValue()}
+                  onChange={this.updateToolSelect} />
+              </Col>
+              <Col xs={3}>
+                <label>
+                  {t("X (mm)")}
+                </label>
+                <BlurableInput
+                  onCommit={this.updateInputValue("x", "location")}
+                  disabled={!!this.tool}
+                  type="number"
+                  name="location-x"
+                  value={this.getAxisValue("x")} />
+              </Col>
+              <Col xs={3}>
+                <label>
+                  {t("Y (mm)")}
+                </label>
+                <BlurableInput
+                  onCommit={this.updateInputValue("y", "location")}
+                  type="number"
+                  disabled={!!this.tool}
+                  name="location-y"
+                  value={this.getAxisValue("y")} />
+              </Col>
+              <Col xs={3}>
+                <label>
+                  {t("Z (mm)")}
+                </label>
+                <BlurableInput
+                  onCommit={this.updateInputValue("z", "location")}
+                  type="number"
+                  name="location-z"
+                  disabled={!!this.tool}
+                  value={this.getAxisValue("z")} />
+              </Col>
+              <Col xs={3}>
+                <label>
+                  {t("Speed")}
+                </label>
+                <StepInputBox
+                  field={"speed"}
+                  step={this.step}
+                  index={index}
+                  dispatch={this.props.dispatch}
+                  sequence={this.props.currentSequence} />
+              </Col>
+              <Col xs={3}>
+                <label>
+                  {t("X-Offset")}
+                </label>
+                <BlurableInput
+                  onCommit={this.updateInputValue("x", "offset")}
+                  type="number"
+                  name="offset-x"
+                  value={this.getOffsetValue("x")} />
+              </Col>
+              <Col xs={3}>
+                <label>
+                  {t("Y-Offset")}
+                </label>
+                <BlurableInput
+                  onCommit={this.updateInputValue("y", "offset")}
+                  type="number"
+                  name="offset-y"
+                  value={this.getOffsetValue("y")} />
+              </Col>
+              <Col xs={3}>
+                <label>
+                  {t("Z-Offset")}
+                </label>
+                <BlurableInput
+                  onCommit={this.updateInputValue("z", "offset")}
+                  type="number"
+                  name="offset-z"
+                  value={this.getOffsetValue("z")} />
+              </Col>
+            </Row>
+          </div>
+        </Col>
+      </Row>
+    </div>;
+  }
 }

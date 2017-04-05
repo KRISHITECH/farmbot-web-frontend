@@ -1,15 +1,6 @@
 import { didLogin } from "../auth/actions";
-import { ReduxAction, Thunk } from "../redux/interfaces";
-import { ChangeApiHost, ChangeApiPort } from "./interfaces";
+import { Thunk } from "../redux/interfaces";
 import { Session } from "../session";
-
-export function changeApiHost(host: string): ReduxAction<ChangeApiHost> {
-  return { type: "CHANGE_API_HOST", payload: { host } };
-};
-
-export function changeApiPort(port: string): ReduxAction<ChangeApiPort> {
-  return { type: "CHANGE_API_PORT", payload: { port } };
-};
 
 /** Lets Redux know that the app is ready to bootstrap. */
 export function ready(): Thunk {

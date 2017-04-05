@@ -4,27 +4,38 @@ import { StepButtonCluster } from "./step_button_cluster";
 import { SequenceEditorMiddle } from "./sequence_editor_middle";
 import { MobileSequencesNav } from "./mobile_nav";
 import { connect } from "react-redux";
-import { Everything } from "../interfaces";
 import { isMobile } from "../util";
+import { Page, Col } from "../ui/index";
+import { Props } from "./interfaces";
+import { mapStateToProps } from "./state_to_props";
 
-@connect((state: Everything) => state)
-export class Sequences extends React.Component<any, Everything> {
+@connect(mapStateToProps)
+export class Sequences extends React.Component<Props, {}> {
   render() {
-    return (
-      <div className="all-content-wrapper">
-        <div className="col-md-3 col-sm-4">
-          <StepButtonCluster { ...this.props } />
-        </div>
-        <div className="col-md-6 col-sm-8">
-          <SequenceEditorMiddle { ...this.props } />
-        </div>
-        {isMobile() && (
-          <MobileSequencesNav { ...this.props} />
-        )}
-        <div className="col-md-3 col-sm-12">
-          <SequencesList { ...this.props } />
-        </div>
-      </div>
-    );
+    return <Page className="sequences">
+      <Col xs={4} md={3}>
+        <StepButtonCluster
+          current={this.props.sequence}
+          dispatch={this.props.dispatch} />
+      </Col>
+      <Col xs={8} md={6}>
+        <SequenceEditorMiddle
+          dispatch={this.props.dispatch}
+          sequences={this.props.sequences}
+          sequence={this.props.sequence}
+          slots={this.props.slots}
+          tools={this.props.tools}
+          resources={this.props.resources}
+        />
+      </Col>
+      {isMobile() && <MobileSequencesNav />}
+      <Col xs={12} md={3}>
+        <SequencesList
+          dispatch={this.props.dispatch}
+          auth={this.props.auth}
+          sequences={this.props.sequences}
+        />
+      </Col>
+    </Page>;
   }
 };

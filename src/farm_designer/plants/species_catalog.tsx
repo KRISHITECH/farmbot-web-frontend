@@ -1,50 +1,41 @@
 import * as React from "react";
-import { Link } from "react-router";
 import { BackArrow } from "../../ui";
-import { CropLiveSearchResult } from "../interfaces";
 import { Everything } from "../../interfaces";
-import { openFarmSearchQuery } from "../actions";
 import { connect } from "react-redux";
 import { t } from "i18next";
+import { OpenFarmSearch } from "./openfarm_search";
+import { DesignerState, CropLiveSearchResult } from "../interfaces";
 
-interface SpeciesCatalogTileProps {
-  result: CropLiveSearchResult;
+interface SpeciesCatalogProps {
+  cropSearchQuery: string;
   dispatch: Function;
+  designer: DesignerState;
+  cropSearchResults: CropLiveSearchResult[];
 }
 
-interface SearchBoxParams {
-  query: string;
-  dispatch: Function;
+function mapStateToProps(props: Everything): SpeciesCatalogProps {
+  return {
+    cropSearchQuery: props.resources.consumers.farm_designer.cropSearchQuery,
+    dispatch: props.dispatch,
+    designer: props.resources.consumers.farm_designer,
+    cropSearchResults: props
+      .resources
+      .consumers
+      .farm_designer
+      .cropSearchResults || []
+  }
 }
 
-function SearchBox({ query, dispatch }: SearchBoxParams) {
-  return <input value={query}
-    onChange={(e) => doSearch(e, dispatch)}
-    className="search"
-    placeholder="Search OpenFarm" />;
-}
-
-function doSearch(e: React.FormEvent<HTMLInputElement>,
-  dispatch: Function) {
-  dispatch(openFarmSearchQuery(e.currentTarget.value));
-}
-
-@connect((state: Everything) => state)
-export class SpeciesCatalog extends React.Component<Everything, {}> {
-  render() {
-    let { cropSearchResults, cropSearchQuery } = this.props.designer;
-
-    let species = cropSearchResults.map(resp => {
-      let { crop, image } = resp;
-      return <Link key={resp.crop.slug}
-        to={`/app/designer/plants/crop_search/` + crop.slug.toString()}>
-        <div className="plant-catalog-tile col-xs-6">
-          <label>{crop.name}</label>
-          <img className="plant-catalog-image" src={image} />
-        </div>
-      </Link>;
+@connect(mapStateToProps)
+export class SpeciesCatalog extends React.Component<SpeciesCatalogProps, {}> {
+  doSearch = (e: React.FormEvent<HTMLInputElement>) => {
+    this.props.dispatch({
+      type: "SEARCH_QUERY_CHANGE",
+      payload: e.currentTarget.value
     });
+  }
 
+  render() {
     return <div className="panel-container green-panel species-catalog-panel">
       <div className="panel-header green-panel">
         <p className="panel-title">
@@ -54,14 +45,20 @@ export class SpeciesCatalog extends React.Component<Everything, {}> {
       <div className="panel-content">
         <div className="thin-search-wrapper">
           <i className="fa fa-search"></i>
+
           <div className="thin-search">
-            <SearchBox query={cropSearchQuery}
-              dispatch={this.props.dispatch} />
+            <input value={this.props.cropSearchQuery}
+              onChange={(e) => { this.doSearch(e); }}
+              className="search"
+              placeholder="Search OpenFarm" />
           </div>
         </div>
         <div className="panel-content">
           <div className="crop-search-result-wrapper row">
-            {species}
+            <OpenFarmSearch
+              dispatch={this.props.dispatch}
+              query={this.props.cropSearchQuery}
+              cropSearchResults={this.props.cropSearchResults} />
           </div>
         </div>
       </div>

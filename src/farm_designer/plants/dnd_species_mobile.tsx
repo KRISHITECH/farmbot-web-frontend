@@ -4,23 +4,17 @@ import { Everything } from "../../interfaces";
 import { connect } from "react-redux";
 import { t } from "i18next";
 import { isMobile } from "../../util";
+import { history } from "../../history";
+import { DEFAULT_ICON } from "../../open_farm/index";
+import {
+  SpeciesInfoProps,
+  DNDSpeciesMobileState,
+  DraggableEvent
+} from "../interfaces";
 
-interface SpeciesInfoProps extends Everything {
-  params: {
-    species: string;
-  };
-}
-
-interface DraggableEvent {
-  currentTarget: HTMLImageElement;
-  dataTransfer: {
-    setDragImage: Function;
-  };
-}
-
-interface DNDSpeciesMobileState {
-  isDragging: boolean;
-}
+const NOOP = (a: object, b: number, c: number) => {
+  console.log("NO DND SUPPORT ON THIS BROWSER");
+};
 
 @connect((state: Everything) => state)
 /** DND => "drag and drop" */
@@ -33,12 +27,12 @@ DNDSpeciesMobileState> {
 
   handleDragStart(e: DraggableEvent) {
     // TODO: Take suggestions from the community about user preference
-    // console.log(e.currentTarget);
     let img = document.createElement("img");
     // Stub until we figure out dynamic drag images
-    img.src = "/app-resources/img/icons/Sprout-96.png";
-    // TS doesn't know setDragImage
-    e.dataTransfer.setDragImage(img, 50, 50);
+    img.src = DEFAULT_ICON;
+
+    // Because of Android and MS Edge.
+    _.get(e, "dataTransfer.setDragImage", NOOP)(img, 50, 50);
   }
 
   toggleDesignerView() {
@@ -46,7 +40,7 @@ DNDSpeciesMobileState> {
   }
 
   findCrop(slug?: string) {
-    let crops = this.props.designer.cropSearchResults;
+    let crops = this.props.cropSearchResults;
     let crop = _(crops).find((result) => result.crop.slug === slug);
     return crop || {
       crop: {
@@ -66,14 +60,15 @@ DNDSpeciesMobileState> {
   }
 
   render() {
-    let species = this.props.params.species.toString();
+    let species = history.getCurrentLocation().pathname.split("/")[5];
+
     let result = this.findCrop(species || "PLANT_NOT_FOUND");
 
     /** rgba arguments are a more mobile-friendly way apply filters */
     let backgroundURL = isMobile() ? `linear-gradient(
       rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${result.image})` : "";
 
-    return <div className={`panel-container green-panel 
+    return <div className={`panel-container green-panel
     dnd-species-mobile-panel is-dragging-${this.state.isDragging}`}>
       <div className="panel-header green-panel"
         style={{ background: backgroundURL }}>
@@ -87,11 +82,11 @@ DNDSpeciesMobileState> {
         <div className="panel-header-description">
           <img alt={t("plant icon")}
             draggable={true}
-            src="/app-resources/img/icons/Sprout-96.png"
+            src={DEFAULT_ICON}
             onTouchStart={this.toggleDesignerView.bind(this)}
             onTouchEnd={this.toggleDesignerView.bind(this)}
             onTouchMove={this.handleDragStart.bind(this)} />
-          <b>{t("Drag and drop")}</b> {t(`the icon onto the map. You can add 
+          <b>{t("Drag and drop")}</b> {t(`the icon onto the map. You can add
           multiple plants and make adjustments as many times as you need to
           before you save and finish.`)}
         </div>

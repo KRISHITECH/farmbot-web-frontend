@@ -31,7 +31,7 @@ module.exports = function () {
       publicPath: "/",
       devtoolLineToLine: true
     },
-    devtool: "source-map",
+    devtool: "eval",
     /** Allows imports without file extensions. */
     resolve: {
       alias: {

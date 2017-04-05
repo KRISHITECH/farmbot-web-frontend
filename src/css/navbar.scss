@@ -57,14 +57,37 @@ nav {
     a {
         padding: 1.8rem 1rem;
         color: $gray !important;
+        position: relative;
+        transition: all 0.6s ease;
         &:hover {
             color: $white !important;
             font-weight: bold;
+            transition: all 0.6s ease;
         }
         &.active {
             color: $white !important;
-            border-bottom: 3px solid $white;
             font-weight: bold;
+            transition: all 0.4s ease;
+            &:before {
+                content: "";
+                background: $dark_gray;
+                position: absolute;
+                bottom: -3px;
+                left: 0;
+                right: 0;
+                height: 3px;
+                z-index: 1;
+                animation: slide-up 0.4s ease forwards;
+            }
+            &:after {
+                content: "";
+                background: $white;
+                position: absolute;
+                bottom: -3px;
+                left: 0;
+                right: 0;
+                height: 3px;
+            }
         }
     }
     .nav-dropdown {
@@ -122,6 +145,15 @@ nav {
                 }
             }
         }
+    }
+}
+
+@keyframes slide-up {
+    0% {
+        transform: translateY(0px);
+    }
+    100% {
+        transform: translateY(-3px);
     }
 }
 

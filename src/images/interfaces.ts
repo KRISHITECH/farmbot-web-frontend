@@ -1,6 +1,4 @@
-export interface ImageState {
-  all: Image[];
-}
+import { TaggedImage } from "../resources/tagged_resources";
 
 export interface Image {
   id: number;
@@ -29,9 +27,6 @@ export interface HiLo {
   lo: number;
 }
 
-// api/regimens/sync
-// {1: 57}
-
 /** JSON document that gets sent to the weed detection python script as an WeedDetectorENV
  *  variable. */
 export interface WeedDetectorENV {
@@ -41,9 +36,37 @@ export interface WeedDetectorENV {
   blur: number;
   morph: number;
   iterations: number;
-};
+}
 
-export interface DetectorState extends WeedDetectorENV {
+export interface DetectorState {
   isEditing: boolean;
   deletionProgress: string;
-};
+  settingsMenuOpen: boolean;
+  /** Defined only if the bot is online AND its been setup */
+  remoteFarmwareSettings: Partial<WeedDetectorENV>;
+}
+
+export interface FarmbotPickerProps {
+  h: [number, number];
+  s: [number, number];
+  v: [number, number];
+}
+
+export interface EnvSliderProps {
+  name: keyof HSV<{}>;
+  env: Partial<WeedDetectorENV>;
+  onChange?: (key: keyof HSV<{}>, val: [number, number]) => void;
+}
+
+export interface EnvSliderState extends Partial<HiLo> {
+  sliding: boolean;
+}
+
+export interface ImageFlipperProps {
+  images: TaggedImage[];
+}
+
+export interface ImageFlipperState {
+  currentInx: number;
+  isLoaded: boolean;
+}

@@ -1,51 +1,41 @@
 import * as React from "react";
 import { RegimenListItem } from "./regimen_list_item";
-import { Everything } from "../../interfaces";
 import { AddRegimen } from "./add_button";
-import { t } from "i18next";
-import { connect } from "react-redux";
+import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../../ui/index";
+import { RegimensListProps } from "../interfaces";
+import { sortResourcesById } from "../../util";
 
-@connect((state: Everything) => state)
-export class RegimensList extends React.Component<Everything, {}> {
+export class RegimensList extends React.Component<RegimensListProps, {}> {
+  rows = () => {
+    return <Col xs={12}>
+      {sortResourcesById(this.props.regimens)
+        .map((regimen, index) => {
+          return <RegimenListItem index={index}
+            key={index}
+            regimen={regimen}
+            dispatch={this.props.dispatch} />;
+        })}
+    </Col>
+  }
+
   render() {
-    return <div className="regimen-list-widget">
-      <div className="widget-wrapper">
-        <div className="row">
-          <div className="col-sm-12">
-            <AddRegimen dispatch={this.props.dispatch} />
-            <div className="widget-header">
-              <h5>Regimens</h5>
-              <i className="fa fa-question-circle widget-help-icon">
-                <div className="widget-help-text">{t(`This is a list of all of
-                your regimens. Click one to begin editing it.`)}
-                </div>
-              </i>
-            </div>
-          </div>
-        </div>
-        <div className="widget-content no-bottom-padding">
-          <div className="row">
-            <div className="col-sm-12">
-              {this
-                .props
-                .regimens
-                .all
-                .map((regimen, inx) => <RegimenListItem
-                  dispatch={this.props.dispatch}
-                  regimen={regimen}
-                  index={inx}
-                  key={inx} />)
-              }
-            </div>
-          </div>
-        </div>
-      </div>
+    return <Widget className="regimen-list-widget">
+      <WidgetHeader title="Regimens"
+        helpText={`This is a list of all of your regimens.
+                   Click one to begin editing it.`}>
+        <AddRegimen dispatch={this.props.dispatch} />
+      </WidgetHeader>
+      <WidgetBody>
+        <Row>
+          {this.rows()}
+        </Row>
+      </WidgetBody>
 
       <AddRegimen className="plus-button"
         dispatch={this.props.dispatch}>
         <i className="fa fa-plus"></i>
       </AddRegimen>
 
-    </div>;
+    </Widget>;
   }
 }

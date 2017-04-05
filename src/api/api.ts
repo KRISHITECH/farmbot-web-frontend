@@ -116,8 +116,6 @@ export class API {
   get regimensPath() { return `${this.baseUrl}/api/regimens/`; };
   /** /api/sequences/ */
   get sequencesPath() { return `${this.baseUrl}/api/sequences/`; };
-  /** /api/sync/ */
-  get syncPath() { return `${this.baseUrl}/api/sync/`; };
   /** /api/tool_bays/ */
   get toolBaysPath() { return `${this.baseUrl}/api/tool_bays/`; };
   /** /api/tool_slots/ */
@@ -130,4 +128,6 @@ export class API {
   get pointsPath() { return `${this.baseUrl}/api/points/`; };
   /** /api/points/search */
   get pointSearchPath() { return `${this.pointsPath}/search/`; };
+  /** /api/logs */
+  get logsPath() { return `${this.baseUrl}/api/logs/`; };
 }

@@ -7,6 +7,7 @@ import { t } from "i18next";
 import { Progress, ProgressCallback } from "../util";
 const QUERY = { meta: { created_by: "plant-detection" } };
 const URL = API.current.pointSearchPath;
+
 export function resetWeedDetection(cb: ProgressCallback): Thunk {
   return async function (dispatch, getState) {
     try {

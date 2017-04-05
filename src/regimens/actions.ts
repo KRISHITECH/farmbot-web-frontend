@@ -1,124 +1,46 @@
 import { Regimen, RegimenItem } from "./interfaces";
 import { ReduxAction } from "../redux/interfaces";
-import { warning, success, error } from "../ui";
-import * as Axios from "axios";
-import { regimenSerializer } from "./serializers";
-import { prettyPrintApiErrors } from "../util";
-import { t } from "i18next";
-import { API } from "../api";
-import { UnsafeError } from "../interfaces";
+import { destroy, save, init, edit } from "../api/crud";
+import { TaggedRegimen, isTaggedRegimen } from "../resources/tagged_resources";
+import { randomColor } from "../util";
 
-export function copyRegimen(payload: Regimen) {
-  return {
-    type: "COPY_REGIMEN",
-    payload
-  };
+export function editRegimen(r: TaggedRegimen | undefined,
+  update: Partial<Regimen>) {
+  return (dispatch: Function) => {
+    r && isTaggedRegimen(r) && dispatch(edit(r, update));
+  }
 }
 
-export function editRegimen(regimen: Regimen,
-  update: Object):
-  ReduxAction<{ regimen: Regimen, update: Object }> {
+export function saveRegimen(uuid: string) {
+  return save(uuid);
+}
+
+export function deleteRegimen(uuid: string) {
+  return destroy(uuid);
+}
+
+export function selectRegimen(payload: TaggedRegimen) {
+  if (isTaggedRegimen(payload)) {
+    return { type: "SELECT_REGIMEN", payload };
+  } else {
+    throw new Error("Not a regimen.")
+  }
+}
+
+let copy = 1;
+
+function emptyRegimen(): TaggedRegimen {
   return {
-    type: "EDIT_REGIMEN",
-    payload: {
-      regimen,
-      update
+    kind: "regimens",
+    uuid: "NEVER",
+    dirty: true,
+    body: {
+      name: ("New regimen " + copy++),
+      color: "gray",
+      regimen_items: []
     }
-  };
+  }
 }
 
-export function saveRegimen(regimen: Regimen, baseUrl: string) {
-  return function (dispatch: Function) {
-    const action = regimen.id ? Axios.put : Axios.post;
-    let url = API.current.regimensPath + (regimen.id || "");
-    return action<Regimen>(url, regimenSerializer(regimen))
-      .then(function (resp) {
-        success(t("Regimen saved."));
-        dispatch(saveRegimenOk(resp.data));
-      })
-      .catch(error => saveRegimenErr(error));
-  };
-}
-
-function saveRegimenOk(regimen: Regimen) {
-  return { type: "SAVE_REGIMEN_OK", payload: regimen };
-}
-
-function saveRegimenErr(err: UnsafeError) {
-  error(prettyPrintApiErrors(err),
-    t("Unable to save regimen."));
-}
-
-export function deleteRegimen(regimen: Regimen) {
-  return function (dispatch: Function) {
-    if (!confirm(`Delete regimen '${regimen.name}'?`)) {
-      return;
-    }
-
-    if (regimen && regimen.id) {
-      let url = API.current.regimensPath + regimen.id;
-
-      Axios.delete<Regimen>(url)
-        .then(function (resp) {
-          dispatch(deleteRegimenOk(regimen));
-        })
-        .catch(function (error) {
-          deleteRegimenErr(error);
-        });
-    } else {
-      dispatch(deleteRegimenOk(regimen));
-    };
-  };
-}
-
-function deleteRegimenOk(payload: Regimen) {
-  success(t("Regimen deleted."));
-  return {
-    type: "DELETE_REGIMEN_OK",
-    payload
-  };
-}
-
-function deleteRegimenErr(payload: Error) {
-  error(t("Unable to delete regimen."));
-}
-
-export function newRegimen(): ReduxAction<{}> {
-  return {
-    type: "NEW_REGIMEN",
-    payload: {}
-  };
-}
-
-export function selectRegimen(index: number): ReduxAction<number> {
-  return {
-    type: "SELECT_REGIMEN",
-    payload: index
-  };
-}
-
-export function removeRegimenItem(item: RegimenItem): ReduxAction<RegimenItem> {
-  return {
-    type: "REMOVE_REGIMEN_ITEM",
-    payload: item
-  };
-}
-
-export function fetchRegimens() {
-  return function (dispatch: Function) {
-    return Axios
-      .get<Regimen[]>(API.current.regimensPath)
-      .then(r => dispatch({
-        type: "FETCH_REGIMENS_OK",
-        payload: r.data
-      }))
-      .catch(e => {
-        warning(t("Could not download regimens."));
-        dispatch({
-          type: "FETCH_REGIMENS_ERR",
-          payload: e
-        });
-      });
-  };
-};
+export let newRegimen = () => init(emptyRegimen());
 

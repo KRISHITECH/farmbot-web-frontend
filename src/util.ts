@@ -1,7 +1,10 @@
 import * as _ from "lodash";
-import { Color } from "./interfaces";
+import { Color, UnsafeError } from "./interfaces";
 import { box } from "boxed_value";
 import { t } from "i18next";
+import { Dictionary } from "farmbot/dist";
+import { error } from "./ui/index";
+import { TaggedResource } from "./resources/tagged_resources";
 
 // http://stackoverflow.com/a/901144/1064917
 // Grab a query string param by name, because react-router-redux doesn't
@@ -42,6 +45,10 @@ export interface AxiosErrorResponse {
   };
 };
 
+export function toastErrors(err: UnsafeError) {
+  return error(prettyPrintApiErrors(err));
+}
+
 /** Concats and capitalizes all of the error key/value
  *  pairs returned by the /api/xyz endpoint. */
 export function prettyPrintApiErrors(err: AxiosErrorResponse) {
@@ -50,16 +57,14 @@ export function prettyPrintApiErrors(err: AxiosErrorResponse) {
     .map(str => _.capitalize(str)).join(" ");
 }
 
-/** */
-function safelyFetchErrors(err: AxiosErrorResponse): { [key: string]: string } {
+function safelyFetchErrors(err: AxiosErrorResponse): Dictionary<string> {
   // In case the interpreter gives us an oddball error message.
   if (err && err.response && err.response.data) {
     return err.response.data;
   } else {
     console.warn("DONT KNOW HOW TO HANDLE THIS ERROR MESSAGE.");
     console.dir(err);
-
-    return { possible: "connectivity issues." };
+    return { problem: "Farmbot Web App hit an unhandled exception." };
   };
 }
 
@@ -68,25 +73,25 @@ function safelyFetchErrors(err: AxiosErrorResponse): { [key: string]: string } {
  * array argument.
  * SOURCE:
  *   https://github.com/granteagon/move/blob/master/src/index.js */
-export function move<T>(array: T[], moveIndex: number, toIndex: number) {
+export function move<T>(array: T[], fromIndex: number, toIndex: number) {
 
-  let item = array[moveIndex];
+  let item = array[fromIndex];
   let length = array.length;
-  let diff = moveIndex - toIndex;
+  let diff = fromIndex - toIndex;
 
   if (diff > 0) {
     // move left
     return [
       ...array.slice(0, toIndex),
       item,
-      ...array.slice(toIndex, moveIndex),
-      ...array.slice(moveIndex + 1, length)
+      ...array.slice(toIndex, fromIndex),
+      ...array.slice(fromIndex + 1, length)
     ];
   } else if (diff < 0) {
     // move right
     return [
-      ...array.slice(0, moveIndex),
-      ...array.slice(moveIndex + 1, toIndex + 1),
+      ...array.slice(0, fromIndex),
+      ...array.slice(fromIndex + 1, toIndex + 1),
       item,
       ...array.slice(toIndex + 1, length)
     ];
@@ -167,13 +172,6 @@ export function pick<T, K extends keyof T>(target: T, key: K): T[K] {
 
 /** _Safely_ check a value at runtime to know if it can be used for square
  * bracket access.
- * ```
- *   if (oneOf<User>(["email"], myVar1)) {
- *     // Safe to use `myVar1` with square bracket access.
- *   } else {
- *     // Handle errors / failures.
- *   }
- * ```
  */
 export function hasKey<T>(base: (keyof T)[]) {
   return (target: T | any): target is keyof T => {
@@ -202,3 +200,86 @@ export class Progress {
 /** If you're creating a module that publishes Progress state, you can use this
  * to prevent people from directly modifying the progress. */
 export type ProgressCallback = (p: Readonly<Progress>) => void;
+
+/** Used only for the sequence scrolling at the moment.
+ * Native DOM methods just aren't standardized enough yet,
+ * so this is an implementation without libs or polyfills. */
+export function smoothScrollToBottom() {
+  let body = document.body;
+  let html = document.documentElement;
+
+  // Not all browsers for mobile/desktop compute height the same, this fixes it.
+  let height = Math.max(body.scrollHeight, body.offsetHeight,
+    html.clientHeight, html.scrollHeight, html.offsetHeight);
+
+  let startY = window.pageYOffset;
+  let stopY = height;
+  let distance = stopY > startY ? stopY - startY : startY - stopY;
+  if (distance < 100) {
+    scrollTo(0, stopY);
+    return;
+  }
+
+  // Higher the distance divided, faster the scroll.
+  // Numbers too low will cause jarring ui bugs.
+  let speed = Math.round(distance / 14);
+  if (speed >= 6) { speed = 14; };
+  let step = Math.round(distance / 25);
+  let leapY = stopY > startY ? startY + step : startY - step;
+  let timer = 0;
+  if (stopY > startY) {
+    for (let i = startY; i < stopY; i += step) {
+      setTimeout("window.scrollTo(0, " + leapY + ")", timer * speed);
+      leapY += step;
+      if (leapY > stopY) { leapY = stopY; }
+      timer++;
+    } return;
+  }
+  for (let i = startY; i > stopY; i -= step) {
+    setTimeout("window.scrollTo(0, " + leapY + ")", timer * speed);
+    leapY -= step; if (leapY < stopY) { leapY = stopY; }
+    timer++;
+  }
+}
+
+/** Fancy debug */
+var last = "";
+export function fancyDebug(t: any) {
+  var next = Object
+    .entries(t)
+    .map((x: any) => `${_.padRight(x[0], 20, " ")} => ${JSON.stringify(x[1]).slice(0, 52)}`)
+    .join("\n");
+  if (last === next) {
+  } else {
+    last = next;
+    console.log(next);
+  }
+}
+
+export type CowardlyDictionary<T> = Dictionary<T | undefined>;
+/** Sometimes, you are forced to pass a number type even though
+ * the resource has no ID (usually for rendering purposes).
+ * Example:
+ *  farmEvent.id || 0
+ *
+ *  In those cases, you can use this constant to indicate intent.
+ */
+export const NOT_SAVED = -1;
+
+export function isUndefined(x: any): x is undefined {
+  return _.isUndefined(x);
+}
+
+/** Better than Array.proto.filter and _.compact() because the type checker
+ * knows what's going on.
+ */
+export function betterCompact<T>(input: (T | undefined)[]): T[] {
+  let output: T[] = [];
+  input.forEach(x => x ? output.push(x) : "")
+  return [];
+};
+
+/** Sorts a list of tagged resources. Unsaved resource get put on the end. */
+export function sortResourcesById<T extends TaggedResource>(input: T[]): T[] {
+  return _.sortBy(input, (x) => x.body.id || Infinity);
+}

@@ -2,7 +2,7 @@ import * as React from "react";
 
 interface BIProps {
   value: string;
-  onCommit: Function;
+  onCommit(e: React.SyntheticEvent<HTMLInputElement>): void;
   min?: number;
   max?: number;
   type?: "text" | "number" | "email" | "password" | "time" | "date";
@@ -17,26 +17,25 @@ interface BIProps {
 }
 
 interface BIState {
-  buffer?: string;
-  isEditing?: boolean;
+  buffer: string;
+  isEditing: boolean;
 }
 
-export class BlurableInput extends React.Component<BIProps, BIState> {
+export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
   constructor(props: BIProps) {
     super();
     this.state = { buffer: "", isEditing: false };
   }
 
+  /** Called on blur. */
   maybeCommit(e: React.SyntheticEvent<HTMLInputElement>) {
-    let shouldCommit = (
-      this.state.buffer || (this.props.allowEmpty && _.isString(""))
-    );
-    if (shouldCommit) { this.props.onCommit(e); }
+    let shouldPassToParent = (this.state.buffer || (this.props.allowEmpty));
+    if (shouldPassToParent) { this.props.onCommit(e); }
     this.setState({ isEditing: false, buffer: "" });
   }
 
   focus() {
-    this.setState({ isEditing: true, buffer: this.props.value });
+    this.setState({ isEditing: true });
   }
 
   updateBuffer(e: React.SyntheticEvent<HTMLInputElement>) {

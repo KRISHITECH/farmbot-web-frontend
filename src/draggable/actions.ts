@@ -4,6 +4,7 @@ import { SequenceBodyItem as Step } from "farmbot";
 import { Everything } from "../interfaces";
 import { ReduxAction } from "../redux/interfaces";
 import * as React from "react";
+export const STEP_DATATRANSFER_IDENTIFER = "farmbot/sequence-step";
 
 /** SIDE EFFECT-Y!! Stores a step into state.draggable.dataTransfer and
  * attaches its lookup key to the event object. This allows you to retrieve
@@ -14,7 +15,7 @@ export function stepPut(value: Step,
   draggerId: number):
   ReduxAction<DataXferBase> {
   let uuid = id();
-  ev.dataTransfer.setData("text", uuid);
+  ev.dataTransfer.setData(STEP_DATATRANSFER_IDENTIFER, uuid);
   return {
     type: "PUT_DATA_XFER",
     payload: {
@@ -34,7 +35,6 @@ export function stepGet(uuid: string) {
     getState: () => Everything):
     DataXfer {
     let obj = getState().draggable.dataTransfer[uuid];
-
     if (obj && obj.intent) {
       dispatch({ type: "DROP_DATA_XFER", payload: uuid });
       return obj;

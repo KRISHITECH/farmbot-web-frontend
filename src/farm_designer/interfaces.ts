@@ -1,4 +1,22 @@
 import { OpenFarm } from "./openfarm";
+import { DropDownItem } from "../ui/index";
+import { CowardlyDictionary } from "../util";
+import { RestResources } from "../resources/interfaces";
+import {
+  TaggedFarmEvent,
+  TaggedSequence,
+  TaggedRegimen,
+  TaggedResource,
+  TaggedPoint,
+  TaggedPlant
+} from "../resources/tagged_resources";
+
+export interface Props {
+  dispatch: Function;
+  designer: DesignerState;
+  points: TaggedPoint[];
+  plants: TaggedPlant[];
+}
 
 export interface UpdateSequenceOrRegimenProps {
   label: string;
@@ -7,15 +25,24 @@ export interface UpdateSequenceOrRegimenProps {
   farm_event_id: number;
 }
 
-export type FarmEventForm = Partial<Record<keyof FarmEvent, string | number>>;
-
-export type TimeUnit = "never"
+export type TimeUnit =
+  | "never"
   | "minutely"
   | "hourly"
   | "daily"
   | "weekly"
   | "monthly"
   | "yearly";
+
+const TIME_UNITS: TimeUnit[] = [
+  "never",
+  "minutely",
+  "hourly",
+  "daily",
+  "weekly",
+  "monthly",
+  "yearly"
+];
 
 export interface FarmEvent {
   id?: number | undefined;
@@ -32,14 +59,8 @@ export interface FarmEvent {
 export interface MovePlantProps {
   deltaX: number;
   deltaY: number;
-  plantId: number;
+  plant: TaggedPlant;
 }
-
-export interface ScheduledEvent {
-  time: Date;
-  desc: string;
-  icon: string;
-};
 
 /** OFCrop bundled with corresponding profile image from OpenFarm API. */
 export interface CropLiveSearchResult {
@@ -51,28 +72,20 @@ export interface Plant {
   id?: number;
   dirty?: boolean | undefined;
   planted_at: string;
-  img_url: string;
+  // img_url: string;
   name: string;
   x: number;
   y: number;
+  radius: number;
+  spread?: number | undefined;
   planting_area_id: string;
-  icon_url: string; // ? Maybe this will change.
+  // icon_url: string; // ? Maybe this will change.
   openfarm_slug: string; // ? Maybe this will change.
-}
-
-export interface Specimen {
-  id: number;
-  name: string;
-  imgUrl: string;
 }
 
 export interface DesignerState {
   x_size: number;
   y_size: number;
-  /** This causes too much data denormalization-
-   *  let's just use state.sync.plants moving forward.
-   */
-  deprecatedPlants: Plant[];
   cropSearchQuery: string;
   cropSearchResults: CropLiveSearchResult[];
 }
@@ -86,3 +99,127 @@ export interface Point {
   created_at: string;
   meta: { [key: string]: (string | undefined) };
 }
+
+export interface AddEditFarmEventProps {
+  selectOptions: DropDownItem[];
+  repeatOptions: DropDownItem[];
+  farmEvents: TaggedFarmEvent[];
+  regimensById: CowardlyDictionary<TaggedRegimen>;
+  sequencesById: CowardlyDictionary<TaggedSequence>;
+  farmEventsById: CowardlyDictionary<TaggedFarmEvent>;
+  getFarmEvent(): TaggedFarmEvent | undefined;
+  formatDate(input: string): string;
+  formatTime(input: string): string;
+  handleTime(e: React.SyntheticEvent<HTMLInputElement>, currentISO: string): string;
+  dispatch: Function;
+}
+
+/** One CalendarDay has many CalendarOccurrences. For instance, a FarmEvent
+ * that executes every 8 hours will create 3 CalendarOccurrences in a single
+ * CalendarDay */
+export interface CalendarOccurrence {
+  sortKey: number;
+  timeStr: string;
+  executableName: string;
+  executableId: number;
+  id: number;
+}
+
+/** A group of FarmEvents for a particular day on the calendar. */
+export interface CalendarDay {
+  /** Unix timestamp. Used as a unique key in JSX and for sorting. */
+  sortKey: string;
+  month: string;
+  day: number;
+  /** Every event that will execute on that day. */
+  items: CalendarOccurrence[];
+}
+
+export interface FarmEventProps {
+  /** Sorted list of the first (100?) events due on the calendar. */
+  calendarRows: CalendarDay[];
+  /** Call this function to navigate to different pages. */
+  push: (url: string) => void;
+}
+
+export interface GardenMapProps {
+  dispatch: Function;
+  designer: DesignerState;
+  points: TaggedPoint[];
+  plants: TaggedPlant[];
+}
+
+export interface GardenMapState {
+  activePlant: Plant | undefined;
+  tempX: number | undefined;
+  tempY: number | undefined;
+}
+
+export interface GardenPlantProps {
+  plant: TaggedPlant;
+  onUpdate: (deltaX: number, deltaY: number, idx: number) => void;
+  onDrop: (uuid: string) => void;
+}
+
+export interface GardenPointProps {
+  point: TaggedPoint;
+}
+
+export type PlantOptions = Partial<Plant>;
+
+export interface SpeciesInfoProps {
+  cropSearchResults: CropLiveSearchResult[];
+}
+
+export interface PlantData {
+  name: string;
+  x: number;
+  y: number;
+  planted_at: string;
+  uuid: string;
+  id?: number;
+}
+
+export interface EditPlantInfoProps {
+  push(url: string): void;
+  dispatch: Function;
+  findPlant(stringyID: string | undefined): TaggedPlant | undefined;
+}
+
+export interface DNDSpeciesMobileState {
+  isDragging: boolean;
+}
+
+export interface DraggableEvent {
+  currentTarget: HTMLImageElement;
+  dataTransfer: { setDragImage: Function; };
+}
+
+export interface DraggableSvgImageState {
+  isDragging: boolean;
+  transX: number;
+  transY: number;
+}
+
+export interface DraggableSvgImageProps {
+  plant: TaggedPlant;
+  id: number;
+  height: number;
+  width: number;
+  onUpdate: (deltaX: number, deltaY: number, idx: number) => void;
+  onDrop: (uuid: string) => void;
+  x: number;
+  y: number;
+  href: string;
+}
+
+export interface OFSearchProps {
+  dispatch: Function;
+  cropSearchResults: CropLiveSearchResult[];
+  query: string;
+}
+
+export interface OFSearchState {
+  results: CropLiveSearchResult[];
+}
+

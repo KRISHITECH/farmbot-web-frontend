@@ -1,75 +1,63 @@
 import * as React from "react";
-import { ListAndFormProps } from "../interfaces";
-import { Col, Widget, WidgetBody, WidgetHeader } from "../../ui";
-import { toggleEditingToolBays } from "../actions";
-import * as _ from "lodash";
+import { Row, Col, Widget, WidgetBody, WidgetHeader } from "../../ui";
 import { t } from "i18next";
+import { ToolBayListProps } from "../interfaces";
+import { TaggedToolSlot } from "../../resources/tagged_resources";
 
-export class ToolBayList extends React.Component<ListAndFormProps, {}> {
-  renderTool(tool_id: number | undefined | null) {
-    let { tools } = this.props.all;
-    return tools.all.map((tool, index) => {
-      if (tool_id === tool.id) {
-        return <td key={index}>
-          {tool.name}
-        </td>;
-      }
-    });
-  }
-
-  renderSlots(tool_bay_id: number) {
-    let { tool_slots, tools } = this.props.all;
-    let currentSlots = _.where(tool_slots, { tool_bay_id });
-    return _.sortBy((currentSlots || []), "id").map((slot, index) => {
-      let { x, y, z, tool_id } = slot;
-      return <tr key={index}>
-        <td>{index + 1}</td>
-        <td>{x}</td>
-        <td>{y}</td>
-        <td>{z}</td>
-        {tools.all.length > 0 && (this.renderTool(tool_id))}
-        {tools.all.length === 0 && (<td>---</td>)}
-      </tr>;
-    });
-  }
-
+export class ToolBayList extends React.Component<ToolBayListProps, {}> {
   render() {
-    let onClick = () => { this.props.dispatch(toggleEditingToolBays()); };
-    let { tool_bays } = this.props.all;
-    return <Col>
-      {tool_bays.map((bay, index) => {
-        let { id, name } = bay;
-        return <Widget key={index}>
+    let toggle = () => this.props.toggle();
+    let { getToolSlots, getToolByToolSlotUUID } = this.props;
+    return <div>
+      {this.props.toolBays.map(bay => {
+        return <Widget key={bay.body.id}>
           <WidgetHeader
-            helpText={t(`Toolbays are where you store your FarmBot
-                          Tools. Each Toolbay has Slots that you can put your
-                          Tools in, which should be reflective of your real
-                          FarmBot hardware configuration.`)}
-            title={name}>
+            helpText={t(`Toolbays are where you store your FarmBot Tools. Each
+              Toolbay has Slots that you can put your Tools in, which should be
+              reflective of your real FarmBot hardware configuration.`)}
+            title={"ToolBay 1"}>
             <button
-              className="gray button-like"
-              onClick={onClick}>
-              {t("EDIT")}
+              className="gray button-like" onClick={toggle}>
+              {t("Edit")}
             </button>
           </WidgetHeader>
           <WidgetBody>
-            <table>
-              <thead>
-                <tr>
-                  <th>{t("SLOT")}</th>
-                  <th>{t("X")}</th>
-                  <th>{t("Y")}</th>
-                  <th>{t("Z")}</th>
-                  <th>{t("TOOL")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {this.renderSlots(id)}
-              </tbody>
-            </table>
+            <Row>
+              <Col xs={2}>
+                <label>{t("Slot")}</label>
+              </Col>
+              <Col xs={2}>
+                <label>{t("X")}</label>
+              </Col>
+              <Col xs={2}>
+                <label>{t("Y")}</label>
+              </Col>
+              <Col xs={2}>
+                <label>{t("Z")}</label>
+              </Col>
+              <Col xs={4}>
+                <label>{t("Tool")}</label>
+              </Col>
+            </Row>
+            {getToolSlots().map(
+              (slot: TaggedToolSlot, index: number) => {
+                let tool = getToolByToolSlotUUID(slot.uuid);
+                let name = (tool && tool.body.name) || "None";
+                return <Row key={slot.body.id}>
+                  <Col xs={2}>
+                    <label>{index + 1}</label>
+                  </Col>
+                  <Col xs={2}>{slot.body.x}</Col>
+                  <Col xs={2}>{slot.body.y}</Col>
+                  <Col xs={2}>{slot.body.z}</Col>
+                  <Col xs={4}>
+                    {name}
+                  </Col>
+                </Row>;
+              })}
           </WidgetBody>
         </Widget>;
       })}
-    </Col>;
+    </div>;
   }
 };

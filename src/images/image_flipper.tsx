@@ -1,46 +1,54 @@
-import { Image } from "./interfaces";
+import { Image, ImageFlipperProps, ImageFlipperState } from "./interfaces";
 import * as React from "react";
 import { safeStringFetch } from "../util";
+import { t } from "i18next";
+import * as moment from "moment";
+import { TaggedImage } from "../resources/tagged_resources";
 
-export interface ImageFlipperProps {
-  images: Image[];
-}
-
-export interface ImageFlipperState {
-  currentInx: number;
-}
+export const PLACEHOLDER_FARMBOT = "/placeholder_farmbot.jpg";
+export const WEBCAM_ERROR = "/webcam_error.jpg"
 const NO_INDEX = new Error(`
-Attempter getting this.state.currentInx and expected a number.
-It was not a number.
+  Attempted getting this.state.currentInx and expected a number.
+  It was not a number.
 `);
 
 export class ImageFlipper extends React.Component<ImageFlipperProps, Partial<ImageFlipperState>> {
   constructor() {
     super();
-    this.state = { currentInx: 0 };
-    this.down = this.down.bind(this);
-    this.up = this.up.bind(this);
-    this.imageJSX = this.imageJSX.bind(this);
+    this.state = { currentInx: 0, isLoaded: false };
   }
 
-  current(): Image | undefined {
+  current(): TaggedImage | undefined {
     return this.props.images[this.state.currentInx || 0];
   }
 
-  imageJSX() {
+  imageJSX = () => {
     let i = this.current();
-    if (i) {
+    if (i && this.props.images.length > 0) {
       let url: string;
-      if (i.attachment_processed_at) {
-        url = i.attachment_url;
-      } else {
-        url = "/app-resources/img/processing.png";
-      }
-      return <img
-        className="image-flipper-image"
-        src={url} />;
+      url = (i.body.attachment_processed_at) ?
+        i.body.attachment_url : PLACEHOLDER_FARMBOT;
+      return <div>
+        {!this.state.isLoaded && (
+          <div className="no-flipper-image-container">
+            <p>{t(`Image loading (try refreshing)`)}</p>
+            <img
+              className="image-flipper-image"
+              src={PLACEHOLDER_FARMBOT} />
+          </div>)}
+        <img
+          onLoad={() => this.setState({ isLoaded: true })}
+          className={`image-flipper-image is-loaded-${this.state.isLoaded}`}
+          src={url} />
+      </div>;
     } else {
-      return <p>Please snap some photos in the sequence editor first.</p>;
+      return <div className="no-flipper-image-container">
+        <p>{t(`You haven't yet taken any photos with your FarmBot.
+          Once you do, they will show up here.`)}</p>
+        <img
+          className="image-flipper-image"
+          src={PLACEHOLDER_FARMBOT} />
+      </div>;
     }
   }
 
@@ -61,24 +69,30 @@ export class ImageFlipper extends React.Component<ImageFlipperProps, Partial<Ima
     return this.useIndex(n => this.props.images[n - 1]);
   }
 
-  up() {
+  up = () => {
     if (this.next) {
       let num = this.useIndex(n => n + 1);
-      this.setState({ currentInx: _.min([this.props.images.length - 1, num]) });
+      this.setState({
+        currentInx: _.min([this.props.images.length - 1, num]),
+        isLoaded: false
+      });
     }
   }
 
-  down() {
+  down = () => {
     if (this.prev) {
       let num = this.useIndex(n => n - 1);
-      this.setState({ currentInx: _.max([0, num]) });
+      this.setState({
+        currentInx: _.max([0, num]),
+        isLoaded: false
+      });
     }
   }
 
   metaDatas() {
     let i = this.current();
     if (i) {
-      let { meta, id } = i;
+      let { meta, id } = i.body;
       return Object.keys(meta).sort().map(function (key, index) {
         return <MetaInfo key={id} attr={key} obj={meta} />;
       });
@@ -101,12 +115,20 @@ export class ImageFlipper extends React.Component<ImageFlipperProps, Partial<Ima
         </div>
       </div>
       <div className="weed-detector-meta">
-        <div>
-          {i ? <MetaInfo attr={"created_at"} obj={i} /> : ""}
+        {/** Separated from <MetaInfo /> for stylistic purposes. */}
+        {i ?
+          <div className="created-at">
+            <label>{t("Created At")}</label>
+            <span>
+              {moment(i.body.created_at).format("MMMM Do, YYYY h:mma")}
+            </span>
+          </div>
+          : ""}
+        <div className="meta-coordinates">
           {this.metaDatas()}
         </div>
       </div>
-    </div >;
+    </div>;
   }
 }
 
@@ -122,7 +144,7 @@ interface MetaInfoProps {
 function MetaInfo({ obj, attr, label }: MetaInfoProps) {
   let top = label || _.startCase(attr.split("_").join());
   let bottom = safeStringFetch(obj, attr);
-  return <div>
+  return <div className="coordinate">
     <label>{top}</label>
     <span>{bottom || "unknown"}</span>
   </div>;

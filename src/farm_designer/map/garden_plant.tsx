@@ -1,25 +1,41 @@
 import * as React from "react";
 import { DraggableSvgImage } from "../draggable_svg_image";
-import { Plant } from "../interfaces";
+import { GardenPlantProps } from "../interfaces";
+import { cachedIcon, DEFAULT_ICON } from "../../open_farm/index";
 
-interface Props {
-    plant: Plant;
-    onUpdate: (deltaX: number, deltaY: number, idx: number) => void;
-    onDrop: (id: number) => void;
-}
-export function GardenPlant(props: Props) {
-    let { plant, onUpdate, onDrop } = props;
-    if (plant.id) {
-        return <DraggableSvgImage key={plant.id}
-            x={plant.x}
-            y={plant.y}
-            height={32}
-            width={32}
-            id={plant.id}
-            onUpdate={onUpdate}
-            onDrop={onDrop}
-            href={"/app-resources/img/icons/Sprout-96.png"} />;
+export class GardenPlant extends React.Component<GardenPlantProps,
+ { icon: string }> {
+  constructor() {
+    super();
+    this.state = { icon: DEFAULT_ICON };
+  }
+
+  componentDidMount() {
+    cachedIcon(this.props.plant.body.openfarm_slug)
+      .then((icon: string) => this.setState({ icon }));
+  }
+
+  render() {
+    let { plant, onUpdate, onDrop } = this.props;
+    if (plant.body.id) {
+      return <g>
+        <circle className="map-plant-spread"
+          cx={plant.body.x}
+          cy={plant.body.y}
+          r={(plant.body.spread || 0) * 10 / 2} />
+        <DraggableSvgImage key={plant.body.id}
+          plant={plant}
+          x={plant.body.x - plant.body.radius}
+          y={plant.body.y - plant.body.radius}
+          height={plant.body.radius * 2}
+          width={plant.body.radius * 2}
+          id={plant.body.id}
+          onUpdate={onUpdate}
+          onDrop={onDrop}
+          href={this.state.icon} />
+      </g>;
     } else {
-        throw new Error("Save plants before placing them on the map");
+      throw new Error("Save plants before placing them on the map");
     }
+  }
 }

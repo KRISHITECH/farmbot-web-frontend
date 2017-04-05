@@ -1,7 +1,7 @@
 import * as React from "react";
-import { IStepInput } from "../step_tiles/index";
+import { StepInputProps } from "../interfaces";
 
-export function InputUnknown({step, field, dispatch, index}: IStepInput) {
-    return <input type="text"
-        placeholder={`UNEXPECTED INPUT '${field.toString}'`} />;
+export function InputUnknown({ field }: StepInputProps) {
+  return <input type="text"
+    placeholder={`UNEXPECTED INPUT '${(field || "empty").toString}'`} />;
 }

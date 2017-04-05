@@ -1,10 +1,8 @@
-.toolbay-form-widget {
-    .row {
-        margin-bottom: 1rem;
+.tools {
+    label {
+        font-size: 1.4rem;
     }
-    .heading-row {
-        &:not(:first-child) {
-            text-align: center;
-        }
+    .widget-body .row:not(:first-child):not(:last-child) {
+        margin-bottom: 1rem;
     }
 }

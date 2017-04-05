@@ -1,26 +1,23 @@
-export type EditorMode = "editing" | "controlling";
+import { TaggedPeripheral } from "../../resources/tagged_resources";
+import { Pins } from "farmbot/dist";
 
 export interface PeripheralState {
-    editorMode: EditorMode;
-    all: Peripheral[];
+  isEditing: boolean;
 }
 
 export interface Peripheral {
-    id?: number;
-    dirty?: boolean;
-    mode?: number;
-    pin: number;
-    label: string;
-}
-
-/** A combination of a peripheral object,
- * plus its index within state.peripheral.all */
-export interface IndexedPeripheral {
-    index: number;
-    peripheral: Peripheral;
+  id?: number;
+  pin: number | undefined;
+  label: string;
 }
 
 export interface PeripheralFormProps {
-    dispatch: Function;
-    editorMode: EditorMode;
+  dispatch: Function;
+  peripherals: TaggedPeripheral[];
+}
+
+export interface PeripheralListProps {
+  dispatch: Function;
+  peripherals: TaggedPeripheral[];
+  pins: Pins
 }

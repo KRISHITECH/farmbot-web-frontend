@@ -1,37 +1,39 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { Everything } from "../interfaces";
 import { WeedDetector } from "../images";
 import { HardwareSettings } from "./components/hardware_settings";
 import { FarmbotOsSettings } from "./components/farmbot_os_settings";
-import { Farmware } from "../farmware";
+import { Farmware } from "../farmware/farmware_panel";
+import { Page, Col } from "../ui/index";
+import { mapStateToProps } from "./state_to_props";
+import { Props } from "./interfaces";
 
-@connect((state: Everything) => state)
-export class Devices extends React.Component<Everything, {}> {
+@connect(mapStateToProps)
+export class Devices extends React.Component<Props, {}> {
   render() {
     if (this.props.auth) {
-      let auth = this.props.auth;
-      return <div className="all-content-wrapper">
-        <div className="row">
-          <div className="col-md-6 col-sm-6 col-xs-12 col-sm-12">
-            <div className="widget-wrapper farmware-widget">
-              <div className="row">
-                <Farmware bot={this.props.bot} />
-              </div>
-            </div>
-            <div className="row">
-              <FarmbotOsSettings {...this.props} auth={auth} />
-            </div>
-          </div>
-          <div className="col-md-6 col-sm-6 col-xs-12">
-            <WeedDetector {...this.props} />
-            <HardwareSettings {...this.props} />
-          </div>
-        </div>
-      </div>;
+      return <Page className="devices">
+        <Col xs={12} sm={6}>
+          <Farmware bot={this.props.bot} />
+          <FarmbotOsSettings
+            account={this.props.deviceAccount}
+            dispatch={this.props.dispatch}
+            bot={this.props.bot}
+            auth={this.props.auth} />
+        </Col>
+        <Col xs={12} sm={6}>
+          <WeedDetector
+            dispatch={this.props.dispatch}
+            bot={this.props.bot}
+            images={this.props.images} />
+          <HardwareSettings
+            dispatch={this.props.dispatch}
+            bot={this.props.bot}
+          />
+        </Col>
+      </Page>;
     } else {
       throw new Error("Log in first");
     }
   }
 };
-

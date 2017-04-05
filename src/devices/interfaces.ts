@@ -3,7 +3,19 @@ import {
   Configuration,
   McuParams
 } from "farmbot";
-import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES } from "farmbot";
+import { ALLOWED_MESSAGE_TYPES } from "farmbot";
+import { AuthState } from "../auth/interfaces";
+import { TaggedImage, TaggedPeripheral, TaggedDevice } from "../resources/tagged_resources";
+import { RestResources } from "../resources/interfaces";
+
+export interface Props {
+  auth: AuthState | undefined;
+  bot: BotState;
+  deviceAccount: TaggedDevice;
+  images: TaggedImage[];
+  dispatch: Function;
+}
+
 /** How the device is stored in the API side.
  * This is what comes back from the API as JSON.
  */
@@ -11,23 +23,7 @@ export interface DeviceAccountSettings {
   id: number;
   name: string;
   webcam_url?: string;
-  /** Must the deivce be saved? */
-  dirty?: boolean;
 };
-
-/**
- * Rpc Log message from the bot.
- */
-export interface RpcBotLog {
-  /** The message to be displayed from the bot. */
-  message: string;
-  /** Unix timestamp of when the log was created. */
-  created_at: number;
-  /** Array of channels where this message is supposed to show up. */
-  channels: ALLOWED_CHANNEL_NAMES[];
-  /** Meta data about the message. */
-  meta: Meta;
-}
 
 /** Meta information about a log message. */
 interface Meta {
@@ -47,13 +43,9 @@ export interface DeviceAccountSettingsUpdate {
   name?: string;
   uuid?: string;
   webcam_url?: string;
-  dirty?: boolean;
 };
 
 export interface BotState {
-  account: DeviceAccountSettings;
-  /** Maximum number of messages to cache. Excess is truncated. */
-  status: string;
   /** How many steps to move when the user presses a manual movement arrow */
   stepSize: number;
   /** The current os version on the github release api */
@@ -82,7 +74,6 @@ export interface BotProp {
   bot: BotState;
 }
 
-
 /** Status registers for the bot's status */
 export type HardwareState = BotStateTree;
 
@@ -96,9 +87,8 @@ export interface GithubRelease {
   tag_name: string;
 }
 
-type configKey = keyof McuParams;
 export interface ChangeSettingsBuffer {
-  key: configKey;
+  key: keyof McuParams;
   val: number;
 }
 
@@ -107,4 +97,57 @@ export interface MoveRelProps {
   y: number;
   z: number;
   speed?: number | undefined;
+}
+
+export type Xyz = "x" | "y" | "z";
+export type Axis = Xyz | "all";
+
+export interface CalibrationButtonProps {
+  axis: Axis;
+}
+
+export interface FarmbotOsProps {
+  bot: BotState;
+  account: TaggedDevice;
+  auth: AuthState;
+  dispatch: Function;
+}
+
+export interface FarmbotOsState {
+  cameraStatus: "" | "sending" | "done" | "error";
+}
+
+export interface ConfigInputBoxProps {
+  bot: BotState;
+  setting: string;
+  dispatch: Function;
+}
+
+export interface McuInputBoxProps {
+  bot: BotState;
+  setting: string;
+  dispatch: Function;
+}
+
+export interface EStopButtonProps {
+  bot: BotState;
+  auth: AuthState | undefined;
+}
+
+export interface PeripheralsProps {
+  resources: RestResources;
+  bot: BotState;
+  peripherals: TaggedPeripheral[];
+  dispatch: Function;
+}
+
+export interface WeedDetectorProps {
+  bot: BotState;
+  dispatch: Function;
+  images: TaggedImage[];
+}
+
+export interface HardwareSettingsProps {
+  dispatch: Function;
+  bot: BotState;
 }

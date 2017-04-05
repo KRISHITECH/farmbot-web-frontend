@@ -1,20 +1,16 @@
 import * as React from "react";
 import { GardenMap } from "./map/garden_map";
 import { connect } from "react-redux";
-import { Everything } from "../interfaces";
 import { success } from "../ui";
 import { Link } from "react-router";
 import { t } from "i18next";
+import { Props } from "./interfaces";
+import { mapStateToProps } from "./state_to_props";
+import { history } from "../history";
+import { fancyDebug } from "../util";
 
-interface IndexProps extends Everything {
-  params: {
-    species: string;
-    plant_id: string;
-  };
-}
-
-@connect((state: Everything) => state)
-export class FarmDesigner extends React.Component<IndexProps, {}> {
+@connect(mapStateToProps)
+export class FarmDesigner extends React.Component<Props, {}> {
   componentDidMount() {
     success("Subscribe to the FarmBot.io mailing list for news and updates.",
       "Work in Progress");
@@ -24,7 +20,8 @@ export class FarmDesigner extends React.Component<IndexProps, {}> {
     // Kinda nasty, similar to the old q="NoTab" we used to determine no panels.
     // This one just makes sure the designer can click it's panel tabs without
     // the other headers getting in the way. There's more re-usability in this.
-    if (this.props.location.pathname === "/app/designer") {
+
+    if (history.getCurrentLocation().pathname === "/app/designer") {
       document.body.classList.add("designer-tab");
     } else {
       document.body.classList.remove("designer-tab");
@@ -46,11 +43,15 @@ export class FarmDesigner extends React.Component<IndexProps, {}> {
           </div>
         </div>
         <div className="farm-designer-panels">
-          {this.props.children}
+          {this.props.children || <div>No child route found.</div>}
         </div>
 
         <div className="farm-designer-map">
-          <GardenMap {...this.props} />
+          <GardenMap
+            dispatch={this.props.dispatch}
+            designer={this.props.designer}
+            plants={this.props.plants}
+            points={this.props.points} />
         </div>
       </div>
     );

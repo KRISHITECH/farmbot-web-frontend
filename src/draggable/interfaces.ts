@@ -17,7 +17,6 @@ export interface DataXferBase {
   /** "why" the drag/drop event took place (tagged union-  See Typescript
    * documentation for more information). */
   intent: DataXferIntent;
-
 }
 
 /** Data transfer payload used when moving a *new* step into an existing step */
