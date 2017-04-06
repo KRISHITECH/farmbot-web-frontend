@@ -333,6 +333,16 @@ export let findSequenceById = (ri: ResourceIndex, sequence_id: number) => {
   }
 };
 
+
+export let findRegimenById = (ri: ResourceIndex, regimen_id: number) => {
+  let regimen = byId("regimens")(ri, regimen_id);
+  if (regimen && isTaggedRegimen(regimen) && sanityCheck(regimen)) {
+    return regimen;
+  } else {
+    throw new Error("Bad regimen id: " + regimen_id);
+  }
+};
+
 export let findSlotById = byId<TaggedToolSlot>("tool_slots");
 /** Find a Tool's corresponding Slot. */
 export let findSlotByToolId = (index: ResourceIndex, tool_id: number) => {

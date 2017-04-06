@@ -8,6 +8,7 @@ export class ToolList extends React.Component<ToolListProps, {}> {
   render() {
     let toggle = () => this.props.toggle();
     let { tools } = this.props;
+
     return <Widget>
       <WidgetHeader
         helpText={t(`This is a list of all your FarmBot Tools.

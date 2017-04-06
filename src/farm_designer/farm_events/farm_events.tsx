@@ -78,8 +78,7 @@ export class FarmEvents extends React.Component<FarmEventProps, {}> {
         </Row>
 
         <Link to="/app/designer/farm_events/add">
-          <div className="plus-button add-event button-like"
-            data-toggle="tooltip" title="Add event">
+          <div className="plus-button button-like magenta">
             <i className="fa fa-2x fa-plus" />
           </div>
         </Link>

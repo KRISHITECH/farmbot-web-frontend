@@ -20,7 +20,6 @@ import { API } from "../api/index";
 import { User } from "../auth/interfaces";
 import * as Axios from "axios";
 import { init, edit } from "../api/crud";
-import { fancyDebug } from "../util";
 import { getDeviceAccountSettings } from "../resources/selectors";
 import { TaggedDevice } from "../resources/tagged_resources";
 
@@ -192,8 +191,6 @@ export function save(input: Partial<DeviceAccountSettings>) {
       .catch(resp => error("Error saving device settings."))
   }
 }
-
-export let addDevice = _.noop
 
 export function changeDevice(device: TaggedDevice,
   update: Partial<DeviceAccountSettings>) {

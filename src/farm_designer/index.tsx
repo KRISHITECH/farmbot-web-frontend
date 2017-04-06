@@ -7,7 +7,6 @@ import { t } from "i18next";
 import { Props } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { history } from "../history";
-import { fancyDebug } from "../util";
 
 @connect(mapStateToProps)
 export class FarmDesigner extends React.Component<Props, {}> {

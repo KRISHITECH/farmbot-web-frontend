@@ -41,10 +41,17 @@ function mapStateToProps(props: Everything): AppProps {
     loaded: props.resources.loaded
   };
 }
+/** Relational resources that *must* load before app starts.
+ * App will crash at load time if they are not pre-loaded.
+*/
+const MUST_LOAD: ResourceName[] = [ "sequences", "regimens", "farm_events" ];
 
 @connect(mapStateToProps)
 export default class App extends React.Component<AppProps, {}> {
-  get isLoaded() { return this.props.loaded.length > 5; }
+  get isLoaded() {
+    return (MUST_LOAD.length ===
+      _.intersection(this.props.loaded, MUST_LOAD).length);
+  }
   componentDidMount() {
     setTimeout(() => {
       if (!this.isLoaded) {

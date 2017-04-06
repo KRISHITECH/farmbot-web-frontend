@@ -13,12 +13,12 @@ import { mapStateToProps } from "./state_to_props";
 export class Sequences extends React.Component<Props, {}> {
   render() {
     return <Page className="sequences">
-      <Col xs={4} md={3}>
+      <Col sm={3}>
         <StepButtonCluster
           current={this.props.sequence}
           dispatch={this.props.dispatch} />
       </Col>
-      <Col xs={8} md={6}>
+      <Col sm={6}>
         <SequenceEditorMiddle
           dispatch={this.props.dispatch}
           sequences={this.props.sequences}
@@ -29,7 +29,7 @@ export class Sequences extends React.Component<Props, {}> {
         />
       </Col>
       {isMobile() && <MobileSequencesNav />}
-      <Col xs={12} md={3}>
+      <Col sm={3}>
         <SequencesList
           dispatch={this.props.dispatch}
           auth={this.props.auth}

@@ -5,9 +5,10 @@ import { PeripheralFormProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
 
 export function PeripheralForm(props: PeripheralFormProps) {
-  let { dispatch } = props;
+  let { dispatch, peripherals } = props;
+
   return <div>
-    {sortResourcesById(props.peripherals).map(p => {
+    {sortResourcesById(peripherals).map(p => {
       return <Row>
         <Col xs={6}>
           <input type="text"

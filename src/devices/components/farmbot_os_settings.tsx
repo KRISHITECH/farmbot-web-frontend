@@ -3,7 +3,6 @@ import { t } from "i18next";
 import { FarmbotOsProps, FarmbotOsState } from "../interfaces";
 import {
   changeDevice,
-  addDevice,
   saveAccountChanges,
   reboot,
   powerOff,
@@ -60,21 +59,18 @@ export class FarmbotOsSettings extends React.Component<FarmbotOsProps,
   }
 
   render() {
-    let fwvers = _.get(this
-      .props
-      .bot
-      .hardware
-      .informational_settings,
-      "firmware_version",
-      t("Not Connected to bot"));
+    let { account } = this.props;
+    let isSaving = account && account.saving;
+    let isDirty = account && account.dirty
+
     return <Widget className="device-widget">
       <form onSubmit={this.saveBot.bind(this)}>
         <WidgetHeader title="Device"
           helpText={`This widget shows device information.`}>
           <button type="submit"
-            className={`button-like green`}
+            className={`green button-like is-saving-${isSaving}`}
             onClick={this.updateBot}>
-            {t("SAVE")} {this.props.account.dirty ? "*" : ""}
+            {t("Save")} {isDirty && !isSaving && ("*")}
           </button>
         </WidgetHeader>
         <WidgetBody>

@@ -8,6 +8,7 @@ export class ToolBayList extends React.Component<ToolBayListProps, {}> {
   render() {
     let toggle = () => this.props.toggle();
     let { getToolSlots, getToolByToolSlotUUID } = this.props;
+
     return <div>
       {this.props.toolBays.map(bay => {
         return <Widget key={bay.body.id}>

@@ -2,7 +2,7 @@ import * as React from "react";
 import { selectSequence } from "./actions";
 import { SequencesListProps } from "./interfaces";
 import { t } from "i18next";
-import { isMobile, randomColor, sortResourcesById } from "../util";
+import { isMobile, sortResourcesById } from "../util";
 import { Link } from "react-router";
 import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui/index";
 import { TaggedSequence } from "../resources/tagged_resources";
@@ -70,8 +70,6 @@ export class SequencesList extends React.Component<SequencesListProps, {}> {
           </Col>
         </Row>
       </WidgetBody>
-      <i className="fa fa-plus plus-button"
-        onClick={() => console.log("TODO: dispatch(addSequence())")}></i>
     </Widget>;
   }
 }

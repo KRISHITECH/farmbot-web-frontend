@@ -81,7 +81,6 @@ export class WeedDetector extends React.Component<WeedDetectorProps,
   }
 
   test = () => {
-    let that = this;
     let settings = this.farmwareSettings;
     let pairs = Object
       .keys(settings)

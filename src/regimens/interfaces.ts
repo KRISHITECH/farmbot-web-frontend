@@ -6,7 +6,12 @@ import { BotState } from "../devices/interfaces";
 import { TaggedRegimen, TaggedSequence } from "../resources/tagged_resources";
 import { ResourceIndex } from "../resources/interfaces";
 import { RegimenState } from "./reducer";
-import { Dictionary } from "farmbot/dist";
+
+export interface MiddleSectionProps {
+  regimen: TaggedRegimen | undefined;
+  calendar: CalendarRow[];
+  dispatch: Function;
+}
 
 export interface CalendarRow {
   day: string;

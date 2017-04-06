@@ -1,7 +1,6 @@
 import * as _ from "lodash";
 import { Color, UnsafeError } from "./interfaces";
 import { box } from "boxed_value";
-import { t } from "i18next";
 import { Dictionary } from "farmbot/dist";
 import { error } from "./ui/index";
 import { TaggedResource } from "./resources/tagged_resources";
@@ -282,4 +281,9 @@ export function betterCompact<T>(input: (T | undefined)[]): T[] {
 /** Sorts a list of tagged resources. Unsaved resource get put on the end. */
 export function sortResourcesById<T extends TaggedResource>(input: T[]): T[] {
   return _.sortBy(input, (x) => x.body.id || Infinity);
+}
+
+/** Light wrapper around _.merge() to prevent common type errors / mistakes. */
+export function betterMerge<T>(target: T, update: (T | Partial<T>)): T {
+  return _.merge({}, target, update);
 }

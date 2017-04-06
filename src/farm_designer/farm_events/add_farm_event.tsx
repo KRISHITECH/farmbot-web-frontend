@@ -101,7 +101,7 @@ Partial<FarmEvent>> {
   }
 
   render() {
-    let { formatDate, formatTime, selectOptions } = this.props;
+    let { formatDate, formatTime, executableOptions } = this.props;
     return <div className={`panel-container magenta-panel
             add-farm-event-panel`}>
       <div className="panel-header magenta-panel">
@@ -112,7 +112,7 @@ Partial<FarmEvent>> {
       <div className="panel-content">
         <label>{t("Sequence or Regimen")}</label>
         <DeprecatedFBSelect
-          list={selectOptions}
+          list={executableOptions}
           onChange={this.updateSequenceOrRegimen} />
         <label>{t("Starts")}</label>
         <Row>

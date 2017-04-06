@@ -38,6 +38,7 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
 
   showPins = () => {
     let { peripherals, dispatch, bot } = this.props;
+
     let pins = bot.hardware.pins;
     if (this.state.isEditing) {
       return <PeripheralForm peripherals={peripherals}
@@ -58,8 +59,15 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
   }
 
   render() {
-    let { dispatch } = this.props;
+    let { dispatch, peripherals } = this.props;
     let { isEditing } = this.state;
+
+    let isSaving = peripherals && peripherals
+      .filter(x => x.saving).length !== 0;
+
+    let isDirty = peripherals && peripherals
+      .filter(x => x.dirty).length !== 0;
+
     return <Widget>
       <WidgetHeader title={"Peripherals"}
         helpText={HELP_TEXT}>
@@ -72,10 +80,10 @@ export class Peripherals extends React.Component<PeripheralsProps, PeripheralSta
         </button>
         <button
           hidden={!isEditing}
-          className="green button-like"
+          className={`green button-like is-saving-${isSaving}`}
           type="button"
           onClick={this.maybeSave}>
-          {t("Save")}
+          {t("Save")} {isDirty && !isSaving && ("*")}
         </button>
         <button
           hidden={!isEditing}
