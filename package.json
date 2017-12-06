@@ -55,7 +55,7 @@
     "lodash": "^3.10.1",
     "markdown-it": "^8.2.1",
     "markdown-it-emoji": "^1.3.0",
-    "moment": "2.15.2",
+    "moment": "2.19.3",
     "moxios": "^0.3.0",
     "node-sass": "^3.10.0",
     "optimize-css-assets-webpack-plugin": "^1.3.0",
