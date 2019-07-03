@@ -10,7 +10,9 @@
   "scripts": {
     "build": "node_modules/webpack/bin/webpack.js --config tools/webpack.config.prd.js --display-error-details",
     "start": "webpack-dev-server --config tools/webpack.config.dev.js --content-base public/ --host 0.0.0.0",
-    "test": "jest --coverage --no-cache && cat ./coverage/remapped/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "test": "jest --coverage --no-cache && cat ./coverage/remapped/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "keywords": [
     "farmbot"
@@ -79,7 +81,8 @@
     "url-loader": "^0.5.7",
     "webpack": "^2.2.0-rc.3",
     "webpack-uglify-js-plugin": "^1.1.9",
-    "weinre": "^2.0.0-pre-I0Z7U9OV"
+    "weinre": "^2.0.0-pre-I0Z7U9OV",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "webpack-notifier": "^1.5.0"
@@ -103,5 +106,6 @@
       "html",
       "json"
     ]
-  }
+  },
+  "snyk": true
 }
