@@ -77,7 +77,7 @@
     "tslint": "4.5.1",
     "typescript": "^2.2.1",
     "url-loader": "^0.5.7",
-    "webpack": "^2.2.0-rc.3",
+    "webpack": "^5.0.0",
     "webpack-uglify-js-plugin": "^1.1.9",
     "weinre": "^2.0.0-pre-I0Z7U9OV"
   },
